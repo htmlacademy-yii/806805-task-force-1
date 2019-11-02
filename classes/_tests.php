@@ -3,42 +3,35 @@
 date_default_timezone_set("Europe/Moscow");
 setlocale(LC_ALL, 'ru_RU');
 
-require('_permitted_actions.php');
+require('_task_process.php');
 
 // ТЕСТИРОВАНИЕ - примеры данных
 
 // Возможные варианты Заказчика и Исполнителя
-//$user = ['id' => 1, 'name' => 'Ser', 'category_I' => '', 'category_II' => '', 'category_III' => '']; // Заказчик
-//$user = ['id' => 2, 'name' => 'employer', 'category_I' => '', 'category_II' => '', 'category_III' => '']; // Заказчик сторонний
-$user = ['id' => 3, 'name' => 'Mister', 'category_I' => 1, 'category_II' => '', 'category_III' => '']; // Пользователь
-//$user = ['id' => 4, 'name' => 'workman', 'category_I' => '', 'category_II' => 2, 'category_III' => 3]; // Сторонний пользователь
+//$user = ['id' => 1, 'name' => 'Ser', 'id_role' => _task_process::ROLE_CUSTOMER, 'category_I' => '', 'category_II' => '', 'category_III' => '']; // Заказчик
+//$user = ['id' => 2, 'name' => 'employer', 'id_role' => _task_process::ROLE_CUSTOMER, 'category_I' => '', 'category_II' => '', 'category_III' => '']; // Заказчик сторонний
+$user = ['id' => 3, 'name' => 'Mister', 'id_role' => _task_process::ROLE_CONTRACTOR, 'category_I' => 1, 'category_II' => '', 'category_III' => '']; // Пользователь
+//$user = ['id' => 4, 'name' => 'workman', 'id_role' => _task_process::ROLE_CONTRACTOR, 'category_I' => '', 'category_II' => 2, 'category_III' => 3]; // Сторонний пользователь
 
 // Возможные варианты $task
-$task = ['id' => 1, 'id_employer' => '1', 'id_workman' => '', 'status' => 'Новое', 
-    'endtime' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; // Новое
-
 /*
-$task = ['id' => 1, 'id_employer' => '1', 'id_workman' => 3, 'status' => 'Выполняется/В работе/На исполнении', 
-    'endtime' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; // Выполняется/В работе/На исполнении
+$task = ['id' => 1, 'id_customer' => '1', 'id_contractor' => '', 'id_status' => _task_process::STATUS_NEW, 
+    'dt_end' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; // Новое
 */
+
+$task = ['id' => 1, 'id_customer' => 1, 'id_contractor' => 3, 'id_status' => _task_process::STATUS_NEW, 
+    'dt_end' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; // Выполняется/В работе/На исполнении
 
 // ТЕСТИРОВАНИЕ ВЫЗОВ ОБЪЕКТА - вручную для каждого изменения (http://localhost/classes/_tests.php) !!!  Ассерты почитать надо. 
 
-$permitted_actions = new _permitted_actions($task, $user);
-
-$is_task_actions = $permitted_actions->make_task_actions();
-
-$task_status = $permitted_actions->task_status;
-
-$task_actions = $permitted_actions->get_task_actions();
-
-$task_status_new = $permitted_actions->make_new_task_status();
-
-print_r($task_status);
+$task_process = new _task_process($task, $user);
+$task_status = $task_process->id_task_status;
+print($task_status);
 print('<br>');
-print_r($task_actions);
+$id_next_status = $task_process->show_next_task_status();
+print_r($id_next_status);
 print('<br>');
-print_r($task_status_new);
+$list_buttons = $task_process->list_task_buttons();
+print_r($list_buttons);
 print('<br>');
-print_r($task_status);
-
+print_r($task_process->read_task_buttons());
