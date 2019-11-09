@@ -21,7 +21,7 @@ $task = ['id' => 1, 'id_customer' => '1', 'id_contractor' => '', 'id_status' => 
 */
 // Выполняется/В работе/На исполнении
 $task = ['id' => 1, 'id_customer' => 1, 'id_contractor' => 3, 'id_status' => _task_process::STATUS_NEW, 
-    'end_life' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; 
+    'end_life' => '2019-12-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; 
 
 // ТЕСТИРОВАНИЕ ВЫЗОВ ОБЪЕКТА - вручную для каждого изменения (http://localhost/classes/_tests.php) !!!  Ассерты почитать надо. 
 
@@ -30,15 +30,16 @@ $task_status = $task_process->id_status;
 print($task_status);
 
 print('<br>');
-
 $next_status = $task_process->show_next_status(_task_process::ACT_CANCEL);
 print_r($next_status);
 
 print('<br>');
-
 $list_acts = $task_process->show_acts();
 print_r($list_acts);
 
 print('<br>');
-
 print_r($task_process->show_statuses());
+
+print('<br>');
+$is_end_life = $task_process->check_is_end_life();
+if($is_end_life) {print('Задание просрочено');}

@@ -135,7 +135,7 @@ class _task_process {
 
         $next_status = '';
         if($this->is_end_life && $this->id_status === self::STATUS_NEW) {
-            $next_status = self::status_changers[self::STATUS_NEW][self::END_LIFE];
+            $next_status = self::$status_changers[self::STATUS_NEW][self::END_LIFE];
             // Перезаписываем в таблицу $task новый статус $next_status используя общую функцию
             return true; 
         }
