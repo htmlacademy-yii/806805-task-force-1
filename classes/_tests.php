@@ -15,23 +15,30 @@ $user = ['id' => 3, 'name' => 'Mister', 'id_role' => _task_process::ROLE_CONTRAC
 
 // Возможные варианты $task
 /*
+// Новое
 $task = ['id' => 1, 'id_customer' => '1', 'id_contractor' => '', 'id_status' => _task_process::STATUS_NEW, 
-    'dt_end' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; // Новое
+    'end_life' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; 
 */
-
+// Выполняется/В работе/На исполнении
 $task = ['id' => 1, 'id_customer' => 1, 'id_contractor' => 3, 'id_status' => _task_process::STATUS_NEW, 
-    'dt_end' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; // Выполняется/В работе/На исполнении
+    'end_life' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; 
 
 // ТЕСТИРОВАНИЕ ВЫЗОВ ОБЪЕКТА - вручную для каждого изменения (http://localhost/classes/_tests.php) !!!  Ассерты почитать надо. 
 
 $task_process = new _task_process($task, $user);
-$task_status = $task_process->id_task_status;
+$task_status = $task_process->id_status;
 print($task_status);
+
 print('<br>');
-$id_next_status = $task_process->show_next_task_status();
-print_r($id_next_status);
+
+$next_status = $task_process->show_next_status(_task_process::ACT_CANCEL);
+print_r($next_status);
+
 print('<br>');
-$list_buttons = $task_process->list_task_buttons();
-print_r($list_buttons);
+
+$list_acts = $task_process->show_acts();
+print_r($list_acts);
+
 print('<br>');
-print_r($task_process->read_task_buttons());
+
+print_r($task_process->show_statuses());

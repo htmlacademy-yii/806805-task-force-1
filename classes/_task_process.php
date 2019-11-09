@@ -2,7 +2,7 @@
 
 /* СУЩНОСТИ */
 // user: id, name, id_role, id_category_I, id_category_II, id_category_III.
-// task: id, name, id_customer, id_contractor, id_status, endtime, desc.
+// task: id, name, id_customer, id_contractor, id_status, end_life, desc.
 
 /* КЛАСС 
 Цель класса/объекта:
@@ -20,7 +20,7 @@ class _task_process {
     const STATUS_COMPLETED = 'COMPLETED';
     const STATUS_FAILED = 'FAILED';
 
-    const STATUSES = 
+    private static $statuses = 
     [
         self::STATUS_NEW => ['id' => self::STATUS_NEW, 'name' => 'Новое'],
         self::STATUS_CANCELED => ['id' => self::STATUS_CANCELED, 'name' => 'Отменено'],
@@ -34,7 +34,7 @@ class _task_process {
     const ROLE_CONTRACTOR = 'CONTRACTOR';
     const ROLE_CUSTOMER = 'CUSTOMER';
 
-    const ROLES = 
+    private static $roles = 
     [
         self::ROLE_CONTRACTOR => ['id' => self::ROLE_CONTRACTOR, 'name' => 'Исполнитель'],
         self::ROLE_CUSTOMER => ['id' => self::ROLE_CUSTOMER, 'name' => 'Заказчик']
@@ -42,151 +42,131 @@ class _task_process {
 
     //#3 action buttons of task 
 
-    const BUTT_MESS = 'MESS';
-    const BUTT_OFFER = 'OFFER';
-    const BUTT_FAILURE = 'FAILURE';
-    const BUTT_CANCEL = 'CANCEL';
-    const BUTT_COMPLETE = 'COMPLETE';
-    const BUTT_ACCEPT = 'ACCEPT';
+    const ACT_MESS = 'MESS';
+    const ACT_OFFER = 'OFFER';
+    const ACT_FAILURE = 'FAILURE';
+    const ACT_CANCEL = 'CANCEL';
+    const ACT_COMPLETE = 'COMPLETE';
+    const ACT_ACCEPT = 'ACCEPT';
 
-    const BUTTONS = 
+    private static $acts = 
     [
-        self::BUTT_OFFER => 
+        self::ACT_OFFER => 
         [
-            'id' => self::BUTT_OFFER, 
-            'name' => 'Откликнуться', 
-            'id_role' => self::ROLE_CONTRACTOR, 
-            'id_status' => self::STATUS_NEW,
-            'id_next_status' => null,
+            'id' => self::ACT_OFFER, 
+            'name' => 'Откликнуться'
         ],
-        self::BUTT_FAILURE => 
+        self::ACT_FAILURE => 
         [
-            'id' => self::BUTT_FAILURE, 
-            'name' => 'Отказаться', 
-            'id_role' => self::ROLE_CONTRACTOR, 
-            'id_status' => self::STATUS_RUNNING,
-            'id_next_status' => self::STATUS_FAILED,
+            'id' => self::ACT_FAILURE, 
+            'name' => 'Отказаться'
         ],
-        self::BUTT_CANCEL => 
+        self::ACT_CANCEL => 
         [
-            'id' => self::BUTT_CANCEL, 
-            'name' => 'Отменить', 
-            'id_role' => self::ROLE_CUSTOMER, 
-            'id_status' => self::STATUS_RUNNING,
-            'id_next_status' => self::STATUS_CANCELED
+            'id' => self::ACT_CANCEL, 
+            'name' => 'Отменить'
         ],
-        self::BUTT_COMPLETE => 
+        self::ACT_COMPLETE => 
         [
-            'id' => self::BUTT_COMPLETE, 
-            'name' => 'Завершить', 
-            'id_role' => self::ROLE_CUSTOMER, 
-            'id_status' => self::STATUS_RUNNING,
-            'id_next_status' => self::STATUS_COMPLETED
+            'id' => self::ACT_COMPLETE, 
+            'name' => 'Завершить'
         ],
-        self::BUTT_ACCEPT => 
+        self::ACT_ACCEPT => 
         [
-            'id' => self::BUTT_ACCEPT, 
-            'name' => 'Принять', 
-            'id_role' => self::ROLE_CUSTOMER, 
-            'id_status' => self::STATUS_NEW,
-            'id_next_status' => self::STATUS_RUNNING
+            'id' => self::ACT_ACCEPT, 
+            'name' => 'Принять'
         ],
-        self::BUTT_MESS => 
+        self::ACT_MESS => 
         [
-            'id' => self::BUTT_MESS, 
-            'name' => 'Написать сообщение', 
-            'id_role' => null, 
-            'id_status' => self::STATUS_RUNNING,
-            'id_next_status' => null,
+            'id' => self::ACT_MESS, 
+            'name' => 'Написать сообщение'
         ]
     ];
     
+    //#5 Задание просрочено
+    const END_LIFE = 'END_LIFE';
+
+    //#6 Переходы статуса
+    static private $status_changers = 
+    [
+        self::STATUS_NEW => 
+        [
+            self::ACT_ACCEPT => self::STATUS_RUNNING,
+            self::ACT_CANCEL => self::STATUS_CANCELED,
+            self::END_LIFE => self::STATUS_CANCELED
+        ],
+        self::STATUS_RUNNING => 
+        [
+            self::ACT_FAILURE => self::STATUS_FAILED,
+            self::ACT_COMPLETE => self::STATUS_COMPLETED
+        ]
+    ];
+
     /* СВОЙСТВА */
 
-    //#4 Свойства стандартные
-    public $id_task_status; // значение зависит от $task
-    public $dt_end; // значение зависит от $task, формат '2019-11-29 12:00:00'
-    public $id_user_role; // значение зависит от $user
-    public $my_role; // по умолчанию false, true если пользователь исполнитель или владелец задания  
+    //#7 Свойства стандартные
+    public $id_status; // значение зависит от $task
+    public $is_end_life; // значение зависит от $task
+    public $id_customer; // значение зависит от $task
+    public $id_contractor; // значение зависит от $task 
 
-    //#5 Свойство-цель
+    //#8 Свойство-цель
     private $task_buttons = [];
 
     /* МЕТОДЫ МАГИЧЕСКИЕ */
 
-    //#6 Конструктор - Слушать базовые данные страницы.
+    //#9 Конструктор - Слушать базовые данные страницы.
     public function __construct ($task, $user) {
 
-        $this->id_task_status = $task['id_status'];
+        $this->id_status = $task['id_status'];
 
         date_default_timezone_set("Europe/Moscow");
-        $this->dt_end = strtotime($task['dt_end']);
+        $this->is_end_life = time() > strtotime($task['end_life']) ? self::END_LIFE : false;
 
-        $this->id_user_role = $user['id_role'];
-
-        $this->my_role = false;
-
-        if($user['id'] === $task['id_customer']) {
-            $this->my_role = true;
-        } 
-        elseif ($user['id'] === $task['id_contractor']) {
-            $this->my_role = true;
-        } 
+        $this->id_customer = $user['id_role'] === self::ROLE_CUSTOMER ? $user['id'] : false;
+        $this->id_contractor = $user['id_role'] === self::ROLE_CUSTOMER ? $user['id'] : false;
 
     }
 
-    /* МЕТОДЫ СТАНДАРТНЫЕ */
+    /* МЕТОДЫ ЦЕЛЕВЫЕ */
 
-    //#7 Метод-цель определить следующий статус после нажатия кнопки-действия. Аргумент $id_task_butt - id кнопки окна/формы.
-    public function show_next_task_status($id_task_butt = null) {
+    //#10 Проверка просроченности перед показом задания
+    public function check_is_end_life() {
 
-        if(time() > $this->dt_end && $this->id_task_status === self::STATUS_NEW) {
-            return self::STATUS_CANCELED;
+        $next_status = '';
+        if($this->is_end_life && $this->id_status === self::STATUS_NEW) {
+            $next_status = self::status_changers[self::STATUS_NEW][self::END_LIFE];
+            // Перезаписываем в таблицу $task новый статус $next_status используя общую функцию
+            return true; 
         }
 
-        foreach (self::BUTTONS as $id_button => $button) {
-            if($id_button === $id_task_butt) {
+        return false;
+    }
 
-                return $button['id_next_status'];
+    //#11 Метод-цель определить следующий статус после нажатия кнопки-действия. 
+    public function show_next_status($current_act = null) {
+
+
+        foreach (self::$status_changers[$this->id_status] as $id_act => $next_status) {
+            if($id_act === $current_act) {
+
+                return $next_status;
             }
         }
 
         return null;
     }
 
-    //#8 Метод - Список доступных кнопок-действий в зависимости от статуса и роли
-    public function list_task_buttons() {
-
-        $task_buttons = [];
-        foreach (self::BUTTONS as $id_button => $button) {
-
-            if($button['id_status'] === $this->id_task_status) {
-                
-                // Кнопка подходит к обеим ролям если id_role === null
-                $button['id_role'] = $button['id_role'] ?? $this->id_user_role;
-
-                //если исполнитель или владелец являются действующими для задания
-                if($this->my_role) {
-                    $task_buttons[$button['id_role']][] = $id_button;
-                } 
-                //иначе исполнитель, но не действующий 
-                elseif($this->id_user_role === self::ROLE_CONTRACTOR && $this->id_task_status !== self::STATUS_RUNNING) {
-                    $task_buttons[$button['id_role']][] = $id_button;
-                } 
-            }
-        }
-
-        $this->task_buttons = $task_buttons[$this->id_user_role] ?? [];
-
-        return !empty($task_buttons);
+    //#12 Метод-цель Список кнопок-действий
+    public function show_acts() {
+        $acts = array_keys(self::$acts);
+        return implode(", ", $acts);
     }
 
-    /* МЕТОДЫ ДОПОЛНИТЕЛЬНЫЕ */
-
-    // Читаем список кнопок-действий
-
-    public function read_task_buttons() {
-        return $this->task_buttons;
+    //#13 Метод-цель Список статусов
+    public function show_statuses() {
+        $statuses = array_keys(self::$statuses);
+        return implode(", ", $statuses);
     }
 
 }
