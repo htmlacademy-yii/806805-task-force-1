@@ -159,11 +159,11 @@ class TaskProcess {
 
         if($this->is_end_life && array_key_exists($this->id_status, self::$status_changers_by_facts)) {
 
-            $next_status = self::$status_changers_by_facts[$this->id_status][$this->is_end_life] ?? false;
+            $next_status = self::$status_changers_by_facts[$this->id_status][$this->is_end_life] ?? null;
             return $next_status; 
         }
 
-        return false;
+        return null;
     }
 
     //#11 Метод-цель определить следующий статус после нажатия кнопки-действия. 

@@ -27,7 +27,7 @@ $tasks[] = ['id' => 1, 'id_customer' => '1', 'id_contractor' => '', 'id_status' 
 $tasks[] = ['id' => 1, 'id_customer' => 1, 'id_contractor' => 3, 'id_status' => TaskProcess::STATUS_FAILED,
     'end_life' => '2019-12-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; 
 
-// ТЕСТИРОВАНИЕ ВЫЗОВ ОБЪЕКТА - вручную для каждого изменения (http://localhost/classes/_tests.php) !!!  Ассерты почитать надо. 
+// ТЕСТИРОВАНИЕ ВЫЗОВ ОБЪЕКТА - вручную для каждого изменения (http://localhost/classes/_tests2.php) !!!  Ассерты почитать надо. 
 foreach($users as $k => $v) {
     $task_process = new TaskProcess($tasks[$k], $users[$k]);
     $task_status = $task_process->id_status;
