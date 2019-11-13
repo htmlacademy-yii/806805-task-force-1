@@ -38,9 +38,9 @@ foreach($users as $k => $v) {
     $next_status = $task_process->show_next_status(TaskProcess::ACTION_CANCEL);
     print_r($next_status);
 
-    print('<br> show_acts <br>');
-    $list_acts = $task_process->show_actions();
-    print_r($list_acts);
+    print('<br> show_actions <br>');
+    $list_actions = $task_process->show_actions();
+    print_r($list_actions);
 
     print('<br> show_statuses <br>');
     print_r($task_process->show_statuses());
