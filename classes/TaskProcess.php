@@ -30,7 +30,7 @@ class TaskProcess {
     ];
 
     //#2 roles of user
-
+    
     const ROLE_CONTRACTOR = 'CONTRACTOR';
     const ROLE_CUSTOMER = 'CUSTOMER';
 
@@ -134,8 +134,8 @@ class TaskProcess {
     //#8 Свойства стандартные
     public $id_status; // значение зависит от $task
     public $is_end_life; // значение зависит от $task
-    public $id_customer; // значение зависит от $task
-    public $id_contractor; // значение зависит от $task 
+    public $id_customer; // значение зависит от $task и $user
+    public $id_contractor; // значение зависит от $task и $user
 
     /* МЕТОДЫ МАГИЧЕСКИЕ */
 
@@ -147,8 +147,8 @@ class TaskProcess {
         date_default_timezone_set("Europe/Moscow");
         $this->is_end_life = time() > strtotime($task['end_life']) ? self::FACT_END_LIFE : false;
 
-        $this->id_customer = $user['id_role'] === self::ROLE_CUSTOMER ? $user['id'] : false;
-        $this->id_contractor = $user['id_role'] === self::ROLE_CONTRACTOR ? $user['id'] : false;
+        $this->id_customer = $task['id_customer'] === $user['id'] ? $task['id_customer'] : null;
+        $this->id_contractor = $task['id_contractor'] === $user['id'] ? $task['id_contractor'] : null;
 
     }
 
@@ -169,10 +169,22 @@ class TaskProcess {
     //#11 Метод-цель определить следующий статус после нажатия кнопки-действия. 
     public function show_next_status($current_action = null) {
 
-        if(array_key_exists($this->id_status, self::$status_changers)) {
+        $right_actions = []; // Разрешенные действия для текущего пользователя
+
+        // Находим массив разрешенных действий в зависимости от статуса и роли
+        if($this->id_contractor || $this->id_customer) {
+            $index_role = $this->id_contractor ? self::ROLE_CONTRACTOR : self::ROLE_CUSTOMER;
+            if(array_key_exists($this->id_status, self::$status_changers_rules)) {
+                $right_actions = self::$status_changers_rules[$this->id_status][$index_role] ?? [];
+            }
+        }
+
+        // Проверяем что такое дейсвие меняет статус
+        if($right_actions && array_key_exists($this->id_status, self::$status_changers)) {
 
             foreach (self::$status_changers[$this->id_status] as $id_action => $next_status) {
-                if($id_action === $current_action) {
+                // Проверяем что действие разрешено
+                if($id_action === $current_action && array_search($current_action, $right_actions)) {
                     return $next_status;
                 }
             }
