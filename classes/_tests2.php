@@ -24,7 +24,7 @@ $tasks[] = ['id' => 1, 'id_customer' => 1, 'id_contractor' => '', 'id_status' =>
     'end_life' => '2019-11-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; 
 
 // Выполняется/В работе/На исполнении
-$tasks[] = ['id' => 2, 'id_customer' => 1, 'id_contractor' => 4, 'id_status' => TaskProcess::STATUS_FAILED,
+$tasks[] = ['id' => 2, 'id_customer' => 1, 'id_contractor' => 4, 'id_status' => TaskProcess::STATUS_RUNNING,
     'end_life' => '2019-12-29 12:00:00', 'name' => 'Task_test', 'desc' => 'Thin end of the wedge']; 
 
 // ТЕСТИРОВАНИЕ ВЫЗОВ ОБЪЕКТА - вручную для каждого изменения (http://localhost/classes/_tests2.php) !!!  Ассерты почитать надо. 
@@ -35,8 +35,10 @@ foreach($users as $k => $v) {
     print($task_status);
 
     print('<br> show_next_status: ');
-    $next_status = $task_process->show_next_status(TaskProcess::ACTION_CANCEL);
-    print_r($next_status);
+    foreach(TaskProcess::$actions as $action) {
+        $next_status = $task_process->show_next_status($action['id']);
+        print($action['id'] . ' - ' . $next_status . '; ');
+    }
 
     print('<br> show_actions <br>');
     $list_actions = $task_process->show_actions();

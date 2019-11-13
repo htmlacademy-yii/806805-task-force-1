@@ -49,7 +49,7 @@ class TaskProcess {
     const ACTION_COMPLETE = 'COMPLETE';
     const ACTION_ACCEPT = 'ACCEPT';
 
-    private static $actions = 
+    public static $actions = 
     [
         self::ACTION_OFFER => 
         [
@@ -173,18 +173,22 @@ class TaskProcess {
 
         // Находим массив разрешенных действий в зависимости от статуса и роли
         if($this->id_contractor || $this->id_customer) {
+
             $index_role = $this->id_contractor ? self::ROLE_CONTRACTOR : self::ROLE_CUSTOMER;
+
             if(array_key_exists($this->id_status, self::$status_changers_rules)) {
                 $right_actions = self::$status_changers_rules[$this->id_status][$index_role] ?? [];
             }
         }
 
+        // Проверяем что текущее действие разрешено для пользователя
+        $is_right_actions = is_numeric(array_search($current_action, $right_actions));
+
         // Проверяем что такое дейсвие меняет статус
-        if($right_actions && array_key_exists($this->id_status, self::$status_changers)) {
+        if($is_right_actions && array_key_exists($this->id_status, self::$status_changers)) {
 
             foreach (self::$status_changers[$this->id_status] as $id_action => $next_status) {
-                // Проверяем что действие разрешено
-                if($id_action === $current_action && array_search($current_action, $right_actions)) {
+                if($id_action === $current_action) {
                     return $next_status;
                 }
             }
