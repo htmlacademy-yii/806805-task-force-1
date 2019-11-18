@@ -1,4 +1,5 @@
 <?php 
+namespace _site_TaskForce\General;
 
 /* СУЩНОСТИ */
 // user: id, name, id_role, id_category_I, id_category_II, id_category_III.
@@ -10,6 +11,8 @@
 - 1. Метод - показать список кнопок-действий под заданием 
 - 2. Метод - определить следующий статус после нажатия кнопки-действия
 */
+namespace _site_TaskForce\General;
+
 class Task{ 
 
     /* КОНСТАНТЫ */

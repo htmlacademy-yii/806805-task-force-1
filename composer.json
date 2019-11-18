@@ -1,0 +1,18 @@
+{
+    "name": "alomir/taskforce",
+    "description": "site on OOP",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "allomir",
+            "email": "49421075+allomir@users.noreply.github.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "_site_TaskForce\\": "classes/"
+        }
+    },
+    "require": {}
+}
