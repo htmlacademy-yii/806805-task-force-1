@@ -1,17 +1,17 @@
 {
-    "name": "alomir/taskforce",
-    "description": "site on OOP",
+    "name": "allomir/task-force",
+    "description": "site TaskForce",
     "type": "project",
     "license": "MIT",
     "authors": [
         {
-            "name": "allomir",
-            "email": "49421075+allomir@users.noreply.github.com"
+            "name": "Lebedev Michael",
+            "email": "alomir@yandex.ru"
         }
     ],
     "autoload": {
         "psr-4": {
-            "_site_TaskForce\\": "classes/"
+            "TaskForce\\": "classes/"
         }
     },
     "require": {}
