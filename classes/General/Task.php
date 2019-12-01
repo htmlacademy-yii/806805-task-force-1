@@ -1,15 +1,5 @@
 <?php 
 
-/* СУЩНОСТИ */
-// user: id, name, id_role, id_category_I, id_category_II, id_category_III.
-// task: id, name, id_customer, id_contractor, id_status, end_life, desc.
-
-/* КЛАСС 
-Цель класса/объекта:
-- Константы STATUSES, ROLES, BUTTONS
-- 1. Метод - показать список кнопок-действий под заданием 
-- 2. Метод - определить следующий статус после нажатия кнопки-действия
-*/
 namespace TaskForce\General; 
 
 class Task{ 
@@ -156,7 +146,7 @@ class Task{
      * @param $userId
      * @return array
      */
-    public function getAvailableActions($userId): array
+    protected function getAvailableActions($userId): array
     {
         $currentStatus = $this->getCurrentStatus();
         if ($userId === $this->customerId) {
