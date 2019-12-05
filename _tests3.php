@@ -4,7 +4,9 @@
 //setlocale(LC_ALL, 'ru_RU');
 
 require_once ('vendor/autoload.php');
-use _site_TaskForce\General\Task;
+
+use TaskForce\General\Task;
+
 /**
  * Отладочная функция, выводит print_r-ом входной параметр
  * @param $value
@@ -17,8 +19,8 @@ function d($value){
 
 $users = [];
 
-$users[] = [1, 'Ivan', TASK::STATUS_NEW, '2019-15-11', 1, 2];
-$users[] = [2, 'Ivan', TASK::STATUS_RUNNING, '2019-15-11', 1, 2];
+$users[] = [1, 'Ivan', Task::STATUS_NEW, '2019-15-11', 1, 2];
+$users[] = [2, 'Ivan', Task::STATUS_RUNNING, '2019-15-11', 1, 2];
 
 // ТЕСТИРОВАНИЕ ВЫЗОВ ОБЪЕКТА - вручную для каждого изменения (http://localhost/_tests3.php) !!! 
 foreach($users as $key => $user) {
