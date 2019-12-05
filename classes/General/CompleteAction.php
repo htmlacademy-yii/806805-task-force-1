@@ -2,14 +2,14 @@
 
 namespace TaskForce\General;
 
-class FinishAction extends AbstractAction
+class CompleteAction extends AbstractAction
 {
-    public static function getActionId()
+    public static function getActionSymbol()
     {
-        return 'finish_action';
+        return 'action_complete';
     }
 
-    public static function verifyAccess(Task $availableActions)
+    public static function verifyAccess(AvailableActions $availableActions)
     {
         if (Task::STATUS_RUNNING && Task::ROLE_CUSTOMER) {
             return true;

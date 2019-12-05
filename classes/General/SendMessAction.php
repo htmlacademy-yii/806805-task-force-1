@@ -2,11 +2,11 @@
 
 namespace TaskForce\General;
 
-class SendMessageAction extends AbstractAction
+class SendMessAction extends AbstractAction
 {
-    public static function getActionId()
+    public static function getActionSymbol()
     {
-        return 'send_message';
+        return 'action_send_mess';
     }
 
     public static function verifyAccess(Task $availableActions)

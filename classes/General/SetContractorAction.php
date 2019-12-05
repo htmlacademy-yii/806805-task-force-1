@@ -2,14 +2,14 @@
 
 namespace TaskForce\General;
 
-class SetExecutorAction extends AbstractAction
+class SetContractorAction extends AbstractAction
 {
-    public static function getActionId()
+    public static function getActionSymbol()
     {
-        return 'set_executor';
+        return 'action_set_contractor';
     }
 
-    public static function verifyAccess(Task $availableActions)
+    public static function verifyAccess(AvailableActions $availableActions)
     {
         if (Task::STATUS_NEW && Task::ROLE_CUSTOMER) {
             return true;

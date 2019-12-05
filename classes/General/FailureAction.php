@@ -2,14 +2,14 @@
 
 namespace TaskForce\General;
 
-class RefuseAction extends AbstractAction
+class FailureAction extends AbstractAction
 {
-    public static function getActionId()
+    public static function getActionSymbol()
     {
-        return 'refuse_action';
+        return 'action_failure';
     }
 
-    public static function verifyAccess(Task $availableActions)
+    public static function verifyAccess(AvailableActions $availableActions)
     {
         if (Task::STATUS_RUNNING && Task::ROLE_CONTRACTOR) {
             return true;

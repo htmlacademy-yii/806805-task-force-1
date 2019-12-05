@@ -4,12 +4,12 @@ namespace TaskForce\General;
 
 class CancelAction extends AbstractAction
 {
-    public static function getActionId()
+    public static function getActionSymbol()
     {
-        return 'cancel_action';
+        return 'action_cancel';
     }
 
-    public static function verifyAccess(Task $availableActions): bool
+    public static function verifyAccess(AvailableActions $availableActions): bool
     {
         if (Task::STATUS_NEW && Task::ROLE_CUSTOMER) {
             return true;
@@ -19,6 +19,6 @@ class CancelAction extends AbstractAction
 
     public static function getActionName()
     {
-       return 'Отменить задание';
+       return 'Отменить';
     }
 }

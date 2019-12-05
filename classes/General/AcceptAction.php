@@ -2,11 +2,11 @@
 
 namespace TaskForce\General;
 
-class AddTaskAction extends AbstractAction
+class AcceptAction extends AbstractAction
 {
     public static function getActionSymbol()
     {
-        return 'action_add_task';
+        return 'action_accept';
     }
 
     public static function verifyAccess(AvailableActions $availableActions): bool
