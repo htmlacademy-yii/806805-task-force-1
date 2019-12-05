@@ -9,9 +9,9 @@ class SendMessAction extends AbstractAction
         return 'action_send_mess';
     }
 
-    public static function verifyAccess(Task $availableActions)
+    public static function verifyAccess(AvailableActions $availableActions)
     {
-        if (Task::STATUS_RUNNING && (Task::ROLE_CUSTOMER || Task::ROLE_CONTRACTOR)) {
+        if (AvailableActions::STATUS_RUNNING && (AvailableActions::ROLE_CUSTOMER || AvailableActions::ROLE_CONTRACTOR)) {
             return true;
         }
         return false;

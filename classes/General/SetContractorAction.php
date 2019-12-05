@@ -11,7 +11,7 @@ class SetContractorAction extends AbstractAction
 
     public static function verifyAccess(AvailableActions $availableActions)
     {
-        if (Task::STATUS_NEW && Task::ROLE_CUSTOMER) {
+        if (AvailableActions::STATUS_NEW && AvailableActions::ROLE_CUSTOMER) {
             return true;
         }
         return false;

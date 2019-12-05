@@ -11,7 +11,7 @@ class CompleteAction extends AbstractAction
 
     public static function verifyAccess(AvailableActions $availableActions)
     {
-        if (Task::STATUS_RUNNING && Task::ROLE_CUSTOMER) {
+        if (AvailableActions::STATUS_RUNNING && AvailableActions::ROLE_CUSTOMER) {
             return true;
         }
         return false;

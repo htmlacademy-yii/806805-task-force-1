@@ -11,7 +11,7 @@ class FailureAction extends AbstractAction
 
     public static function verifyAccess(AvailableActions $availableActions)
     {
-        if (Task::STATUS_RUNNING && Task::ROLE_CONTRACTOR) {
+        if (AvailableActions::STATUS_RUNNING && AvailableActions::ROLE_CONTRACTOR) {
             return true;
         }
         return false;
