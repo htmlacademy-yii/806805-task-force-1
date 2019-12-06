@@ -11,7 +11,10 @@ class AddTaskAction extends AbstractAction
 
     public static function verifyAccess(AvailableActions $availableActions, $userId) : bool
     {
-        if ($availableActions->getCurrentStatus() === NULL && $availableActions->getMemberId() === $availableActions::ROLE_CUSTOMER) {
+        // ??? Не понимаю. Разве когда создается новое задание у него будет статус? почему === $availableActions::STATUS_NEW
+        // ??? Может быть лучше написать событие отправки формы, например $_POST['add_task'] или $availableActions->getCurrentStatus() === NULL
+        if ($_POST  
+            && $availableActions->checkRoleInTask($userId) === $availableActions::ROLE_CUSTOMER) {
             return true;
         }
         return false;

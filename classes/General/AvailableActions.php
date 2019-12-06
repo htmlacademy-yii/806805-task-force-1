@@ -105,7 +105,7 @@ class AvailableActions
     }
 
 /**
- * Получение список ролей
+ * Получение список всех ролей
  * @return string
  * 
  */
@@ -205,10 +205,10 @@ public function getCustomerId(): string
                     return [self::ACTION_OFFER];
             }
         }
-        */
+
         // ???ACTION_ACCEPT должно быть при STATUS_RUNNING, в предыдушем методе getNextStatus указывается при STATUS_RUNNING, но после ее нужно не показывать?
         // ???ACTION_OFFER - откликнутся не должно быть у задания у которого пользователь уже является Исполнителем, $roleInTask === NULL (как в #пример_1)
-        
+        // ???ACTION_ADD_TASK - его не нужно указывать в данном методе, тк он не связан с просматриеваемым Заданием, а связан с $_POST и ролью внешней
         return [];
     }
 
