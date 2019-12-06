@@ -9,9 +9,10 @@ class FailureAction extends AbstractAction
         return 'action_failure';
     }
 
-    public static function verifyAccess(AvailableActions $availableActions)
+    public static function verifyAccess(AvailableActions $availableActions, $userId) : bool
     {
-        if (AvailableActions::STATUS_RUNNING && AvailableActions::ROLE_CONTRACTOR) {
+        if ($availableActions->getCurrentStatus() === $availableActions::STATUS_RUNNING 
+            && $availableActions->checkRoleInTask($userId) === $availableActions::ROLE_CONTRACTOR) {
             return true;
         }
         return false;

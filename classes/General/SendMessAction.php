@@ -9,9 +9,11 @@ class SendMessAction extends AbstractAction
         return 'action_send_mess';
     }
 
-    public static function verifyAccess(AvailableActions $availableActions)
+    public static function verifyAccess(AvailableActions $availableActions, $userId) : bool
     {
-        if (AvailableActions::STATUS_RUNNING && (AvailableActions::ROLE_CUSTOMER || AvailableActions::ROLE_CONTRACTOR)) {
+        if ($availableActions->getCurrentStatus() === $availableActions::STATUS_RUNNING 
+            && ($availableActions->checkRoleInTask($userId) === $availableActions::ROLE_CONTRACTOR 
+                || $availableActions->checkRoleInTask($userId) === $availableActions::ROLE_CUSTOMER)) {
             return true;
         }
         return false;

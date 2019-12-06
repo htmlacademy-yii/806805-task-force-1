@@ -9,9 +9,10 @@ class AcceptAction extends AbstractAction
         return 'action_accept';
     }
 
-    public static function verifyAccess(AvailableActions $availableActions): bool
+    public static function verifyAccess(AvailableActions $availableActions, $userId) : bool
     {
-        if (AvailableActions::STATUS_NEW && AvailableActions::ROLE_CUSTOMER) {
+        if ($availableActions->getCurrentStatus() === $availableActions::STATUS_RUNNING 
+            && $availableActions->checkRoleInTask($userId) === $availableActions::ROLE_CONTRACTOR) {
             return true;
         }
         return false;

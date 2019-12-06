@@ -9,9 +9,10 @@ class CancelAction extends AbstractAction
         return 'action_cancel';
     }
 
-    public static function verifyAccess(AvailableActions $availableActions): bool
+    public static function verifyAccess(AvailableActions $availableActions, $userId) : bool
     {
-        if (AvailableActions::STATUS_NEW && AvailableActions::ROLE_CUSTOMER) {
+        if ($availableActions->getCurrentStatus() === $availableActions::STATUS_NEW 
+            && $availableActions->checkRoleInTask($userId) === $availableActions::ROLE_CUSTOMER) {
             return true;
         }
         return false;
@@ -19,6 +20,6 @@ class CancelAction extends AbstractAction
 
     public static function getActionName()
     {
-       return 'Отменить';
+        return 'Отменить';
     }
 }
