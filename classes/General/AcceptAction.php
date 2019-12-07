@@ -2,17 +2,17 @@
 
 namespace TaskForce\General;
 
-class CancelAction extends AbstractAction
+class AcceptAction extends AbstractAction
 {
     public static function getActionSymbol()
     {
-        return 'action_cancel';
+        return 'action_accept';
     }
 
     public static function verifyAccess(AvailableActions $availableActions, $userId) : bool
     {
-        if ($availableActions->getCurrentStatus() === $availableActions::STATUS_NEW 
-            && $availableActions->checkRoleInTask($userId) === $availableActions::ROLE_CUSTOMER) {
+        if ($availableActions->getCurrentStatus() === $availableActions::STATUS_RUNNING 
+            && $availableActions->checkRoleInTask($userId) === $availableActions::ROLE_CONTRACTOR) {
             return true;
         }
         return false;
@@ -20,6 +20,6 @@ class CancelAction extends AbstractAction
 
     public static function getActionName()
     {
-        return 'Отменить';
+        return 'Добавить задание';
     }
 }

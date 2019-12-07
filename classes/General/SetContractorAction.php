@@ -2,11 +2,11 @@
 
 namespace TaskForce\General;
 
-class CancelAction extends AbstractAction
+class SetContractorAction extends AbstractAction
 {
     public static function getActionSymbol()
     {
-        return 'action_cancel';
+        return 'action_set_contractor';
     }
 
     public static function verifyAccess(AvailableActions $availableActions, $userId) : bool
@@ -20,6 +20,6 @@ class CancelAction extends AbstractAction
 
     public static function getActionName()
     {
-        return 'Отменить';
+        return 'Выбрать исполнителя';
     }
 }

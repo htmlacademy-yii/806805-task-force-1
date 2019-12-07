@@ -4,19 +4,20 @@ namespace TaskForce\General;
 
 class AddTaskAction extends AbstractAction
 {
-    public static function getActionId()
+    public static function getActionSymbol()
     {
-        return 'add_task';
+        return 'action_add_task';
     }
 
-    public static function verifyAccess(Task $availableActions): bool
+    public static function verifyAccess(AvailableActions $availableActions, $userId) : bool
     {
-        
-        if (Task::STATUS_NEW && Task::ROLE_CUSTOMER) {
+        // ??? Не понимаю. Разве когда создается новое задание у него будет статус? почему === $availableActions::STATUS_NEW
+        // ??? Может быть лучше написать событие отправки формы, например $_POST['add_task'] или $availableActions->getCurrentStatus() === NULL
+        if ($_POST  
+            && $availableActions->checkRoleInTask($userId) === $availableActions::ROLE_CUSTOMER) {
             return true;
         }
         return false;
-
     }
 
     public static function getActionName()
