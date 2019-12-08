@@ -2,6 +2,8 @@
 
 namespace TaskForce\General; 
 
+use TaskForce\Exs\AvailableNamesException;
+
 class AvailableActions
 {
     /* КОНСТАНТЫ */
@@ -50,7 +52,7 @@ class AvailableActions
      * @param $customerId
      * @param $contractorId
      */
-    public function __construct ($taskId, $taskName, $currentStatus, $endDate, $customerId, $contractorId) {
+    public function __construct (int $taskId, string $taskName, string $currentStatus, string $endDate, int $customerId, ?int $contractorId) {
 
         $this->taskId = $taskId;
         $this->taskName = $taskName;
@@ -58,6 +60,11 @@ class AvailableActions
         $this->endDate = $endDate;
         $this->customerId = $customerId;
         $this->contractorId = $contractorId;
+
+        if(!in_array($currentStatus, $this->getStatuses())) {
+            throw new AvailableNamesException('статус. см Конструктор');
+        }
+        
     }
 
     /* МЕТОДЫ ЦЕЛЕВЫЕ */
@@ -101,6 +108,9 @@ class AvailableActions
      */
     public function getCurrentStatus(): string
     {
+        if(!in_array($this->currentStatus, $this->getStatuses())) {
+            throw new \Exception('статус. см Показать текущий статус');
+        }
         return $this->currentStatus;
     }
 
@@ -120,10 +130,10 @@ class AvailableActions
 /**
  * Проверяем userId на совпадение с id Пользователя/Заказчика из БД
  * 
- * @return string
+ * @return ?string
  * 
  */
-public function checkRoleInTask($userId): string {
+public function checkRoleInTask(?int $userId): ?string {
     
     if ($userId === $this->contractorId) {
         return self::ROLE_CONTRACTOR;
@@ -135,20 +145,15 @@ public function checkRoleInTask($userId): string {
     return null; // Если Исполнитель не выбран
 }
 
-public function getCustomerId(): string 
-{
-    return $this->customerId;
-}
-
     /**
      * Получение следующего статуса
      * @param $action
      * @return string
      */
-    public function getNextStatus($action): string
+    public function getNextStatus(string $action): string
     {
         if (!in_array($action, $this->getActions())) {
-            return 'Ошибка';
+            throw new \Exception('действие. см Показать следующий статус');
         }
         switch ($action) {
             case self::ACTION_ADD_TASK:
@@ -177,10 +182,10 @@ public function getCustomerId(): string
      * @param $userId
      * @return array
      */
-    public function getAvailableActions($currentStatus, $roleInTask): array
+    public function getAvailableActions(string $currentStatus, string $roleInTask): array
     {
         if(!in_array($roleInTask, $this->getRoles())) {
-            return ['Ошибка! Wrong! Error! Fault! Inaccuracy! Lapse! Mistake!'];
+            throw new \Exception('роль пользователя. см Доступные действия');
         }
 
         if ($roleInTask === self::ROLE_CUSTOMER) {
