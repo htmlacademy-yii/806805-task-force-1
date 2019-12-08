@@ -2,10 +2,6 @@
 
 namespace TaskForce\General; 
 
-<<<<<<< Updated upstream
-class AvailableActions extends Task
-{ 
-=======
 use TaskForce\Exs\AvailableNamesException;
 
 class AvailableActions
@@ -66,7 +62,7 @@ class AvailableActions
         $this->contractorId = $contractorId;
 
         if(!in_array($currentStatus, $this->getStatuses())) {
-            throw new AvailableNamesException('статус. см Конструктор');
+            throw new \Exception('Атрибуты. Статус не существует');
         }
         
     }
@@ -113,7 +109,7 @@ class AvailableActions
     public function getCurrentStatus(): string
     {
         if(!in_array($this->currentStatus, $this->getStatuses())) {
-            throw new \Exception('статус. см Показать текущий статус');
+            throw new \Exception('Показать статус. Не существует');
         }
         return $this->currentStatus;
     }
@@ -157,7 +153,7 @@ public function checkRoleInTask(?int $userId): ?string {
     public function getNextStatus(string $action): string
     {
         if (!in_array($action, $this->getActions())) {
-            throw new \Exception('действие. см Показать следующий статус');
+            throw new \Exception('Действие не существует');
         }
         switch ($action) {
             case self::ACTION_ADD_TASK:
@@ -181,21 +177,15 @@ public function checkRoleInTask(?int $userId): ?string {
         }
     }
 
->>>>>>> Stashed changes
     /**
      * Получение всех доступных действий исходя из роли пользователя
      * @param $userId
      * @return array
      */
-<<<<<<< Updated upstream
-    public function getAvailableActions($userId): array
-    {
-        return parent::getAvailableActions($userId);
-=======
     public function getAvailableActions(string $currentStatus, string $roleInTask): array
     {
         if(!in_array($roleInTask, $this->getRoles())) {
-            throw new \Exception('роль пользователя. см Доступные действия');
+            throw new \Exception('Роль не существует');
         }
 
         if ($roleInTask === self::ROLE_CUSTOMER) {
@@ -225,7 +215,6 @@ public function checkRoleInTask(?int $userId): ?string {
         // ???ACTION_OFFER - откликнутся не должно быть у задания у которого пользователь уже является Исполнителем, $roleInTask === NULL (как в #пример_1)
         // ???ACTION_ADD_TASK - его не нужно указывать в данном методе, тк он не связан с просматриеваемым Заданием, а связан с $_POST и ролью внешней
         return [];
->>>>>>> Stashed changes
     }
 
 }
