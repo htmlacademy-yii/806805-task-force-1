@@ -67,6 +67,7 @@ foreach($classData as $key => $data) {
 
     } catch (AvailableNamesException $ex) {
         echo "!!!ИСКЛЮЧЕНИЕ!!! Данные не верны: " . $ex->getMessage() . "<hr>";
+        // error_log("Ошибка: " . $ex->getMessage()); ??? не работает
     }
 
 }
