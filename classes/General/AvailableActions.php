@@ -64,7 +64,6 @@ class AvailableActions
         if(!in_array($currentStatus, $this->getStatuses())) {
             throw new AvailableNamesException('статус. см Конструктор');
         }
-        
     }
 
     /* МЕТОДЫ ЦЕЛЕВЫЕ */
@@ -108,9 +107,6 @@ class AvailableActions
      */
     public function getCurrentStatus(): string
     {
-        if(!in_array($this->currentStatus, $this->getStatuses())) {
-            throw new \Exception('статус. см Показать текущий статус');
-        }
         return $this->currentStatus;
     }
 
@@ -153,8 +149,9 @@ public function checkRoleInTask(?int $userId): ?string {
     public function getNextStatus(string $action): string
     {
         if (!in_array($action, $this->getActions())) {
-            throw new \Exception('действие. см Показать следующий статус');
+            throw new AvailableNamesException('действие. см Показать следующий статус');
         }
+
         switch ($action) {
             case self::ACTION_ADD_TASK:
                 return $this->currentStatus = self::STATUS_NEW;
@@ -185,7 +182,10 @@ public function checkRoleInTask(?int $userId): ?string {
     public function getAvailableActions(string $currentStatus, string $roleInTask): array
     {
         if(!in_array($roleInTask, $this->getRoles())) {
-            throw new \Exception('роль пользователя. см Доступные действия');
+            throw new AvailableNamesException('роль пользователя. см Доступные действия');
+        }
+        if(!in_array($this->currentStatus, $this->getStatuses())) {
+            throw new AvailableNamesException('статус. см Доступные действия');
         }
 
         if ($roleInTask === self::ROLE_CUSTOMER) {
