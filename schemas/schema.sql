@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS users
 	`email`          VARCHAR(128) NOT NULL UNIQUE,
     `password`       VARCHAR(255) NOT NULL,
 	`skype`          VARCHAR(128),
-    `phone`          INT UNSIGNED,
+    `phone`          VARCHAR(11),
 	`other_contacts` VARCHAR(255),
     `address`        VARCHAR(255),
 	`about`          TEXT,
@@ -65,20 +65,20 @@ CREATE TABLE IF NOT EXISTS portfolio_images
 (
     `id`      INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_user` INT UNSIGNED NOT NULL,
-    `image`   VARCHAR(255) NOT NULL,
+    `image`   VARCHAR(255),
     PRIMARY KEY (id)
 );
 
 
 /* #2.2
- * специализация в категориях для исполнителя .
+ * специализация в категориях для исполнителя.
  *
  * id не используется в других таблицах
  */
 CREATE TABLE user_specializations (
 	`id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_user`     INT UNSIGNED NOT NULL,
-	`id_category` TINYINT UNSIGNED NOT NULL,
+	`id_category` TINYINT UNSIGNED,
 	PRIMARY KEY (id)
 );
 
@@ -87,14 +87,14 @@ CREATE TABLE user_specializations (
  *
  * id не используется в других таблицах
  * ??? `status` - можно без этого параметра? просто поставить 0 в id_notification или удалить всю строку. Тоже самое в #6 favorite_users
- * `status` - BOOL DEFAULT 1 - тк при создании активируется
+ * `status`on_off - BOOL DEFAULT 1 - тк при создании активируется
  */
 CREATE TABLE IF NOT EXISTS user_notification_settings
 (
     `id`              INT NOT NULL AUTO_INCREMENT,
 	`id_user`         INT UNSIGNED NOT NULL,
     `id_notification` INT UNSIGNED NOT NULL,
-    `status`          BOOL DEFAULT 1,
+    `on_off`          BOOL DEFAULT 1,
     PRIMARY KEY (id)
 );
 
@@ -116,10 +116,13 @@ CREATE TABLE IF NOT EXISTS tasks
 	`id_location`   INT UNSIGNED NOT NULL,
     `id_customer`   INT UNSIGNED NOT NULL,
     `name`          VARCHAR(128) NOT NULL,
-    `desc`          TEXT NOT NULL,
+    `description`   TEXT NOT NULL,
+    `price`         INT UNSIGNED,
+    `address`       VARCHAR(128),
+    `latitude`      VARCHAR(128),
+    `longitude`     VARCHAR(128),
     `add_time`      DATETIME NOT NULL,
     `end_date`      DATETIME,
-    `price`         INT UNSIGNED,
 	`is_remote`     BOOL DEFAULT 0,
     PRIMARY KEY (task_id)
 );
@@ -133,7 +136,7 @@ CREATE TABLE IF NOT EXISTS task_files
 (
     `id`      INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_task` INT UNSIGNED NOT NULL,
-    `file`    VARCHAR(255) NOT NULL,
+    `file`    VARCHAR(255),
     PRIMARY KEY (id)
 );
 
@@ -191,14 +194,14 @@ CREATE TABLE IF NOT EXISTS offers
  *
  * id не используется в других таблицах
  * ??? `status` - можно без этого параметра? просто поставить 0 в id_user_favorite или удалить всю строку. Тоже самое в #2.3 user_notification_settings
- * `status` - BOOL DEFAULT 1 - тк при создании активируется
+ * `status`on_off - BOOL DEFAULT 1 - тк при создании активируется
  */
 CREATE TABLE IF NOT EXISTS favorite_users
 (
     `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_user`          INT UNSIGNED NOT NULL,
     `id_user_favorite` INT UNSIGNED NOT NULL,
-    `status`           BOOL DEFAULT 1,
+    `on_off`           BOOL DEFAULT 1,
     PRIMARY KEY (id)
 );
 

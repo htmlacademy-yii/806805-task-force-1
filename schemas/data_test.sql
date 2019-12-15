@@ -151,7 +151,7 @@ VALUES
 ;
 
 INSERT INTO favorite_users 
-    (`id_user`,`id_user_favorite`,`status`)
+    (`id_user`,`id_user_favorite`,`on_off`)
 VALUES
 	('5','1','1'),
 	('1','5','1'),

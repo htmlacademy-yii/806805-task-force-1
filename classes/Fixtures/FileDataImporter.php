@@ -7,19 +7,17 @@ use TaskForce\Exs\SourceFileException;
 
 class FileDataImporter 
 {
-    // Список файлов и их адрес.
-    //Начнем с ситис
 
     /*** СВОЙСТВА ***/
 
-    public $filesPath; // строка адрес папки с файл/файлы
-    public $fileNames; // массив названий импортируемых файлов c помощью
-    public $fileName;
-    public $fileNo; // первый файл, определяется в методе import
-    public $mergedFilesNo; 
-    protected $fp;
-    protected $header_data = [];
-    protected $row_data = [];
+    public $filesPath; // директория/папка с файлами
+    public $fileNames; // массив названий файлов в директории
+    public $fileName; // полное имя файла, все выбранные файлы
+    public $fileNo; // номер в директротии первый файл
+    public $mergedFilesNo; // массив номеров файлов, выбранных для слияния
+    private $fp; // подключение к файлу
+    private $header_data = []; // первая строка выбранного файла, буфер-переменные
+    private $row_data = []; // все строки выбранного файла, буфер-переменные
 
     private $error = null;
 
@@ -27,31 +25,53 @@ class FileDataImporter
 
         $this->filesPath = $filesPath; // директория файлов, папка со всеми файлами
         $this->fileNo = $fileNo; // первый выбранный файл в первом поле формы (кнопка выбрать)
-        $this->mergedFilesNo = $mergedFilesNo; // массив с файлами которые будут добавлены в первый файл, должны содержать колонки с одинаковым колвом строк
+        $this->mergedFilesNo = $mergedFilesNo; // массив с номерами для слияния с первый файл, добавляют колонкиб количество строк должно совпадать
     }
 
+    // Директория/папка абсолютный адрес от корня системы
     public function getFilesPath(): ?string {
         return $this->filesPath;
     }
-
+    // Название файла
     public function getFileName(): ?string {
         return $this->fileName;
     }
 
+    // Получение имен файлов в директории
     public function getFilesList(): array {
         return array_slice(scandir($this->filesPath), 2);
     }
 
-    public function selectFileName($fileNo): BOOL {
+    // Проверка верности номера файлов введенных в поля
+    public function selectFileName($filesNo): ?string {
 
-        if(isset($this->getFilesList()[$fileNo])) {
-            $this->fileName = $this->filesPath . '/' . $this->getFilesList()[$fileNo];         
-            return TRUE;
-        } 
+        if(isset($this->getFilesList()[$filesNo])) {
+            return $this->fileName = $this->filesPath . '/' . $this->getFilesList()[$filesNo];         
+        }
 
-        return FALSE;
+        throw new SourceFileException('Wrong file number!');
+        return NULL;
     }
 
+    // Массив со списком выбранных файлов, включая первый
+    public function getSelectedFiles(): ?array {
+        $mergedFilesNo = array_filter($this->mergedFilesNo, function($value) {return  $value !== '' ?? $value;});
+        array_unshift($mergedFilesNo, $this->fileNo);
+
+        if($mergedFilesNo !== array_unique($mergedFilesNo)) {
+            throw new SourceFileException('Есть повторяющиеся файлы!');
+        }
+
+        $mergedFiles = [];
+        foreach($mergedFilesNo as $key => $value) {
+            $this->selectFileName($value);
+            $mergedFiles[] = $this->fileName;
+        }
+
+        return $mergedFiles;
+    }
+
+    // Строка запроса и форма с полями
     public function pageForma (): void {
         $sum = count($this->getFilesList());
         $number = $this->fileNo;
@@ -80,26 +100,18 @@ class FileDataImporter
         </form>";
     } 
 
+    // Собираем все Выбранные файлы - Загружамем данные в буфер-переменные data
     public function mergeFiles() {
-        $mergedFilesNo = array_filter($this->mergedFilesNo, function($value) {return  $value !== '' ?? $value;});
-        array_unshift($mergedFilesNo, $this->fileNo);
+        $mergedFiles = $this->getSelectedFiles();
 
-        printPre($mergedFilesNo);
-
-        if($mergedFilesNo !== array_unique($mergedFilesNo)) {
-            throw new SourceFileException('Есть повторяющиеся файлы!');
-        }
-
-        $mergedFiles = [];
-        foreach($mergedFilesNo as $key => $value) {
-            $this->selectFileName($value);
-            $mergedFiles[] = $this->fileName;
-        }
-
+        // Слияние файлов
         foreach($mergedFiles as $key => $value) {
+
+            // Берем данные из буфера-переменных, если они не пусты
             $header_data_before = $this->header_data;
             $row_data_before = $this->row_data;
 
+            // Читаем данные из каждого файла и загружаем в буфер-переменные
             $this->importIntoBuffer($value);
 
             $this->header_data = array_merge($header_data_before, $this->header_data);
@@ -107,7 +119,7 @@ class FileDataImporter
             if(!empty($row_data_before)) {
 
                 if(count($row_data_before) !== count($this->row_data) ) {
-                    throw new SourceFileException('Файлы не совместимы');
+                    throw new SourceFileException('Файлы не совместимы по количеству строк!');
                 }
 
                 for($i=0; $i < count($row_data_before); $i++) {
@@ -118,12 +130,9 @@ class FileDataImporter
 
     }
 
+    // Проверка каждого файла, чтение, отправка в буфер-переменные
     public function importIntoBuffer($fileName): void
     {
-        if(!$this->selectFileName($this->fileNo)) {
-            throw new SourceFileException('No enter the number');
-        }
-
         echo "<br>Загрузка ... $fileName";
 
         if (!file_exists($fileName)) {
@@ -147,23 +156,27 @@ class FileDataImporter
 
     private function getNextLine(): ?array {
         $data = fgetcsv($this->fp, ',');
+        // При последнем проходе влюбом случае возвратит false, поэтому просим вернуть NULL
         if($data) {
             return $data;
         }
-
         return NULL;
     }
 
     private function getHeaderData():?array {
         rewind($this->fp);
         $data = fgetcsv($this->fp);
+        if (!$data) {
+            throw new FileFormatException("Заголовки не верны или отсутствуют");
+        }
         return $data;
     }
 
+    // Печатать SQL код файлов
+    // пример ('city','latitude','longitude')
     public function convertInSQL(): void {
-        // ('city','latitude','longitude')
 
-        $sql_head = "INSERT INTO " . pathinfo($this->fileName)['filename'] 
+        $sql_head = "INSERT INTO " . pathinfo($this->selectFileName($this->fileNo))['filename'] 
         . " <br>(" . trim(implode(",", $this->header_data)) . ")<br>" ;
 
         printPre($sql_head);
@@ -175,7 +188,6 @@ class FileDataImporter
         $sql_values .= "('" . implode("','", array_pop($this->row_data)) . "');";
 
         printPre($sql_values);
-
     }
 
 }
