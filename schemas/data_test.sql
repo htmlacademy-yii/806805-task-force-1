@@ -14,7 +14,7 @@ VALUES
 ;
 
 INSERT INTO users
-    (`id_role`,`id_location`,`name`,`avatar`,`email`,`password`,`skype`,`phone`,`other_contacts`,`brief`,`portfolio`,`reg_time`,`birth_date`,`activity_time`,`hide_contacts`,`hide_profile`)
+    (`id_role`,`id_location`,`name`,`avatar`,`email`,`password`,`skype`,`phone`,`other_contacts`,`adress`,`portfolio`,`reg_time`,`birth_date`,`activity_time`,`hide_contacts`,`hide_profile`)
 VALUES
 	('1','1','Robby','avatar_robby.jpg','robby@email.com','asdf1234','robby@skype.ru','1234567890','robby@viber.com','Ideal programmer','www.idealsite.com','2019-11-11','2001-01-01','2019-11-21 12:00:00','0','1'),
 	('1','2','John','avatar_john.jpg','john@email.com','asdf1234','john@skype.ru','1234567890','john@viber.com','Ideal driver','DHL, ALI','2019-11-12','2002-01-02','2019-11-22 12:00:00','1','1'),
@@ -168,7 +168,8 @@ VALUES
 
 INSERT INTO locations 
     (`city`,`latitude`,`longitude`)
-VALUES
+
+INSERT INTO locations (city,latitude,longitude)
 	('Нижний Новгород','56.3242093','44.0053948'),
 	('Орёл','52.9672573','36.0696479'),
 	('Сочи','43.5855829','39.7231419'),

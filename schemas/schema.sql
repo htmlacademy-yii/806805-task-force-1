@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS users
 	`skype`          VARCHAR(128),
     `phone`          INT UNSIGNED,
 	`other_contacts` VARCHAR(255),
-    `brief`          TEXT,
-	`portfolio`      TEXT,
+    `address`        VARCHAR(255),
+	`about`          TEXT,
     `reg_time`       DATETIME NOT NULL,
 	`birth_date`     DATE,
 	`activity_time`  DATETIME NOT NULL,
@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS messages
 CREATE TABLE IF NOT EXISTS locations
 (
     `location_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `city`        VARCHAR(128) NOT NULL UNIQUE,
+    `city`        VARCHAR(128) NOT NULL,
     `latitude`    VARCHAR(128) NOT NULL,
     `longitude`   VARCHAR(128) NOT NULL,
     PRIMARY KEY (location_id)
