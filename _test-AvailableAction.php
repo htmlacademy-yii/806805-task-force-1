@@ -11,8 +11,6 @@ use TaskForce\General\OfferAction;
 use TaskForce\General\SendMessAction;
 use TaskForce\General\SetContractorAction;
 
-use TaskForce\Exs\AvailableNamesException;
-
 /**
  * Отладочная функция, выводит print_r-ом входной параметр
  * @param $value
@@ -29,47 +27,35 @@ $classData = [];
 $classData[] = [1, 'task1', AvailableActions::STATUS_RUNNING, '2019-12-11', 1, 2];
 $classData[] = [2, 'task2', AvailableActions::STATUS_RUNNING, '2019-12-11', 3, 1];
 $classData[] = [3, 'task3', AvailableActions::STATUS_CANCELED, '2019-12-11', 1, 3];
-$classData[] = [4, 'task4', 'STATUS_EMPTY', '2019-12-11', 1, NULL];
+$classData[] = [4, 'task4', AvailableActions::STATUS_NEW, '2019-12-11', 1, NULL];
 $classData[] = [5, 'task25', AvailableActions::STATUS_NEW, '2019-12-11', 3, NULL];
 
 // ТЕСТИРОВАНИЕ ВЫЗОВ ОБЪЕКТА - вручную для каждого изменения (http://localhost/_tests-m2t2v2.php) !!! 
-
 foreach($classData as $key => $data) {
 
     [$taskId, $taskName, $currentStatus, $endDate, $customerId, $contractorId] = $data;
 
-    print("Задание-$taskId <br> ");
+    $AvailableActions = new AvailableActions($taskId, $taskName, $currentStatus, $endDate, $customerId, $contractorId);
 
-    try {
+    print('<br> show_current_status: ');
+    echo $AvailableActions->getCurrentStatus();
 
-        $AvailableActions = new AvailableActions($taskId, $taskName, $currentStatus, $endDate, $customerId, $contractorId);
+    $u = 1; // переключатель id пользователя 0 - $customerId or 1 - $contractorId
+    $userid = $u ? $contractorId : $customerId; 
+    print("<br> show_role [$userid]: ");
+    echo $roleInTask = $AvailableActions->checkRoleInTask($userid); 
 
-        print("<br> show_current_status: ");
-        echo $AvailableActions->getCurrentStatus();
+    print('<br> <br> show Available Actions before:'); 
+    d($goodActions = $AvailableActions->getAvailableActions($currentStatus, $roleInTask));
 
-        $u = 0; // переключатель id пользователя 0 - $customerId or 1 - $contractorId
-        $userid = $u ? $contractorId : $customerId; 
-        print("<br> show_role [$userid]: ");
-        echo $roleInTask = $AvailableActions->checkRoleInTask($userid); 
+    $i = 1; // ключ массава с разрешенными действиями, если существует
+    if (!empty($goodActions[$i])) {
+        print("show Next Status by Actions[$i]: "); echo $AvailableActions->getNextStatus($goodActions[$i]); // Следующий статус от ACTION
+        echo '<br> ';
+    } else {echo "show Next Status by Actions[$i]: No Next Status";}
+    
 
-        print('<br> <br> show Available Actions before:'); 
-        d($goodActions = $AvailableActions->getAvailableActions($currentStatus, $roleInTask));
-
-        $i = 0; // ключ массава с разрешенными действиями, если существует
-        if (!empty($goodActions[$i])) {
-            print("show Next Status by Actions[$i]: "); echo $AvailableActions->getNextStatus($goodActions[$i]); // Следующий статус от ACTION
-            echo '<br> ';
-        } else {
-            echo "show Next Status by Actions[$i]: No Next Status";
-        }
-        
-        print('<hr>');
-
-    } catch (AvailableNamesException $ex) {
-        echo "!!!ИСКЛЮЧЕНИЕ!!! Данные не верны: " . $ex->getMessage() . "<hr>";
-        // error_log("Ошибка: " . $ex->getMessage()); ??? не работает
-    }
-
+    print('<hr>');
 }
 
 print '<br> show Statuses: '; d($AvailableActions->getStatuses());

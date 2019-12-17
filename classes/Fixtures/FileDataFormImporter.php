@@ -145,9 +145,11 @@ class FileDataFormImporter
 
         $this->header_data = $this->getHeaderData();
 
+        $lines = [];
         while ($line = $this->getNextLine()) {
-            $this->row_data[] = $line;
+            $lines[] = $line;
         }
+        $this->row_data = $lines;
     }
 
     private function getNextLine(): ?array {
@@ -171,7 +173,7 @@ class FileDataFormImporter
     // Печатать SQL код файлов
     // пример ('city','latitude','longitude')
     public function convertInSQL(): void {
-
+        print '<br>';
         $sql_head = "INSERT INTO " . pathinfo($this->selectFileName($this->fileNo))['filename'] 
         . " <br>(" . trim(implode(",", $this->header_data)) . ")<br>" ;
 
@@ -184,6 +186,26 @@ class FileDataFormImporter
         $sql_values .= "('" . implode("','", array_pop($this->row_data)) . "');";
 
         printPre($sql_values);
+    }
+
+
+    public function convertInCSV(): void {
+        print '<br>';
+        print(trim(implode(",", $this->header_data)) . "<br>");
+
+        foreach ($this->row_data as $row) {
+            print(implode(",", $row) . "<br>");
+        }
+    }
+
+    public function convertInCSV2(): void {
+        print '<br>';
+        print(trim(implode(",", $this->header_data)) . "<br>");
+
+        for ($i=0; $i < count($this->row_data) - 1; $i++) {
+            print '"' . implode('","', $this->row_data[$i]) . '"<br>';
+        }
+        print '"' . implode('","', array_pop($this->row_data)) . '"<br>';
     }
 
 }

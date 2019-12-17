@@ -1,13 +1,14 @@
 <?php
 require_once ('vendor/autoload.php');
 
-use TaskForce\Fixtures\FileDataImporter;
+use TaskForce\Fixtures\FileDataFormImporter;
 
 use TaskForce\Exs\FileFormatException;
 use TaskForce\Exs\SourceFileException;
 
 /* 
-_tests-m3t2v1-form - Это сценарий с формой, в которой вводится номер файла из найденных в дирректории. Используется класс FileDataFormImporter
+_tests-csvToSql-form.php
+Это сценарий с формой, в которой вводится номер файла из найденных в дирректории. Используется класс FileDataFormImporter
 Можно добавить несколько полей для слияния/объединения файлов с одинаковым количеством строк, те добавить в 1ый файл столбцы из 2го
 
 Различия Созданные и Исходные таблицы и их поля в папке data
@@ -27,38 +28,50 @@ function printPre($value) {
 //1. Вводим директорию, поное имя
 $filesPath = __DIR__ . '/data';
 
-//2. Вводим номер файла в переменную
-$fileNo = 1;
+//2. Определяем заполненность поля первого файла
+$fileNo = $_GET['fileNo'] ?? NULL;
+if($fileNo === '') {
+    $fileNo = NULL;
+}
+
+//3. Определяем заполненность полей для сливания/объединения
+$mergedFilesNo = [];
+for($i=0; isset($_GET["file-" . $i]); $i++) {
+    $mergedFilesNo[] = $_GET["file-$i"];
+}
+
+//4. Добавляем поле для сливания - 2ой и более файлы, если первый файл не пуст
+if(isset($_GET['add']) && $fileNo !== NULL) {
+    $mergedFilesNo[] = '';
+}
+
+//5. Удаляем поле по ключу, присвоенном в форме
+if(isset($_GET['delete'])) {
+    unset($mergedFilesNo[$_GET['delete']]);
+}
+
+//6. Запускаем один объект при каждом обновлении страницы. Нажми на кнопку получишь результат)))
+$Loader = new FileDataFormImporter($filesPath, $fileNo, $mergedFilesNo);
 
 echo "Директория: ";
-print($filesPath);
+print($Loader->getFilesPath());
 
-echo "<br>Список файлов: ";
-$filesList = FileDataImporter::getFilesList($filesPath);
-printPre($filesList);
+printPre($Loader->getFilesList());
 
-//3. Импортирование
-
-// Каждый файл директории
-foreach ($filesList as $fileNo => $value) {
-
-// Запускаем один объект
-$Loader = new FileDataImporter($filesPath, $fileNo);
+// Показываем поля формы после обработки файлов
+$Loader->pageForma();
 
 try {
-    // Проверяем номер в папке и сохраняем полное имя выбранного файла
-    $fileName = $Loader->getFileName();
-    // Проверяем на чтение и существование, загружаем строки из файла в буфер-переменные
-    $buffer = $Loader->importIntoBuffer();
-    // Конвертируем переменные в SQL запрос
+    $buffer = $Loader->mergeFiles();
+    $Loader->convertInCSV();
+    print '<br><hr>';
+    $Loader->convertInCSV2();
+    print '<br><hr>';
     $Loader->convertInSQL();
-
 }
 catch (FileFormatException $ex) {
     print '<br>EX1 ' . $ex->getMessage();
 }
 catch (SourceFileException $ex) {
     print '<br>EX2! ' . $ex->getMessage();
-}
-
 }

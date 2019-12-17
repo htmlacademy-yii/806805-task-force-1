@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS users
  *
  * id не используется в других таблицах
  */
-CREATE TABLE IF NOT EXISTS portfolio_images
+CREATE TABLE IF NOT EXISTS user_portfolio_images
 (
     `id`      INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_user` INT UNSIGNED NOT NULL,
@@ -83,6 +83,18 @@ CREATE TABLE user_specializations (
 );
 
 /* #2.3
+ * уведомления для пользователей в профиле, их виды или названия.
+ * 
+ */
+CREATE TABLE IF NOT EXISTS user_notifications
+(
+    `notification_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`symbol`          VARCHAR(32) NOT NULL UNIQUE,
+    `name`            VARCHAR(32) NOT NULL UNIQUE,
+    PRIMARY KEY (notification_id)
+);
+
+/* #2.4
  * настройки уведомлений пользователя.
  *
  * id не используется в других таблицах
@@ -233,18 +245,6 @@ CREATE TABLE IF NOT EXISTS locations
     `latitude`    VARCHAR(128) NOT NULL,
     `longitude`   VARCHAR(128) NOT NULL,
     PRIMARY KEY (location_id)
-);
-
-/* #11
- * уведомления для пользователей в профиле, их виды или названия.
- * 
- */
-CREATE TABLE IF NOT EXISTS notifications
-(
-    `notification_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`symbol`          VARCHAR(32) NOT NULL UNIQUE,
-    `name`            VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (notification_id)
 );
 
 /*** ТАБЛИЦЫ c КОНСТАНТАМИ ***/
