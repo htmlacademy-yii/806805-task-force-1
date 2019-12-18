@@ -11,7 +11,7 @@ function printPre($value) {
 // все данные о том, где содержится входной файл, имя выходного файла и правила формирования дополнительных полей.
 $csvFilesWithRules = [
     [
-        'path2file' => '/data/_categories.csv',
+        'path2file' => '/data/categories.csv',
         'path2save' => 'schemas/csv2sql/categories.sql',
         'table_name' => 'categories',
         'value_map' => [
@@ -21,7 +21,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_actions.csv',
+        'path2file' => '/data/actions.csv',
         'path2save' => 'schemas/csv2sql/actions.sql',
         'table_name' => 'actions',
         'value_map' => [
@@ -31,7 +31,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_roles.csv',
+        'path2file' => '/data/roles.csv',
         'path2save' => 'schemas/csv2sql/roles.sql',
         'table_name' => 'roles',
         'value_map' => [
@@ -41,7 +41,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_statuses.csv',
+        'path2file' => '/data/statuses.csv',
         'path2save' => 'schemas/csv2sql/statuses.sql',
         'table_name' => 'statuses',
         'value_map' => [
@@ -51,7 +51,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_tasks.csv',
+        'path2file' => '/data/tasks.csv',
         'path2save' => 'schemas/csv2sql/tasks.sql',
         'table_name' => 'tasks',
         'value_map' => [
@@ -73,7 +73,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_task_files.csv',
+        'path2file' => '/data/task_files.csv',
         'path2save' => 'schemas/csv2sql/task_files.sql',
         'table_name' => 'task_files',
         'value_map' => [
@@ -83,7 +83,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_running_tasks.csv',
+        'path2file' => '/data/running_tasks.csv',
         'path2save' => 'schemas/csv2sql/running_tasks.sql',
         'table_name' => 'running_tasks',
         'value_map' => [
@@ -93,7 +93,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_users.csv',
+        'path2file' => '/data/users.csv',
         'path2save' => 'schemas/csv2sql/users.sql',
         'table_name' => 'users',
         'value_map' => [
@@ -115,7 +115,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_user_portfolio_images.csv',
+        'path2file' => '/data/user_portfolio_images.csv',
         'path2save' => 'schemas/csv2sql/user_portfolio_images.sql',
         'table_name' => 'user_portfolio_images',
         'value_map' => [
@@ -125,7 +125,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_user_specializations.csv',
+        'path2file' => '/data/user_specializations.csv',
         'path2save' => 'schemas/csv2sql/user_specializations.sql',
         'table_name' => 'user_specializations',
         'value_map' => [
@@ -135,7 +135,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_user_notifications.csv',
+        'path2file' => '/data/user_notifications.csv',
         'path2save' => 'schemas/csv2sql/user_notifications.sql',
         'table_name' => 'user_notifications',
         'value_map' => [
@@ -145,7 +145,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_user_notification_settings.csv',
+        'path2file' => '/data/user_notification_settings.csv',
         'path2save' => 'schemas/csv2sql/user_notification_settings.sql',
         'table_name' => 'user_notification_settings',
         'value_map' => [
@@ -156,7 +156,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_favorite_users.csv',
+        'path2file' => '/data/favorite_users.csv',
         'path2save' => 'schemas/csv2sql/favorite_users.sql',
         'table_name' => 'favorite_users',
         'value_map' => [
@@ -167,7 +167,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_feedbacks.csv',
+        'path2file' => '/data/feedbacks.csv',
         'path2save' => 'schemas/csv2sql/feedbacks.sql',
         'table_name' => 'feedbacks',
         'value_map' => [
@@ -181,7 +181,7 @@ $csvFilesWithRules = [
     ],
 
     [
-        'path2file' => '/data/_messages.csv',
+        'path2file' => '/data/messages.csv',
         'path2save' => 'schemas/csv2sql/messages.sql',
         'table_name' => 'messages',
         'value_map' => [
@@ -194,7 +194,7 @@ $csvFilesWithRules = [
     ],
     
     [
-        'path2file' => '/data/_offers.csv',
+        'path2file' => '/data/offers.csv',
         'path2save' => 'schemas/csv2sql/offers.sql',
         'table_name' => 'offers',
         'value_map' => [
