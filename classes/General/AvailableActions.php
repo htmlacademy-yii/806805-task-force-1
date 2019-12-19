@@ -152,6 +152,7 @@ public function checkRoleInTask(?int $userId): ?string {
         if (!in_array($action, $this->getActions())) {
             throw new AvailableNamesException('действие. см Показать следующий статус');
         }
+
         switch ($action) {
             case self::ACTION_ADD_TASK:
                 return $this->currentStatus = self::STATUS_NEW;
