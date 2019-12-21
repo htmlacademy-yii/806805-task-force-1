@@ -1,0 +1,2 @@
+https://github.com/htmlacademy-yii/806805-task-force-1.git
+https://github.com/allomir/806805-task-force-1.git
