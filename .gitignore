@@ -12,6 +12,7 @@ vendor
 /yii
 /yii_test
 /yii_test.bat
+/frontend/runtime
 
 # phpstorm project files
 .idea
