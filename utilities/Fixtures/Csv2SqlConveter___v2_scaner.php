@@ -1,19 +1,19 @@
 <?php
 
-namespace TaskForce\Fixtures;
+namespace dirSite\utilities\Fixtures;
 
 use SplFileObject;
 
-class Csv2SqlConveter___v2
+class Csv2SqlConveter___v2_scaner
 {
-    public static function getFile(string $fileName, $path)
+    public static function getFile(string $file)
     {
-        return $file = new SplFileObject($path . $fileName);
+        return $file = new SplFileObject($file);
     }
 
-    public static function getSqlFromCsv(string $fileName, array $value_map, string $table_name, $path)
+    public static function getSqlFromCsv(string $file, array $value_map, string $table_name)
     {
-        $file = self::getFile($fileName, $path);
+        $file = self::getFile($file);
         $file->setFlags(8);
         $headers = $file->current();
         $sql = [];

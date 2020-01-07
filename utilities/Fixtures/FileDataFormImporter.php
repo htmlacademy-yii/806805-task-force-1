@@ -1,6 +1,6 @@
 <?php 
 
-namespace TaskForce\Fixtures; 
+namespace dirSite\utilities\Fixtures; 
 
 use TaskForce\Exs\FileFormatException;
 use TaskForce\Exs\SourceFileException;

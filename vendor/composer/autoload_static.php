@@ -37,13 +37,13 @@ class ComposerStaticInit594d97d59380b58481e0716afc2ddc3b
         array (
             'phpDocumentor\\Reflection\\' => 25,
         ),
+        'd' => 
+        array (
+            'dirSite\\' => 8,
+        ),
         'c' => 
         array (
             'cebe\\markdown\\' => 14,
-        ),
-        'Y' => 
-        array (
-            'Yii\\' => 4,
         ),
         'W' => 
         array (
@@ -139,13 +139,13 @@ class ComposerStaticInit594d97d59380b58481e0716afc2ddc3b
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
+        'dirSite\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/',
+        ),
         'cebe\\markdown\\' => 
         array (
             0 => __DIR__ . '/..' . '/cebe/markdown',
-        ),
-        'Yii\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/classes',
         ),
         'Webmozart\\Assert\\' => 
         array (
