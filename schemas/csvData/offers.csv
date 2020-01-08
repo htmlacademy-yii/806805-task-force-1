@@ -1,4 +1,4 @@
-id_task,id_contractor,desk
+task_id,contractor_id,desk
 1,11,I best Piano mover
 2,12,We will do everything without noise and dust
 3,13,I am grut

@@ -1,4 +1,4 @@
-id_task,id_sender,id_recipient,mess,add_time
+task_id,sender_id,recipient_id,mess,add_time
 1,1,11,Boss I am start tommorow,2019-11-25 12:00:21
 1,11,1,Do not put off until tomorrow what can be done today,2019-11-25 12:00:25
 3,3,13,The quieter you go the further you\ll get,2019-11-30 12:00:00

@@ -7,7 +7,54 @@ CREATE DATABASE IF NOT EXISTS task_force
     
 USE task_force;
 
-/*** СТАНДАРТНЫЕ ТАБЛИЦЫ ***/
+
+/* 
+ * города и координаты.
+ * 
+ */
+CREATE TABLE IF NOT EXISTS locations
+(
+    `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `city`        VARCHAR(128) NOT NULL,
+    `latitude`    VARCHAR(128) NOT NULL,
+    `longitude`   VARCHAR(128) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+/*
+ * статусы. 
+ *
+ * symbol - используется для имени иконки статуса
+ */
+CREATE TABLE IF NOT EXISTS task_statuses
+(
+    `id`        INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `symbol`    VARCHAR(32) NOT NULL UNIQUE,
+    `name`      VARCHAR(32) NOT NULL UNIQUE,
+    PRIMARY KEY (id)
+);
+
+/* 
+ * действия над заданием. 
+ */
+CREATE TABLE IF NOT EXISTS task_actions
+(
+    `id`        TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `symbol`    VARCHAR(32) NOT NULL UNIQUE,
+    `name`      VARCHAR(32) NOT NULL UNIQUE,
+    PRIMARY KEY (id)
+);
+
+/* 
+ * роли пользователей. 
+ */
+CREATE TABLE IF NOT EXISTS user_roles
+(
+    `id`        TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `symbol`    VARCHAR(32) NOT NULL UNIQUE,
+    `name`      VARCHAR(32) NOT NULL UNIQUE,
+    PRIMARY KEY (id)
+);
 
 /* #1
  * категории.
@@ -16,10 +63,10 @@ USE task_force;
  */
  CREATE TABLE IF NOT EXISTS categories
 (
-    `category_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id`          TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `symbol`      VARCHAR(32) NOT NULL UNIQUE,
     `name`        VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (category_id)
+    PRIMARY KEY (id)
 );
 
 /* #2
@@ -36,9 +83,9 @@ USE task_force;
  */
 CREATE TABLE IF NOT EXISTS users
 (
-    `user_id`        INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`id_role`        TINYINT UNSIGNED NOT NULL DEFAULT 1, 
-	`id_location`    INT UNSIGNED NOT NULL,
+    `id`        INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`role_id`        TINYINT UNSIGNED NOT NULL DEFAULT 1, 
+	`location_id`    INT UNSIGNED NOT NULL,
     `name`           VARCHAR(128) NOT NULL,
     `avatar`         VARCHAR(255),
 	`email`          VARCHAR(128) NOT NULL UNIQUE,
@@ -53,7 +100,9 @@ CREATE TABLE IF NOT EXISTS users
 	`activity_time`  DATETIME NOT NULL,
     `hide_contacts`  BOOL DEFAULT 0,
     `hide_profile`   BOOL DEFAULT 0,
-    PRIMARY KEY (user_id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (role_id) REFERENCES user_roles(id),
+    FOREIGN KEY (location_id) REFERENCES locations(id)
 );
 
 /* #2.1
@@ -64,9 +113,10 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS user_portfolio_images
 (
     `id`      INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_user` INT UNSIGNED NOT NULL,
+    `user_id` INT UNSIGNED NOT NULL,
     `image`   VARCHAR(255),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 
@@ -75,11 +125,13 @@ CREATE TABLE IF NOT EXISTS user_portfolio_images
  *
  * id не используется в других таблицах
  */
-CREATE TABLE user_specializations (
+CREATE TABLE IF NOT EXISTS user_specializations (
 	`id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`id_user`     INT UNSIGNED NOT NULL,
-	`id_category` TINYINT UNSIGNED,
-	PRIMARY KEY (id)
+	`user_id`     INT UNSIGNED NOT NULL,
+	`category_id` TINYINT UNSIGNED,
+	PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
 /* #2.3
@@ -88,10 +140,10 @@ CREATE TABLE user_specializations (
  */
 CREATE TABLE IF NOT EXISTS user_notifications
 (
-    `notification_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`symbol`          VARCHAR(32) NOT NULL UNIQUE,
     `name`            VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (notification_id)
+    PRIMARY KEY (id)
 );
 
 /* #2.4
@@ -104,10 +156,12 @@ CREATE TABLE IF NOT EXISTS user_notifications
 CREATE TABLE IF NOT EXISTS user_notification_settings
 (
     `id`              INT NOT NULL AUTO_INCREMENT,
-	`id_user`         INT UNSIGNED NOT NULL,
-    `id_notification` INT UNSIGNED NOT NULL,
+	`user_id`         INT UNSIGNED NOT NULL,
+    `notification_id` INT UNSIGNED NOT NULL,
     `on_off`          BOOL DEFAULT 1,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (notification_id) REFERENCES user_notifications(id)
 );
 
 /* #3
@@ -122,11 +176,11 @@ CREATE TABLE IF NOT EXISTS user_notification_settings
  */
 CREATE TABLE IF NOT EXISTS tasks
 (
-    `task_id`       INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`id_status`     TINYINT UNSIGNED NOT NULL DEFAULT 1,
-    `id_category`   TINYINT UNSIGNED NOT NULL,
-	`id_location`   INT UNSIGNED NOT NULL,
-    `id_customer`   INT UNSIGNED NOT NULL,
+    `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`status_id`     INT UNSIGNED NOT NULL,
+    `category_id`   TINYINT UNSIGNED NOT NULL,
+	`location_id`   INT UNSIGNED NOT NULL,
+    `customer_id`   INT UNSIGNED NOT NULL,
     `name`          VARCHAR(128) NOT NULL,
     `description`   TEXT NOT NULL,
     `price`         INT UNSIGNED,
@@ -136,7 +190,11 @@ CREATE TABLE IF NOT EXISTS tasks
     `add_time`      DATETIME NOT NULL,
     `end_date`      DATETIME,
 	`is_remote`     BOOL DEFAULT 0,
-    PRIMARY KEY (task_id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (status_id) REFERENCES task_statuses(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (location_id) REFERENCES locations(id),
+    FOREIGN KEY (customer_id) REFERENCES users(id)
 );
 
 /* #3.1
@@ -147,9 +205,10 @@ CREATE TABLE IF NOT EXISTS tasks
 CREATE TABLE IF NOT EXISTS task_files
 (
     `id`      INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_task` INT UNSIGNED NOT NULL,
+    `task_id` INT UNSIGNED NOT NULL,
     `file`    VARCHAR(255),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
 
 /* #3.2
@@ -160,12 +219,14 @@ CREATE TABLE IF NOT EXISTS task_files
  * `id_contractor` INT NOT NULL - перенесено из таблицы task, чтобы искать только по заданиям со статусом Выполняется
  * `id_contractor` ссылается на таблицу а не константы из класса ссылается на таблицу users
  */
-CREATE TABLE IF NOT EXISTS running_tasks 
+CREATE TABLE IF NOT EXISTS tasks_running
 (
-  `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_task`       INT UNSIGNED NOT NULL,
-  `id_contractor` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (id)
+    `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `task_run_id`       INT UNSIGNED NOT NULL,
+    `contractor_id` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (task_run_id) REFERENCES tasks(id),
+    FOREIGN KEY (contractor_id) REFERENCES users(id)
 );
 
 /* #4
@@ -178,13 +239,16 @@ CREATE TABLE IF NOT EXISTS running_tasks
 CREATE TABLE IF NOT EXISTS feedbacks
 (
     `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_user`       INT UNSIGNED NOT NULL,
-    `id_user_rated` INT UNSIGNED NOT NULL,
-    `id_task`       INT UNSIGNED NOT NULL,
+    `user_id`       INT UNSIGNED NOT NULL,
+    `user_rated_id` INT UNSIGNED NOT NULL,
+    `task_id`       INT UNSIGNED NOT NULL,
     `desk`          TEXT,
     `point`         TINYINT UNSIGNED NOT NULL,
     `add_time`      DATETIME NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (user_rated_id) REFERENCES users(id),
+    FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
 
 /* #5
@@ -195,10 +259,12 @@ CREATE TABLE IF NOT EXISTS feedbacks
 CREATE TABLE IF NOT EXISTS offers
 (
     `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_task`       INT UNSIGNED NOT NULL,
-    `id_contractor` INT UNSIGNED NOT NULL,
+    `task_id`       INT UNSIGNED NOT NULL,
+    `contractor_id` INT UNSIGNED NOT NULL,
     `desk`          TEXT NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (task_id) REFERENCES tasks(id),
+    FOREIGN KEY (contractor_id) REFERENCES users(id)
 );
 
 /* #6
@@ -208,13 +274,15 @@ CREATE TABLE IF NOT EXISTS offers
  * ??? `status` - можно без этого параметра? просто поставить 0 в id_user_favorite или удалить всю строку. Тоже самое в #2.3 user_notification_settings
  * `status`on_off - BOOL DEFAULT 1 - тк при создании активируется
  */
-CREATE TABLE IF NOT EXISTS favorite_users
+CREATE TABLE IF NOT EXISTS user_favorites
 (
     `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_user`          INT UNSIGNED NOT NULL,
-    `id_user_favorite` INT UNSIGNED NOT NULL,
+    `user_id`          INT UNSIGNED NOT NULL,
+    `favorite_id` INT UNSIGNED NOT NULL,
     `on_off`           BOOL DEFAULT 1,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (favorite_id) REFERENCES users(id)
 );
 
 /* #7
@@ -226,60 +294,15 @@ CREATE TABLE IF NOT EXISTS favorite_users
 CREATE TABLE IF NOT EXISTS messages
 (
     `id`           INT NOT NULL AUTO_INCREMENT,
-    `id_task`       INT UNSIGNED NOT NULL,
-    `id_sender`    INT UNSIGNED NOT NULL,
-    `id_recipient` INT UNSIGNED NOT NULL,
+    `task_id`       INT UNSIGNED NOT NULL,
+    `sender_id`    INT UNSIGNED NOT NULL,
+    `recipient_id` INT UNSIGNED NOT NULL,
     `mess`         TEXT NOT NULL,
     `add_time`     DATETIME NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (task_id) REFERENCES tasks(id),
+    FOREIGN KEY (sender_id) REFERENCES users(id),
+    FOREIGN KEY (recipient_id) REFERENCES users(id)
 );
 
-/* #10
- * города и координаты.
- * 
- */
-CREATE TABLE IF NOT EXISTS locations
-(
-    `location_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `city`        VARCHAR(128) NOT NULL,
-    `latitude`    VARCHAR(128) NOT NULL,
-    `longitude`   VARCHAR(128) NOT NULL,
-    PRIMARY KEY (location_id)
-);
 
-/*** ТАБЛИЦЫ c КОНСТАНТАМИ ***/
-
-/* 
- * статусы. 
- *
- * symbol - используется для имени иконки статуса
- */
-CREATE TABLE IF NOT EXISTS statuses
-(
-    `status_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `symbol`    VARCHAR(32) NOT NULL UNIQUE,
-    `name`      VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (status_id)
-);
-
-/* 
- * роли пользователей. 
- */
-CREATE TABLE IF NOT EXISTS roles
-(
-    `role_id`   TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `symbol`    VARCHAR(32) NOT NULL UNIQUE,
-    `name`      VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (role_id)
-);
-
-/* 
- * действия над заданием. 
- */
-CREATE TABLE IF NOT EXISTS actions
-(
-    `action_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `symbol`    VARCHAR(32) NOT NULL UNIQUE,
-    `name`      VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (action_id)
-);

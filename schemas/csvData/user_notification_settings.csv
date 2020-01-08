@@ -1,4 +1,4 @@
-id_user,id_notification,on_off
+user_id,notification_id,on_off
 1,1,1
 1,2,1
 1,3,1
