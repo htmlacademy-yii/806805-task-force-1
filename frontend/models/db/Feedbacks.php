@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "feedbacks".
  *
- * @property int $id
+ * @property int $id_feedback
  * @property int $user_id
  * @property int $user_rated_id
  * @property int $task_id
@@ -39,9 +39,9 @@ class Feedbacks extends \yii\db\ActiveRecord
             [['user_id', 'user_rated_id', 'task_id', 'point'], 'integer'],
             [['desk'], 'string'],
             [['add_time'], 'safe'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id']],
-            [['user_rated_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_rated_id' => 'id']],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id_user']],
+            [['user_rated_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_rated_id' => 'id_user']],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'id_task']],
         ];
     }
 
@@ -51,7 +51,7 @@ class Feedbacks extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_feedback' => 'Id Feedback',
             'user_id' => 'User ID',
             'user_rated_id' => 'User Rated ID',
             'task_id' => 'Task ID',
@@ -66,7 +66,7 @@ class Feedbacks extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id' => 'user_id']);
+        return $this->hasOne(Users::className(), ['id_user' => 'user_id']);
     }
 
     /**
@@ -74,7 +74,7 @@ class Feedbacks extends \yii\db\ActiveRecord
      */
     public function getUserRated()
     {
-        return $this->hasOne(Users::className(), ['id' => 'user_rated_id']);
+        return $this->hasOne(Users::className(), ['id_user' => 'user_rated_id']);
     }
 
     /**
@@ -82,6 +82,6 @@ class Feedbacks extends \yii\db\ActiveRecord
      */
     public function getTask()
     {
-        return $this->hasOne(Tasks::className(), ['id' => 'task_id']);
+        return $this->hasOne(Tasks::className(), ['id_task' => 'task_id']);
     }
 }

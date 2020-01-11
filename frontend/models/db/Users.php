@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "users".
  *
- * @property int $id
+ * @property int $id_user
  * @property int $role_id
  * @property int $location_id
  * @property string $name
@@ -30,8 +30,8 @@ use Yii;
  * @property Messages[] $messages
  * @property Messages[] $messages0
  * @property Offers[] $offers
+ * @property TaskRunnings[] $taskRunnings
  * @property Tasks[] $tasks
- * @property TasksRunning[] $tasksRunnings
  * @property UserFavorites[] $userFavorites
  * @property UserFavorites[] $userFavorites0
  * @property UserNotificationSettings[] $userNotificationSettings
@@ -64,8 +64,8 @@ class Users extends \yii\db\ActiveRecord
             [['avatar', 'password', 'other_contacts', 'address'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 11],
             [['email'], 'unique'],
-            [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRoles::className(), 'targetAttribute' => ['role_id' => 'id']],
-            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::className(), 'targetAttribute' => ['location_id' => 'id']],
+            [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRoles::className(), 'targetAttribute' => ['role_id' => 'id_user_role']],
+            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::className(), 'targetAttribute' => ['location_id' => 'id_location']],
         ];
     }
 
@@ -75,7 +75,7 @@ class Users extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_user' => 'Id User',
             'role_id' => 'Role ID',
             'location_id' => 'Location ID',
             'name' => 'Name',
@@ -100,7 +100,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getFeedbacks()
     {
-        return $this->hasMany(Feedbacks::className(), ['user_id' => 'id'])->inverseOf('user');
+        return $this->hasMany(Feedbacks::className(), ['user_id' => 'id_user']);
     }
 
     /**
@@ -108,7 +108,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getFeedbacks0()
     {
-        return $this->hasMany(Feedbacks::className(), ['user_rated_id' => 'id'])->inverseOf('userRated');
+        return $this->hasMany(Feedbacks::className(), ['user_rated_id' => 'id_user']);
     }
 
     /**
@@ -116,7 +116,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getMessages()
     {
-        return $this->hasMany(Messages::className(), ['sender_id' => 'id'])->inverseOf('sender');
+        return $this->hasMany(Messages::className(), ['sender_id' => 'id_user']);
     }
 
     /**
@@ -124,7 +124,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getMessages0()
     {
-        return $this->hasMany(Messages::className(), ['recipient_id' => 'id'])->inverseOf('recipient');
+        return $this->hasMany(Messages::className(), ['recipient_id' => 'id_user']);
     }
 
     /**
@@ -132,7 +132,15 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getOffers()
     {
-        return $this->hasMany(Offers::className(), ['contractor_id' => 'id'])->inverseOf('contractor');
+        return $this->hasMany(Offers::className(), ['contractor_id' => 'id_user']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTaskRunnings()
+    {
+        return $this->hasMany(TaskRunnings::className(), ['contractor_id' => 'id_user']);
     }
 
     /**
@@ -140,15 +148,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Tasks::className(), ['customer_id' => 'id'])->inverseOf('customer');
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTasksRunnings()
-    {
-        return $this->hasMany(TasksRunning::className(), ['contractor_id' => 'id'])->inverseOf('contractor');
+        return $this->hasMany(Tasks::className(), ['customer_id' => 'id_user']);
     }
 
     /**
@@ -156,7 +156,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserFavorites()
     {
-        return $this->hasMany(UserFavorites::className(), ['user_id' => 'id'])->inverseOf('user');
+        return $this->hasMany(UserFavorites::className(), ['user_id' => 'id_user']);
     }
 
     /**
@@ -164,7 +164,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserFavorites0()
     {
-        return $this->hasMany(UserFavorites::className(), ['favorite_id' => 'id'])->inverseOf('favorite');
+        return $this->hasMany(UserFavorites::className(), ['favorite_id' => 'id_user']);
     }
 
     /**
@@ -172,7 +172,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserNotificationSettings()
     {
-        return $this->hasMany(UserNotificationSettings::className(), ['user_id' => 'id'])->inverseOf('user');
+        return $this->hasMany(UserNotificationSettings::className(), ['user_id' => 'id_user']);
     }
 
     /**
@@ -180,7 +180,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserPortfolioImages()
     {
-        return $this->hasMany(UserPortfolioImages::className(), ['user_id' => 'id'])->inverseOf('user');
+        return $this->hasMany(UserPortfolioImages::className(), ['user_id' => 'id_user']);
     }
 
     /**
@@ -188,7 +188,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserSpecializations()
     {
-        return $this->hasMany(UserSpecializations::className(), ['user_id' => 'id'])->inverseOf('user');
+        return $this->hasMany(UserSpecializations::className(), ['user_id' => 'id_user']);
     }
 
     /**
@@ -196,7 +196,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getRole()
     {
-        return $this->hasOne(UserRoles::className(), ['id' => 'role_id'])->inverseOf('users');
+        return $this->hasOne(UserRoles::className(), ['id_user_role' => 'role_id']);
     }
 
     /**
@@ -204,6 +204,6 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getLocation()
     {
-        return $this->hasOne(Locations::className(), ['id' => 'location_id'])->inverseOf('users');
+        return $this->hasOne(Locations::className(), ['id_location' => 'location_id']);
     }
 }

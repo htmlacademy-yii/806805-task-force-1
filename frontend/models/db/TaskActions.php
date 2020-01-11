@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "task_actions".
  *
- * @property int $id
+ * @property int $id_task_action
  * @property string $symbol
  * @property string $name
  */
@@ -40,7 +40,7 @@ class TaskActions extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_task_action' => 'Id Task Action',
             'symbol' => 'Symbol',
             'name' => 'Name',
         ];

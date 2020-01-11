@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "categories".
  *
- * @property int $id
+ * @property int $id_category
  * @property string $symbol
  * @property string $name
  *
@@ -43,9 +43,9 @@ class Categories extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'symbol' => Yii::t('app', 'Symbol'),
-            'name' => Yii::t('app', 'Name'),
+            'id_category' => 'Id Category',
+            'symbol' => 'Symbol',
+            'name' => 'Name',
         ];
     }
 
@@ -54,7 +54,7 @@ class Categories extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Tasks::className(), ['category_id' => 'id'])->inverseOf('category');
+        return $this->hasMany(Tasks::className(), ['category_id' => 'id_category']);
     }
 
     /**
@@ -62,6 +62,6 @@ class Categories extends \yii\db\ActiveRecord
      */
     public function getUserSpecializations()
     {
-        return $this->hasMany(UserSpecializations::className(), ['category_id' => 'id'])->inverseOf('category');
+        return $this->hasMany(UserSpecializations::className(), ['category_id' => 'id_category']);
     }
 }

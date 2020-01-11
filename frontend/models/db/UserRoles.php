@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "user_roles".
  *
- * @property int $id
+ * @property int $id_user_role
  * @property string $symbol
  * @property string $name
  *
@@ -42,7 +42,7 @@ class UserRoles extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_user_role' => 'Id User Role',
             'symbol' => 'Symbol',
             'name' => 'Name',
         ];
@@ -53,6 +53,6 @@ class UserRoles extends \yii\db\ActiveRecord
      */
     public function getUsers()
     {
-        return $this->hasMany(Users::className(), ['role_id' => 'id'])->inverseOf('role');
+        return $this->hasMany(Users::className(), ['role_id' => 'id_user_role']);
     }
 }

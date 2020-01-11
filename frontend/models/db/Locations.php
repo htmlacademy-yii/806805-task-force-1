@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "locations".
  *
- * @property int $id
+ * @property int $id_location
  * @property string $city
  * @property string $latitude
  * @property string $longitude
@@ -42,7 +42,7 @@ class Locations extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_location' => 'Id Location',
             'city' => 'City',
             'latitude' => 'Latitude',
             'longitude' => 'Longitude',
@@ -54,7 +54,7 @@ class Locations extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Tasks::className(), ['location_id' => 'id']);
+        return $this->hasMany(Tasks::className(), ['location_id' => 'id_location']);
     }
 
     /**
@@ -62,6 +62,6 @@ class Locations extends \yii\db\ActiveRecord
      */
     public function getUsers()
     {
-        return $this->hasMany(Users::className(), ['location_id' => 'id']);
+        return $this->hasMany(Users::className(), ['location_id' => 'id_location']);
     }
 }

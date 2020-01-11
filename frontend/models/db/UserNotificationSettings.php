@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "user_notification_settings".
  *
- * @property int $id
+ * @property int $id_user_notification_setting
  * @property int $user_id
  * @property int $notification_id
  * @property int|null $on_off
@@ -33,8 +33,8 @@ class UserNotificationSettings extends \yii\db\ActiveRecord
         return [
             [['user_id', 'notification_id'], 'required'],
             [['user_id', 'notification_id', 'on_off'], 'integer'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id']],
-            [['notification_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserNotifications::className(), 'targetAttribute' => ['notification_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id_user']],
+            [['notification_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserNotifications::className(), 'targetAttribute' => ['notification_id' => 'id_user_notification']],
         ];
     }
 
@@ -44,7 +44,7 @@ class UserNotificationSettings extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_user_notification_setting' => 'Id User Notification Setting',
             'user_id' => 'User ID',
             'notification_id' => 'Notification ID',
             'on_off' => 'On Off',
@@ -56,7 +56,7 @@ class UserNotificationSettings extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id' => 'user_id'])->inverseOf('userNotificationSettings');
+        return $this->hasOne(Users::className(), ['id_user' => 'user_id']);
     }
 
     /**
@@ -64,6 +64,6 @@ class UserNotificationSettings extends \yii\db\ActiveRecord
      */
     public function getNotification()
     {
-        return $this->hasOne(UserNotifications::className(), ['id' => 'notification_id'])->inverseOf('userNotificationSettings');
+        return $this->hasOne(UserNotifications::className(), ['id_user_notification' => 'notification_id']);
     }
 }

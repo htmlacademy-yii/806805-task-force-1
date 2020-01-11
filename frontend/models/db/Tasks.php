@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "tasks".
  *
- * @property int $id
+ * @property int $id_task
  * @property int $status_id
  * @property int $category_id
  * @property int $location_id
@@ -26,11 +26,11 @@ use Yii;
  * @property Messages[] $messages
  * @property Offers[] $offers
  * @property TaskFiles[] $taskFiles
+ * @property TaskRunnings[] $taskRunnings
  * @property TaskStatuses $status
  * @property Categories $category
  * @property Locations $location
  * @property Users $customer
- * @property TasksRunning[] $tasksRunnings
  */
 class Tasks extends \yii\db\ActiveRecord
 {
@@ -53,10 +53,10 @@ class Tasks extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['add_time', 'end_date'], 'safe'],
             [['name', 'address', 'latitude', 'longitude'], 'string', 'max' => 128],
-            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => TaskStatuses::className(), 'targetAttribute' => ['status_id' => 'id']],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::className(), 'targetAttribute' => ['category_id' => 'id']],
-            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::className(), 'targetAttribute' => ['location_id' => 'id']],
-            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['customer_id' => 'id']],
+            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => TaskStatuses::className(), 'targetAttribute' => ['status_id' => 'id_task_status']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::className(), 'targetAttribute' => ['category_id' => 'id_category']],
+            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::className(), 'targetAttribute' => ['location_id' => 'id_location']],
+            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['customer_id' => 'id_user']],
         ];
     }
 
@@ -66,7 +66,7 @@ class Tasks extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_task' => 'Id Task',
             'status_id' => 'Status ID',
             'category_id' => 'Category ID',
             'location_id' => 'Location ID',
@@ -88,7 +88,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getFeedbacks()
     {
-        return $this->hasMany(Feedbacks::className(), ['task_id' => 'id'])->inverseOf('task');
+        return $this->hasMany(Feedbacks::className(), ['task_id' => 'id_task']);
     }
 
     /**
@@ -96,7 +96,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getMessages()
     {
-        return $this->hasMany(Messages::className(), ['task_id' => 'id'])->inverseOf('task');
+        return $this->hasMany(Messages::className(), ['task_id' => 'id_task']);
     }
 
     /**
@@ -104,7 +104,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getOffers()
     {
-        return $this->hasMany(Offers::className(), ['task_id' => 'id'])->inverseOf('task');
+        return $this->hasMany(Offers::className(), ['task_id' => 'id_task']);
     }
 
     /**
@@ -112,7 +112,15 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getTaskFiles()
     {
-        return $this->hasMany(TaskFiles::className(), ['task_id' => 'id'])->inverseOf('task');
+        return $this->hasMany(TaskFiles::className(), ['task_id' => 'id_task']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTaskRunnings()
+    {
+        return $this->hasMany(TaskRunnings::className(), ['task_running_id' => 'id_task']);
     }
 
     /**
@@ -120,7 +128,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getStatus()
     {
-        return $this->hasOne(TaskStatuses::className(), ['id' => 'status_id'])->inverseOf('tasks');
+        return $this->hasOne(TaskStatuses::className(), ['id_task_status' => 'status_id']);
     }
 
     /**
@@ -128,7 +136,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Categories::className(), ['id' => 'category_id'])->inverseOf('tasks');
+        return $this->hasOne(Categories::className(), ['id_category' => 'category_id']);
     }
 
     /**
@@ -136,7 +144,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getLocation()
     {
-        return $this->hasOne(Locations::className(), ['id' => 'location_id'])->inverseOf('tasks');
+        return $this->hasOne(Locations::className(), ['id_location' => 'location_id']);
     }
 
     /**
@@ -144,14 +152,6 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getCustomer()
     {
-        return $this->hasOne(Users::className(), ['id' => 'customer_id'])->inverseOf('tasks');
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTasksRunnings()
-    {
-        return $this->hasMany(TasksRunning::className(), ['task_run_id' => 'id'])->inverseOf('taskRun');
+        return $this->hasOne(Users::className(), ['id_user' => 'customer_id']);
     }
 }

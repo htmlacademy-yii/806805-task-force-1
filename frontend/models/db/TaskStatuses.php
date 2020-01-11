@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "task_statuses".
  *
- * @property int $id
+ * @property int $id_task_status
  * @property string $symbol
  * @property string $name
  *
@@ -42,7 +42,7 @@ class TaskStatuses extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_task_status' => 'Id Task Status',
             'symbol' => 'Symbol',
             'name' => 'Name',
         ];
@@ -53,6 +53,6 @@ class TaskStatuses extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Tasks::className(), ['status_id' => 'id'])->inverseOf('status');
+        return $this->hasMany(Tasks::className(), ['status_id' => 'id_task_status']);
     }
 }

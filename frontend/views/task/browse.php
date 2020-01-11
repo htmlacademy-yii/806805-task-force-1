@@ -1,8 +1,9 @@
 <?php 
 use yii\helpers\html;
-echo "index";
 
+echo "browse";
 ?>
+
 <!-- Верстка view.html -->
             <section class="content-view">
                 <div class="content-view__card">

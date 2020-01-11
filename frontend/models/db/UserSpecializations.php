@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "user_specializations".
  *
- * @property int $id
+ * @property int $id_user_specialization
  * @property int $user_id
  * @property int|null $category_id
  *
@@ -32,8 +32,8 @@ class UserSpecializations extends \yii\db\ActiveRecord
         return [
             [['user_id'], 'required'],
             [['user_id', 'category_id'], 'integer'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id']],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::className(), 'targetAttribute' => ['category_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id_user']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::className(), 'targetAttribute' => ['category_id' => 'id_category']],
         ];
     }
 
@@ -43,7 +43,7 @@ class UserSpecializations extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_user_specialization' => 'Id User Specialization',
             'user_id' => 'User ID',
             'category_id' => 'Category ID',
         ];
@@ -54,7 +54,7 @@ class UserSpecializations extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id' => 'user_id'])->inverseOf('userSpecializations');
+        return $this->hasOne(Users::className(), ['id_user' => 'user_id']);
     }
 
     /**
@@ -62,6 +62,6 @@ class UserSpecializations extends \yii\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Categories::className(), ['id' => 'category_id'])->inverseOf('userSpecializations');
+        return $this->hasOne(Categories::className(), ['id_category' => 'category_id']);
     }
 }

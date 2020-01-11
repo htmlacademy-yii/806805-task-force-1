@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "user_portfolio_images".
  *
- * @property int $id
+ * @property int $id_user_portfolio_image
  * @property int $user_id
  * @property string|null $image
  *
@@ -32,7 +32,7 @@ class UserPortfolioImages extends \yii\db\ActiveRecord
             [['user_id'], 'required'],
             [['user_id'], 'integer'],
             [['image'], 'string', 'max' => 255],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id_user']],
         ];
     }
 
@@ -42,7 +42,7 @@ class UserPortfolioImages extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_user_portfolio_image' => 'Id User Portfolio Image',
             'user_id' => 'User ID',
             'image' => 'Image',
         ];
@@ -53,6 +53,6 @@ class UserPortfolioImages extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id' => 'user_id'])->inverseOf('userPortfolioImages');
+        return $this->hasOne(Users::className(), ['id_user' => 'user_id']);
     }
 }

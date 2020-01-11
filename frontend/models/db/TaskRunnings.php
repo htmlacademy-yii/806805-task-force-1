@@ -5,24 +5,23 @@ namespace frontend\models\db;
 use Yii;
 
 /**
- * This is the model class for table "offers".
+ * This is the model class for table "task_runnings".
  *
- * @property int $id_offer
- * @property int $task_id
+ * @property int $id_task_running
+ * @property int $task_running_id
  * @property int $contractor_id
- * @property string $desk
  *
- * @property Tasks $task
+ * @property Tasks $taskRunning
  * @property Users $contractor
  */
-class Offers extends \yii\db\ActiveRecord
+class TaskRunnings extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'offers';
+        return 'task_runnings';
     }
 
     /**
@@ -31,10 +30,9 @@ class Offers extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['task_id', 'contractor_id', 'desk'], 'required'],
-            [['task_id', 'contractor_id'], 'integer'],
-            [['desk'], 'string'],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'id_task']],
+            [['task_running_id', 'contractor_id'], 'required'],
+            [['task_running_id', 'contractor_id'], 'integer'],
+            [['task_running_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_running_id' => 'id_task']],
             [['contractor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['contractor_id' => 'id_user']],
         ];
     }
@@ -45,19 +43,18 @@ class Offers extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_offer' => 'Id Offer',
-            'task_id' => 'Task ID',
+            'id_task_running' => 'Id Task Running',
+            'task_running_id' => 'Task Running ID',
             'contractor_id' => 'Contractor ID',
-            'desk' => 'Desk',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTask()
+    public function getTaskRunning()
     {
-        return $this->hasOne(Tasks::className(), ['id_task' => 'task_id']);
+        return $this->hasOne(Tasks::className(), ['id_task' => 'task_running_id']);
     }
 
     /**

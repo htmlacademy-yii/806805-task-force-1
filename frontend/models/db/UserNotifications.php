@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "user_notifications".
  *
- * @property int $id
+ * @property int $id_user_notification
  * @property string $symbol
  * @property string $name
  *
@@ -42,7 +42,7 @@ class UserNotifications extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id_user_notification' => 'Id User Notification',
             'symbol' => 'Symbol',
             'name' => 'Name',
         ];
@@ -53,6 +53,6 @@ class UserNotifications extends \yii\db\ActiveRecord
      */
     public function getUserNotificationSettings()
     {
-        return $this->hasMany(UserNotificationSettings::className(), ['notification_id' => 'id'])->inverseOf('notification');
+        return $this->hasMany(UserNotificationSettings::className(), ['notification_id' => 'id_user_notification']);
     }
 }
