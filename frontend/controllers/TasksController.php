@@ -31,14 +31,13 @@ class TasksController extends Controller
         //$tasks = Tasks::find()->joinWith('category c', 'location')->where(['c.symbol' => 'neo'])->orderBy(['add_time' => SORT_ASC])->limit(3)->all();
         //Примеры - данные как массивы
         //$tasks = Tasks::find()->where(['category_id' => 3])->orderBy('id_task')->joinWith('category')->limit(3)->asArray()->all();
-        
-
+        /* печать примеров
         foreach($tasks as $task) {
             print_r($task->add_time);
             //print_r($task); // как массивы
         }
         print('<hr>');
-
+        */
         return $this->render('index', ['tasks' => $tasks]);
 
     }

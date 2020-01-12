@@ -23,7 +23,7 @@ echo "index";
                         </p>
                         <b class="new-task__price new-task__price--<?= $task->category->symbol ?>"><?= $task->price ?><b> ₽</b></b>
                         <p class="new-task__place"><?= $task->location->city ?>, Центральный район ???</p>
-                        <span class="new-task__time">4 часа назад</span>
+                        <span class="new-task__time">4 часа назад ???</span>
                     </div>
                     <?php endforeach ?>
 <!-- end single task -->
