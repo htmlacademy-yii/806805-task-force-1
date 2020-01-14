@@ -1,308 +1,377 @@
-/*
- * utf8 выдает предупреждение utf8mb3 и utf8mb4
- */
-CREATE DATABASE IF NOT EXISTS task_force
-    DEFAULT CHARACTER SET 'utf8mb4'
-    DEFAULT COLLATE 'utf8mb4_general_ci';
-    
-USE task_force;
+-- MySQL dump 10.13  Distrib 8.0.17, for Win64 (x86_64)
+--
+-- Host: localhost    Database: task_force
+-- ------------------------------------------------------
+-- Server version	8.0.17
 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-/* 
- * города и координаты.
- * 
- */
-CREATE TABLE IF NOT EXISTS locations
-(
-    `id_location`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `city`        VARCHAR(128) NOT NULL,
-    `latitude`    VARCHAR(128) NOT NULL,
-    `longitude`   VARCHAR(128) NOT NULL,
-    PRIMARY KEY (id_location)
-);
+--
+-- Table structure for table `categories`
+--
 
-/*
- * статусы. 
- *
- * symbol - используется для имени иконки статуса
- */
-CREATE TABLE IF NOT EXISTS task_statuses
-(
-    `id_task_status`        INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `symbol`    VARCHAR(32) NOT NULL UNIQUE,
-    `name`      VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (id_task_status)
-);
+DROP TABLE IF EXISTS `categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `categories` (
+  `id_category` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id_category`),
+  UNIQUE KEY `symbol` (`symbol`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/* 
- * действия над заданием. 
- */
-CREATE TABLE IF NOT EXISTS task_actions
-(
-    `id_task_action`        TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `symbol`    VARCHAR(32) NOT NULL UNIQUE,
-    `name`      VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (id_task_action)
-);
+--
+-- Table structure for table `feedbacks`
+--
 
-/* 
- * роли пользователей. 
- */
-CREATE TABLE IF NOT EXISTS user_roles
-(
-    `id_user_role`        TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `symbol`    VARCHAR(32) NOT NULL UNIQUE,
-    `name`      VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (id_user_role)
-);
+DROP TABLE IF EXISTS `feedbacks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `feedbacks` (
+  `id_feedback` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `user_rated_id` int(10) unsigned NOT NULL,
+  `task_id` int(10) unsigned NOT NULL,
+  `desk` text COLLATE utf8mb4_general_ci,
+  `point` tinyint(3) unsigned NOT NULL,
+  `add_time` datetime NOT NULL,
+  PRIMARY KEY (`id_feedback`),
+  KEY `user_id` (`user_id`),
+  KEY `user_rated_id` (`user_rated_id`),
+  KEY `task_id` (`task_id`),
+  CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
+  CONSTRAINT `feedbacks_ibfk_2` FOREIGN KEY (`user_rated_id`) REFERENCES `users` (`id_user`),
+  CONSTRAINT `feedbacks_ibfk_3` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/* #1
- * категории.
- * 
- * symbol - по нему ищем в заданном каталоге иконку каталога и также используем в формах
- */
- CREATE TABLE IF NOT EXISTS categories
-(
-    `id_category`          TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `symbol`      VARCHAR(32) NOT NULL UNIQUE,
-    `name`        VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (id_category)
-);
+--
+-- Table structure for table `locations`
+--
 
-/* #2
- * зарегистрированные пользователи.
- *
- * `skype``phone``portfolio` `other_contacts``birth_date`- проверить по вводиммым полям
- * `activity_dt` - думал что это делается как то через ссесию и класс
- * `user brief` - краткая информация о пользователе
- * ???`phone` - а почему не строка VARCHAR(10)
- * `portfolio` - описание о выполненных работах
- * !!!TINYINT(1) - значение в скобках выдает предупреждение 1681 Integer display width is deprecated and will be removed in a future release
- * TINYINT(1) - BIT, BOOL Являются синонимами
- * мне показалось `id_role` примет значение 1-2, чем is_executor 0-1
- */
-CREATE TABLE IF NOT EXISTS users
-(
-    `id_user`        INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`role_id`        TINYINT UNSIGNED NOT NULL DEFAULT 1, 
-	`location_id`    INT UNSIGNED NOT NULL,
-    `name`           VARCHAR(128) NOT NULL,
-    `avatar`         VARCHAR(255),
-	`email`          VARCHAR(128) NOT NULL UNIQUE,
-    `password`       VARCHAR(255) NOT NULL,
-	`skype`          VARCHAR(128),
-    `phone`          VARCHAR(11),
-	`other_contacts` VARCHAR(255),
-    `address`        VARCHAR(255),
-	`about`          TEXT,
-    `reg_time`       DATETIME NOT NULL,
-	`birth_date`     DATE,
-	`activity_time`  DATETIME NOT NULL,
-    `hide_contacts`  BOOL DEFAULT 0,
-    `hide_profile`   BOOL DEFAULT 0,
-    PRIMARY KEY (id_user),
-    FOREIGN KEY (role_id) REFERENCES user_roles(id_user_role),
-    FOREIGN KEY (location_id) REFERENCES locations(id_location)
-);
+DROP TABLE IF EXISTS `locations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `locations` (
+  `id_location` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `city` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  `latitude` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  `longitude` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id_location`)
+) ENGINE=InnoDB AUTO_INCREMENT=1109 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/* #2.1
- * портфолио или фото работ.
- *
- * id не используется в других таблицах
- */
-CREATE TABLE IF NOT EXISTS user_portfolio_images
-(
-    `id_user_portfolio_image`      INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `user_id` INT UNSIGNED NOT NULL,
-    `image`   VARCHAR(255),
-    PRIMARY KEY (id_user_portfolio_image),
-    FOREIGN KEY (user_id) REFERENCES users(id_user)
-);
+--
+-- Table structure for table `messages`
+--
 
+DROP TABLE IF EXISTS `messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `messages` (
+  `id_message` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(10) unsigned NOT NULL,
+  `sender_id` int(10) unsigned NOT NULL,
+  `recipient_id` int(10) unsigned NOT NULL,
+  `mess` text COLLATE utf8mb4_general_ci NOT NULL,
+  `add_time` datetime NOT NULL,
+  PRIMARY KEY (`id_message`),
+  KEY `task_id` (`task_id`),
+  KEY `sender_id` (`sender_id`),
+  KEY `recipient_id` (`recipient_id`),
+  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`),
+  CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id_user`),
+  CONSTRAINT `messages_ibfk_3` FOREIGN KEY (`recipient_id`) REFERENCES `users` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/* #2.2
- * специализация в категориях для исполнителя.
- *
- * id не используется в других таблицах
- */
-CREATE TABLE IF NOT EXISTS user_specializations (
-	`id_user_specialization`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`user_id`     INT UNSIGNED NOT NULL,
-	`category_id` TINYINT UNSIGNED,
-	PRIMARY KEY (id_user_specialization),
-    FOREIGN KEY (user_id) REFERENCES users(id_user),
-    FOREIGN KEY (category_id) REFERENCES categories(id_category)
-);
+--
+-- Table structure for table `offers`
+--
 
-/* #2.3
- * уведомления для пользователей в профиле, их виды или названия.
- * 
- */
-CREATE TABLE IF NOT EXISTS user_notifications
-(
-    `id_user_notification` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`symbol`          VARCHAR(32) NOT NULL UNIQUE,
-    `name`            VARCHAR(32) NOT NULL UNIQUE,
-    PRIMARY KEY (id_user_notification)
-);
+DROP TABLE IF EXISTS `offers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `offers` (
+  `id_offer` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `task_id` int(10) unsigned NOT NULL,
+  `contractor_id` int(10) unsigned NOT NULL,
+  `desk` text COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id_offer`),
+  KEY `task_id` (`task_id`),
+  KEY `contractor_id` (`contractor_id`),
+  CONSTRAINT `offers_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`),
+  CONSTRAINT `offers_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/* #2.4
- * настройки уведомлений пользователя.
- *
- * id не используется в других таблицах
- * ??? `status` - можно без этого параметра? просто поставить 0 в id_notification или удалить всю строку. Тоже самое в #6 favorite_users
- * `status`on_off - BOOL DEFAULT 1 - тк при создании активируется
- */
-CREATE TABLE IF NOT EXISTS user_notification_settings
-(
-    `id_user_notification_setting`              INT NOT NULL AUTO_INCREMENT,
-	`user_id`         INT UNSIGNED NOT NULL,
-    `notification_id` INT UNSIGNED NOT NULL,
-    `on_off`          BOOL DEFAULT 1,
-    PRIMARY KEY (id_user_notification_setting),
-    FOREIGN KEY (user_id) REFERENCES users(id_user),
-    FOREIGN KEY (notification_id) REFERENCES user_notifications(id_user_notification)
-);
+--
+-- Table structure for table `task_actions`
+--
 
-/* #3
- * задания.
- *
- * is_remote - удаленное выполнение 0-1, используется в фильтрах
- * id_author заменен на id_customer ссылается на таблицу users
- * `files` VARCHAR(512) DEFAULT '', удалено тк добавлена отдельная таблица для файлов заданий
- * id_status принимаем как число id из еще одной таблицы а не констант из класса Task
- * ??? `id_contractor` - нужен ли в данной таблице
- * `id_contractor` не нужен в данной таблице, тк задания со статусом Выполняются вынесены в отдельную таблицу, где он и указывается
- */
-CREATE TABLE IF NOT EXISTS tasks
-(
-    `id_task`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`status_id`     INT UNSIGNED NOT NULL,
-    `category_id`   TINYINT UNSIGNED NOT NULL,
-	`location_id`   INT UNSIGNED NOT NULL,
-    `customer_id`   INT UNSIGNED NOT NULL,
-    `name`          VARCHAR(128) NOT NULL,
-    `description`   TEXT NOT NULL,
-    `price`         INT UNSIGNED,
-    `address`       VARCHAR(128),
-    `latitude`      VARCHAR(128),
-    `longitude`     VARCHAR(128),
-    `add_time`      DATETIME NOT NULL,
-    `end_date`      DATETIME,
-	`is_remote`     BOOL DEFAULT 0,
-    PRIMARY KEY (id_task),
-    FOREIGN KEY (status_id) REFERENCES task_statuses(id_task_status),
-    FOREIGN KEY (category_id) REFERENCES categories(id_category),
-    FOREIGN KEY (location_id) REFERENCES locations(id_location),
-    FOREIGN KEY (customer_id) REFERENCES users(id_user)
-);
+DROP TABLE IF EXISTS `task_actions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `task_actions` (
+  `id_task_action` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id_task_action`),
+  UNIQUE KEY `symbol` (`symbol`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/* #3.1
- * вложения/файлы задания.
- *
- * id не используется в других таблицах
- */
-CREATE TABLE IF NOT EXISTS task_files
-(
-    `id_task_file`      INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `task_id` INT UNSIGNED NOT NULL,
-    `file`    VARCHAR(255),
-    PRIMARY KEY (id_task_file),
-    FOREIGN KEY (task_id) REFERENCES tasks(id_task)
-);
+--
+-- Table structure for table `task_files`
+--
 
-/* #3.2
- * задания в статусе Выполняется - интересное решение.
- *
- * id не используется в других таблицах
- * действительно это должно быть удобнее, для проверок заданий в статусе Выполняется
- * `id_contractor` INT NOT NULL - перенесено из таблицы task, чтобы искать только по заданиям со статусом Выполняется
- * `id_contractor` ссылается на таблицу а не константы из класса ссылается на таблицу users
- */
-CREATE TABLE IF NOT EXISTS task_runnings
-(
-    `id_task_running`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `task_running_id`       INT UNSIGNED NOT NULL,
-    `contractor_id` INT UNSIGNED NOT NULL,
-    PRIMARY KEY (id_task_running),
-    FOREIGN KEY (task_running_id) REFERENCES tasks(id_task),
-    FOREIGN KEY (contractor_id) REFERENCES users(id_user)
-);
+DROP TABLE IF EXISTS `task_files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `task_files` (
+  `id_task_file` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `task_id` int(10) unsigned NOT NULL,
+  `file` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id_task_file`),
+  KEY `task_id` (`task_id`),
+  CONSTRAINT `task_files_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/* #4
- * отзывы.
- *
- * `id_task` - добавлено
- * `point` - от 1 до 5
- * id не используется в других таблицах
- */
-CREATE TABLE IF NOT EXISTS feedbacks
-(
-    `id_feedback`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `user_id`       INT UNSIGNED NOT NULL,
-    `user_rated_id` INT UNSIGNED NOT NULL,
-    `task_id`       INT UNSIGNED NOT NULL,
-    `desk`          TEXT,
-    `point`         TINYINT UNSIGNED NOT NULL,
-    `add_time`      DATETIME NOT NULL,
-    PRIMARY KEY (id_feedback),
-    FOREIGN KEY (user_id) REFERENCES users(id_user),
-    FOREIGN KEY (user_rated_id) REFERENCES users(id_user),
-    FOREIGN KEY (task_id) REFERENCES tasks(id_task)
-);
+--
+-- Table structure for table `task_runnings`
+--
 
-/* #5
- * отклики на задание - предложения от исполнителей.
- *
- * id не используется в других таблицах
- */
-CREATE TABLE IF NOT EXISTS offers
-(
-    `id_offer`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `task_id`       INT UNSIGNED NOT NULL,
-    `contractor_id` INT UNSIGNED NOT NULL,
-    `desk`          TEXT NOT NULL,
-    PRIMARY KEY (id_offer),
-    FOREIGN KEY (task_id) REFERENCES tasks(id_task),
-    FOREIGN KEY (contractor_id) REFERENCES users(id_user)
-);
+DROP TABLE IF EXISTS `task_runnings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `task_runnings` (
+  `id_task_running` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `task_running_id` int(10) unsigned NOT NULL,
+  `contractor_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id_task_running`),
+  KEY `task_running_id` (`task_running_id`),
+  KEY `contractor_id` (`contractor_id`),
+  CONSTRAINT `task_runnings_ibfk_1` FOREIGN KEY (`task_running_id`) REFERENCES `tasks` (`id_task`),
+  CONSTRAINT `task_runnings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/* #6
- * избранные пользователи/закладка - добавить пользователя в избранные.
- *
- * id не используется в других таблицах
- * ??? `status` - можно без этого параметра? просто поставить 0 в id_user_favorite или удалить всю строку. Тоже самое в #2.3 user_notification_settings
- * `status`on_off - BOOL DEFAULT 1 - тк при создании активируется
- */
-CREATE TABLE IF NOT EXISTS user_favorites
-(
-    `id_user_favorite`               INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `user_id`          INT UNSIGNED NOT NULL,
-    `favorite_id` INT UNSIGNED NOT NULL,
-    `on_off`           BOOL DEFAULT 1,
-    PRIMARY KEY (id_user_favorite),
-    FOREIGN KEY (user_id) REFERENCES users(id_user),
-    FOREIGN KEY (favorite_id) REFERENCES users(id_user)
-);
+--
+-- Table structure for table `task_statuses`
+--
 
-/* #7
- * чат/сообщения между заказчиком и исполнителем задания.
- *
- * id_task - везде написал а здесь пропустил.
- * id не используется в других таблицах
- */
-CREATE TABLE IF NOT EXISTS messages
-(
-    `id_message`           INT NOT NULL AUTO_INCREMENT,
-    `task_id`       INT UNSIGNED NOT NULL,
-    `sender_id`    INT UNSIGNED NOT NULL,
-    `recipient_id` INT UNSIGNED NOT NULL,
-    `mess`         TEXT NOT NULL,
-    `add_time`     DATETIME NOT NULL,
-    PRIMARY KEY (id_message),
-    FOREIGN KEY (task_id) REFERENCES tasks(id_task),
-    FOREIGN KEY (sender_id) REFERENCES users(id_user),
-    FOREIGN KEY (recipient_id) REFERENCES users(id_user)
-);
+DROP TABLE IF EXISTS `task_statuses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `task_statuses` (
+  `id_task_status` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id_task_status`),
+  UNIQUE KEY `symbol` (`symbol`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `tasks`
+--
 
+DROP TABLE IF EXISTS `tasks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tasks` (
+  `id_task` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `status_id` int(10) unsigned NOT NULL,
+  `category_id` tinyint(3) unsigned NOT NULL,
+  `location_id` int(10) unsigned NOT NULL,
+  `customer_id` int(10) unsigned NOT NULL,
+  `name` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci NOT NULL,
+  `price` int(10) unsigned DEFAULT NULL,
+  `address` varchar(128) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `latitude` varchar(128) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `longitude` varchar(128) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `add_time` datetime NOT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `is_remote` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id_task`),
+  KEY `status_id` (`status_id`),
+  KEY `category_id` (`category_id`),
+  KEY `location_id` (`location_id`),
+  KEY `customer_id` (`customer_id`),
+  CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `task_statuses` (`id_task_status`),
+  CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id_category`),
+  CONSTRAINT `tasks_ibfk_3` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id_location`),
+  CONSTRAINT `tasks_ibfk_4` FOREIGN KEY (`customer_id`) REFERENCES `users` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_favorites`
+--
+
+DROP TABLE IF EXISTS `user_favorites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_favorites` (
+  `id_user_favorite` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `favorite_id` int(10) unsigned NOT NULL,
+  `on_off` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id_user_favorite`),
+  KEY `user_id` (`user_id`),
+  KEY `favorite_id` (`favorite_id`),
+  CONSTRAINT `user_favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
+  CONSTRAINT `user_favorites_ibfk_2` FOREIGN KEY (`favorite_id`) REFERENCES `users` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_notification_settings`
+--
+
+DROP TABLE IF EXISTS `user_notification_settings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_notification_settings` (
+  `id_user_notification_setting` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `notification_id` int(10) unsigned NOT NULL,
+  `on_off` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id_user_notification_setting`),
+  KEY `user_id` (`user_id`),
+  KEY `notification_id` (`notification_id`),
+  CONSTRAINT `user_notification_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
+  CONSTRAINT `user_notification_settings_ibfk_2` FOREIGN KEY (`notification_id`) REFERENCES `user_notifications` (`id_user_notification`)
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_notifications`
+--
+
+DROP TABLE IF EXISTS `user_notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_notifications` (
+  `id_user_notification` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id_user_notification`),
+  UNIQUE KEY `symbol` (`symbol`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_portfolio_images`
+--
+
+DROP TABLE IF EXISTS `user_portfolio_images`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_portfolio_images` (
+  `id_user_portfolio_image` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id_user_portfolio_image`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_portfolio_images_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_roles`
+--
+
+DROP TABLE IF EXISTS `user_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_roles` (
+  `id_user_role` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id_user_role`),
+  UNIQUE KEY `symbol` (`symbol`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_specializations`
+--
+
+DROP TABLE IF EXISTS `user_specializations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_specializations` (
+  `id_user_specialization` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `category_id` tinyint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id_user_specialization`),
+  KEY `user_id` (`user_id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `user_specializations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
+  CONSTRAINT `user_specializations_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id_category`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id_user` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `location_id` int(10) unsigned NOT NULL,
+  `name` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  `avatar` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `skype` varchar(128) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `phone` varchar(11) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `other_contacts` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `address` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `about` text COLLATE utf8mb4_general_ci,
+  `reg_time` datetime NOT NULL,
+  `birth_date` date DEFAULT NULL,
+  `activity_time` datetime NOT NULL,
+  `hide_contacts` tinyint(1) DEFAULT '0',
+  `hide_profile` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id_user`),
+  UNIQUE KEY `email` (`email`),
+  KEY `role_id` (`role_id`),
+  KEY `location_id` (`location_id`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `user_roles` (`id_user_role`),
+  CONSTRAINT `users_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id_location`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2020-01-13 16:09:18
