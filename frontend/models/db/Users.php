@@ -26,7 +26,7 @@ use Yii;
  * @property int|null $hide_profile
  *
  * @property Feedbacks[] $feedbacks
- * @property Feedbacks[] $feedbacks0
+ * @property Feedbacks[] $ratedFeedbacks
  * @property Messages[] $messages
  * @property Messages[] $messages0
  * @property Offers[] $offers
@@ -37,6 +37,10 @@ use Yii;
  * @property UserNotificationSettings[] $userNotificationSettings
  * @property UserPortfolioImages[] $userPortfolioImages
  * @property UserSpecializations[] $userSpecializations
+ * 
+ * // Связь много ко многим
+ * @property Categories[] $userCategories
+ * 
  * @property UserRoles $role
  * @property Locations $location
  */
@@ -106,7 +110,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFeedbacks0()
+    public function getRatedFeedbacks()
     {
         return $this->hasMany(Feedbacks::className(), ['user_rated_id' => 'id_user']);
     }
@@ -190,6 +194,15 @@ class Users extends \yii\db\ActiveRecord
     {
         return $this->hasMany(UserSpecializations::className(), ['user_id' => 'id_user']);
     }
+
+
+    // Связь много ко многим категории пользователя
+    public function getUserCategories()
+    {
+        return $this->hasMany(Categories::className(), ['id_category' => 'category_id'])
+        ->viaTable('user_specializations', ['user_id' => 'id_user']);
+    }
+
 
     /**
      * @return \yii\db\ActiveQuery
