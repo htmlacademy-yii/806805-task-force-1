@@ -1,6 +1,7 @@
 <?php 
 use yii\helpers\html;
 
+$this->title = 'Задания (Верстка browse.html)';
 ?>
 
 <!-- Верстка browse.html контент -->

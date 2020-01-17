@@ -1,6 +1,7 @@
 <?php 
 use yii\helpers\html;
 
+$this->title = 'Исполнители (верстка Users.html)';
 ?>
 
 <!-- Верстка Users.html контент -->

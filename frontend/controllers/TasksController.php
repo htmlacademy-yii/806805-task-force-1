@@ -11,11 +11,8 @@ use yii\web\NotFoundHttpException;
 class TasksController extends Controller
 {
 
-    public $title;
-
     public function actionIndex() 
     {
-        $this->title = 'Задания (Верстка browse.html)';
 
         $tasks = Tasks::find()->where(['status_id' => 1])->orderBy(['add_time' => SORT_DESC])->all(); 
         

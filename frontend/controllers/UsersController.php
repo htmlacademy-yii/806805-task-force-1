@@ -13,11 +13,8 @@ use yii\web\NotFoundHttpException;
 class UsersController extends Controller
 {
 
-    public $title;
-
     public function actionIndex() 
     {
-        $this->title = 'Исполнители (верстка Users.html)';
 
         // Пользователи являются Исполнителями, если они не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
         // Находим уникальные id заказчиков customer_id где Task_status=new и Task_status=running
