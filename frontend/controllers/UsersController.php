@@ -23,7 +23,7 @@ class UsersController extends Controller
         $customers_id = array_keys($customer_tasks);
         // Определяем простой массив в качестве значений id всех пользователей (заказчики и исполнители)  
         $allusers_id = array_keys(Users::find()->indexBy('id_user')->asArray()->all()); 
-        // Находим id исполнителей (выделяем id заказчика из массива всех пользователей) и подставляем их в запрос
+        // Находим id исполнителей (удаляем id заказчика из массива всех пользователей) и подставляем их в запрос
         $contractors = $users = Users::find()->where(['IN', 'id_user', array_diff($allusers_id, $customers_id)])->orderBy(['reg_time' => SORT_DESC])->all();
 
         $rating = [];
