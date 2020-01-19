@@ -10,10 +10,38 @@ use yii\web\NotFoundHttpException;
 
 class ExamplesController extends Controller
 {
+
+    public function d($value) {
+        echo "<pre>";
+        var_dump($value);
+        echo "</pre>";
+    }
+
     public function actionIndex() 
     {
         date_default_timezone_set('Europe/Moscow');
-        
+        /* Пример 1 */
+        // Пользователи являются Исполнителями, если они не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
+        // Находим уникальные id заказчиков customer_id где Task_status=new и Task_status=running 
+        // !!! Не работает при SET sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+        // Устанавливается с помощью sql запроса
+
+        // $customer_tasks = Tasks::find()
+        //     ->select(['customer_id'])
+        //     ->where(['status_id' => '1'])
+        //     ->orWhere(['status_id' => '3'])
+        //     ->groupBy('customer_id')
+        //     ->indexBy('customer_id')
+        //     ->asArray()->all(); 
+        //     // ->createCommand()->sql // показать как sql запрос
+        // ;
+        // Показать sql-запрос
+        // $this->d($customer_tasks); die;
+
+        // Создаем простой массив в качестве значений id заказчиков 
+        // $customers_id = array_keys($customer_tasks);
+
+        /* Пример 2 */
         // $tasks = Tasks::find()->joinWith(['category c', 'location l', 'status s'])
         //     ->where('end_date < NOW()') // сравнение с sql временем
         //     //->where('end_date < :curTime', ['curTime' => date('Y-m-d H:i:s', time())]) // пример сравнение с временем в php 
