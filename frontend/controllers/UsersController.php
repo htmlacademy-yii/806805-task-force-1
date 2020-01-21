@@ -21,7 +21,6 @@ class UsersController extends Controller
         // Построитель запросов позволяет группировать и оставить в запросе только группируемые поля
         $customer_tasks = new Query();
         $customer_tasks->select(['customer_id'])->from('tasks t')->where(['status_id' => '1'])->orWhere(['status_id' => '3'])->groupBy('customer_id');
-        // Создаем простой массив в качестве значений id заказчиков 
         $customers_id = array_column($customer_tasks->all(), 'customer_id');
 
         // Если нужно получить всех имеющихся пользователей кроме Текущих заказчиков. в качестве значений id всех пользователей (заказчики и исполнители)  
