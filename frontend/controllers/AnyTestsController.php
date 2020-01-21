@@ -128,7 +128,7 @@ class AnytestsController extends Controller
         // Если нужно получить всех имеющихся пользователей кроме Текущих заказчиков. в качестве значений id всех пользователей (заказчики и исполнители)  
         // $allusers_id = array_keys(Users::find()->indexBy('id_user')->asArray()->all());
 
-        // По заданию Не все пользователи исполнители, а только те у которых есть специализация, те они есть в модель userSpecializations и уникальные
+        // Вариант 1. Получаем user_id из user_specializations groupBy('user_id') и array_column
         $allcontractors_id = new Query();
         $allcontractors_id->select(['user_id'])->from('user_specializations u')->groupBy('user_id');
         $allcontractors_id = array_column($allcontractors_id->all(), 'user_id');

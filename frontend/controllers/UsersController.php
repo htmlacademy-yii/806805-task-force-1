@@ -6,6 +6,7 @@ use yii\web\Controller;
 use yii\db\Query;
 use frontend\models\db\Tasks;
 use frontend\models\db\Users;
+use frontend\models\db\UserSpecializations;
 use frontend\models\db\TaskRunnings;
 use yii\web\NotFoundHttpException;
 
@@ -13,33 +14,45 @@ use yii\web\NotFoundHttpException;
 class UsersController extends Controller
 {
 
+    public function d($value) {
+        echo "<pre>";
+        var_dump($value);
+        echo "</pre>";
+    }
+
     public function actionIndex() 
     {
+        // Получение пользователей
+        // По заданию Пользователь является исполнитель, у которого есть специализация user_specializations, те выбираем уникальные user_id
+        // Нужно удалить тех пользователей, если пользователь стал Заказчиком, даже если у него есть специализация
+        // те проверяем что пользователь не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
 
-        // Пользователи являются Исполнителями, если они не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
-        // Находим уникальные id заказчиков customer_id где Task_status=new и Task_status=running
-        // Построитель запросов позволяет группировать и оставить в запросе только группируемые поля
-        $customer_tasks = new Query();
-        $customer_tasks->select(['customer_id'])->from('tasks t')->where(['status_id' => '1'])->orWhere(['status_id' => '3'])->groupBy('customer_id');
-        $customers_id = array_column($customer_tasks->all(), 'customer_id');
+        // Все действующие Заказчики. Получаем массив со значениями user_id из user_specializations DISTINCT
+        $allcustomers_id = new Query();
+        $allcustomers_id->select(['customer_id'])->distinct()->from('tasks t')->where(['status_id' => '1'])->orWhere(['status_id' => '3'])
+            ->all()
+            // ->createCommand()->sql
+            // ->queryAll();
+        ;
+        // Все Исполнители. Получаем массив со значениями user_id из user_specializations DISTINCT, 
+        // также  Query позволяет легко делать подзапросы, здесь Удаляем id заказчиков из исполнителей
+        $allcontractors_id = (new \yii\db\Query());
+        $allcontractors_id->select(['user_id'])->distinct()->from('user_specializations')->where(['not in', 'user_id', $allcustomers_id])
+            // ->asArray()
+            ->all()
+            // ->createCommand()->sql
+            // ->queryAll();
+        ;
 
-        // Если нужно получить всех имеющихся пользователей кроме Текущих заказчиков. в качестве значений id всех пользователей (заказчики и исполнители)  
-        // $allusers_id = array_keys(Users::find()->indexBy('id_user')->asArray()->all());
+        // Исполнители, которые имеют специализацию и в данный момент не Заказчики. 
+        $contractors = $users = Users::find()->where(['IN', 'id_user', $allcontractors_id])->orderBy(['reg_time' => SORT_DESC])->all();
 
-        // По заданию Не все пользователи исполнители, а только те у которых есть специализация, те они есть в модель userSpecializations и уникальные
-        $allcontractors_id = new Query();
-        $allcontractors_id->select(['user_id'])->from('user_specializations u')->groupBy('user_id');
-        $allcontractors_id = array_column($allcontractors_id->all(), 'user_id');
-
-        // Находим id исполнителей (удаляем id заказчика из массива всех пользователей-исполнителей) и подставляем их в запрос
-        $contractors = $users = Users::find()->where(['IN', 'id_user', array_diff($allcontractors_id, $customers_id)])->orderBy(['reg_time' => SORT_DESC])->all();
-
-        // Рейтинг содержится в запросе модели user->getRatedFeedbacks, если рейтинг есть то среднее значение sql запроса sum('point') !=0
-        // Создаем массив ключ-Id пользователя, среднее рейтинга - в значении
+        // Рейтинг, метод getRatedFeedbacks возвратит запрос к БД, а свойство ratedFeedbacks вернет массив объектов 
+        // если рейтинг есть то среднее значение sql запроса sum('point') !=0, запишем в массив $rating, где ключом будет id_user
         $rating = [];
         foreach($users as $user) {
             
-            $sumPoints = $user->getRatedFeedbacks()->sum('point');
+            $sumPoints = $user->getRatedFeedbacks()->sum('point'); 
 
             if ($sumPoints) {
                 $rating[$user->id_user] = $sumPoints / $user->getRatedFeedbacks()->count();
