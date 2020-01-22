@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `task_force` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `task_force`;
 -- MySQL dump 10.13  Distrib 8.0.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: task_force
@@ -24,8 +26,8 @@ DROP TABLE IF EXISTS `categories`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categories` (
   `id_category` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_category`),
   UNIQUE KEY `symbol` (`symbol`),
   UNIQUE KEY `name` (`name`)
@@ -44,7 +46,7 @@ CREATE TABLE `feedbacks` (
   `user_id` int(10) unsigned NOT NULL,
   `user_rated_id` int(10) unsigned NOT NULL,
   `task_id` int(10) unsigned NOT NULL,
-  `desk` text COLLATE utf8mb4_general_ci,
+  `desk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `point` tinyint(3) unsigned NOT NULL,
   `add_time` datetime NOT NULL,
   PRIMARY KEY (`id_feedback`),
@@ -66,9 +68,9 @@ DROP TABLE IF EXISTS `locations`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `locations` (
   `id_location` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `city` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
-  `latitude` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
-  `longitude` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  `city` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `latitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `longitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_location`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1109 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -85,7 +87,7 @@ CREATE TABLE `messages` (
   `task_id` int(10) unsigned NOT NULL,
   `sender_id` int(10) unsigned NOT NULL,
   `recipient_id` int(10) unsigned NOT NULL,
-  `mess` text COLLATE utf8mb4_general_ci NOT NULL,
+  `mess` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `add_time` datetime NOT NULL,
   PRIMARY KEY (`id_message`),
   KEY `task_id` (`task_id`),
@@ -108,7 +110,7 @@ CREATE TABLE `offers` (
   `id_offer` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `task_id` int(10) unsigned NOT NULL,
   `contractor_id` int(10) unsigned NOT NULL,
-  `desk` text COLLATE utf8mb4_general_ci NOT NULL,
+  `desk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_offer`),
   KEY `task_id` (`task_id`),
   KEY `contractor_id` (`contractor_id`),
@@ -126,8 +128,8 @@ DROP TABLE IF EXISTS `task_actions`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_actions` (
   `id_task_action` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_task_action`),
   UNIQUE KEY `symbol` (`symbol`),
   UNIQUE KEY `name` (`name`)
@@ -144,7 +146,7 @@ DROP TABLE IF EXISTS `task_files`;
 CREATE TABLE `task_files` (
   `id_task_file` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `task_id` int(10) unsigned NOT NULL,
-  `file` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id_task_file`),
   KEY `task_id` (`task_id`),
   CONSTRAINT `task_files_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`)
@@ -179,8 +181,8 @@ DROP TABLE IF EXISTS `task_statuses`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_statuses` (
   `id_task_status` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_task_status`),
   UNIQUE KEY `symbol` (`symbol`),
   UNIQUE KEY `name` (`name`)
@@ -200,12 +202,12 @@ CREATE TABLE `tasks` (
   `category_id` tinyint(3) unsigned NOT NULL,
   `location_id` int(10) unsigned NOT NULL,
   `customer_id` int(10) unsigned NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
-  `description` text COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `price` int(10) unsigned DEFAULT NULL,
-  `address` varchar(128) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `latitude` varchar(128) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `longitude` varchar(128) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `address` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `latitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `longitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `add_time` datetime NOT NULL,
   `end_date` datetime DEFAULT NULL,
   `is_remote` tinyint(1) DEFAULT '0',
@@ -270,8 +272,8 @@ DROP TABLE IF EXISTS `user_notifications`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_notifications` (
   `id_user_notification` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_user_notification`),
   UNIQUE KEY `symbol` (`symbol`),
   UNIQUE KEY `name` (`name`)
@@ -288,7 +290,7 @@ DROP TABLE IF EXISTS `user_portfolio_images`;
 CREATE TABLE `user_portfolio_images` (
   `id_user_portfolio_image` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id_user_portfolio_image`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_portfolio_images_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`)
@@ -304,8 +306,8 @@ DROP TABLE IF EXISTS `user_roles`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_roles` (
   `id_user_role` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_user_role`),
   UNIQUE KEY `symbol` (`symbol`),
   UNIQUE KEY `name` (`name`)
@@ -342,15 +344,15 @@ CREATE TABLE `users` (
   `id_user` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `location_id` int(10) unsigned NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
-  `avatar` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `skype` varchar(128) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `phone` varchar(11) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `other_contacts` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `address` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `about` text COLLATE utf8mb4_general_ci,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `skype` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `other_contacts` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `about` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `reg_time` datetime NOT NULL,
   `birth_date` date DEFAULT NULL,
   `activity_time` datetime NOT NULL,
@@ -374,4 +376,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-01-13 16:09:18
+-- Dump completed on 2020-01-17 14:16:32
