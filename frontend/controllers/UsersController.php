@@ -56,11 +56,11 @@ class UsersController extends Controller
 
         // Рейтинг, используем Mysql функции и groupBy
         $rating = new Query();
-        $rating = $rating->select(['user_id', 'count(user_id) as num_feedbacks', 'sum(point) as sum_point', 'sum(point)/count(user_id) as avg_point'])
+        $rating = $rating->select(['user_rated_id', 'count(user_rated_id) as num_feedbacks', 'sum(point) as sum_point', 'sum(point)/count(user_rated_id) as avg_point'])
             ->from('feedbacks')
-            ->where(['in', 'user_id', $contractors])
-            ->groupBy('user_id')
-            ->indexBy('user_id')
+            ->where(['in', 'user_rated_id', $contractors])
+            ->groupBy('user_rated_id')
+            ->indexBy('user_rated_id')
             ->all()
         ;
 
