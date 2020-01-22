@@ -34,27 +34,23 @@ $this->title = 'Исполнители (верстка Users.html)';
                             <span><?= count($user->ratedFeedbacks) ?> отзывов</span>
                         </div>
                         <div class="feedback-card__top--name user__search-card">
-                            <p class="link-name"><a href="#" class="link-regular"><?= $user->name ?></a></p>
+                          <p class="link-name"><a href="#" class="link-regular"><?= $user->name ?></a></p>
 
                             <!-- Рейтинг -->
-                            <?php $point = $rating[$user->id_user] ?? ''; ?>
-
-                            <?php if($point): ?>
+                            <?php $avg_point = $rating[$user->id_user]['avg_point'] ?? 0; ?>
 
                             <!-- итерация желтой звездочки -->
-                            <?php for($i=1; $i <= $point ; $i++): ?>
+                            <?php for($i=1; $i <= $avg_point ; $i++): ?>
                             <span></span>
                             <?php endfor; ?>
 
                             <!-- итерация белой звездочки -->
-                            <?php for($i=$point; $i < 5; $i++): ?>
+                            <?php for($i=$avg_point; $i < 5; $i++): ?>
                             <span class="star-disabled"></span>
                             <?php endfor; ?>
-                            
-                            <!-- Оценка рейтинг -->
-                            <b><?= $point; ?></b>
 
-                            <?php endif; ?>
+                            <!-- Оценка рейтинг -->
+                            <b><?= substr($avg_point, 0, 4); ?></b>
 
                             <p class="user__search-content">
                                 <?= $user->about ?>

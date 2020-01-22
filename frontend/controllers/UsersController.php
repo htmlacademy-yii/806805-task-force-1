@@ -22,6 +22,7 @@ class UsersController extends Controller
 
     public function actionIndex() 
     {
+        
         // Получение пользователей
         // По заданию Пользователь является исполнитель, у которого есть специализация user_specializations, те выбираем уникальные user_id
         // Нужно удалить тех пользователей, если пользователь стал Заказчиком, даже если у него есть специализация
@@ -45,20 +46,25 @@ class UsersController extends Controller
         ;
 
         // Исполнители, которые имеют специализацию и в данный момент не Заказчики. 
-        $contractors = $users = Users::find()->where(['IN', 'id_user', $allcontractors_id])->orderBy(['reg_time' => SORT_DESC])->all();
+        $users = Users::find()->where(['IN', 'id_user', $allcontractors_id])
+            ->orderBy(['reg_time' => SORT_DESC])
+            ->indexBy('id_user')
+            ->all();
+        
+        // Используется для рейтинга, массив со значениями id исполнителей
+        $contractors = array_keys($users);
 
-        // Рейтинг, метод getRatedFeedbacks возвратит запрос к БД, а свойство ratedFeedbacks вернет массив объектов 
-        // если рейтинг есть то среднее значение sql запроса sum('point') !=0, запишем в массив $rating, где ключом будет id_user
-        $rating = [];
-        foreach($users as $user) {
-            
-            $sumPoints = $user->getRatedFeedbacks()->sum('point'); 
+        // Рейтинг, используем Mysql функции и groupBy
+        $rating = new Query();
+        $rating = $rating->select(['user_id', 'count(user_id) as num_feedbacks', 'sum(point) as sum_point', 'sum(point)/count(user_id) as avg_point'])
+            ->from('feedbacks')
+            ->where(['in', 'user_id', $contractors])
+            ->groupBy('user_id')
+            ->indexBy('user_id')
+            ->all()
+        ;
 
-            if ($sumPoints) {
-                $rating[$user->id_user] = $sumPoints / $user->getRatedFeedbacks()->count();
-            }
-        }
-
+        // $this->d($rating);
         return $this->render('index', ['users' => $users, 'rating' => $rating]);
     }
 
