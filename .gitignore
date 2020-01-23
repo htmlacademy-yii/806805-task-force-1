@@ -43,3 +43,6 @@ phpunit.phar
 /backend/web/index-test.php
 /backend/web/robots.txt
 
+# ignore my anytests files
+/frontend/controllers/AnyTestsController.php
+/frontend/views/anytests
