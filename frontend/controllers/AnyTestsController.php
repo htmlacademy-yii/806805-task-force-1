@@ -121,7 +121,7 @@ class AnytestsController extends Controller
         // Пользователи являются Исполнителями, если они не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
         // Находим уникальные id заказчиков customer_id где Task_status=new и Task_status=running
         // Построитель запросов позволяет группировать и оставить в запросе только группируемые поля
-        $customer_tasks = new Query();
+        $customer_tasks = new Query;
         $customer_tasks->select(['customer_id'])->from('tasks t')->where(['status_id' => '1'])->orWhere(['status_id' => '3'])->groupBy('customer_id');
         $customers_id = array_column($customer_tasks->all(), 'customer_id');
 
@@ -129,7 +129,7 @@ class AnytestsController extends Controller
         // $allusers_id = array_keys(Users::find()->indexBy('id_user')->asArray()->all());
 
         // Вариант 1. Получаем user_id из user_specializations groupBy('user_id') и array_column
-        $allcontractors_id = new Query();
+        $allcontractors_id = new Query;
         $allcontractors_id->select(['user_id'])->from('user_specializations u')->groupBy('user_id');
         $allcontractors_id = array_column($allcontractors_id->all(), 'user_id');
 

@@ -29,7 +29,7 @@ class UsersController extends Controller
         // те проверяем что пользователь не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
 
         // Все действующие Заказчики. Получаем массив со значениями user_id из tasks DISTINCT
-        $allcustomers_id = new Query();
+        $allcustomers_id = new Query;
         $allcustomers_id->select(['customer_id'])->distinct()->from('tasks t')->where(['status_id' => '1'])->orWhere(['status_id' => '3'])
             // ->limit() // !!! This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'
             // ->one()
@@ -39,11 +39,11 @@ class UsersController extends Controller
             // ->createCommand()->queryAll() // аналогично ->all(), Не сработает в самом запросе
         ;
 
-        $this->d($allcustomers_id->one());
+        // $this->d($allcustomers_id->one());
 
         // Все Исполнители. Получаем массив со значениями user_id из user_specializations DISTINCT, 
         // также  Query позволяет легко делать подзапросы, здесь Удаляем id заказчиков из исполнителей
-        $allcontractors_id = new \yii\db\Query();
+        $allcontractors_id = new \yii\db\Query;
         $allcontractors_id->select(['user_id'])->distinct()->from('user_specializations')->where(['not in', 'user_id', $allcustomers_id])
             // ->asArray()
             // ->all() // Не сработает в самом запросе, необходима дополнительная переменная $this->d($allcustomers_id->all());

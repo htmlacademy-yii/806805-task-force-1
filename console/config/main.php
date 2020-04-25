@@ -17,9 +17,11 @@ return [
     ],
     'controllerMap' => [
         'fixture' => [
-            'class' => 'yii\console\controllers\FixtureController',
+            'class' => 'yii\faker\FixtureController', // Замена
+            'templatePath' => '@common/fixtures/templates', // добавлено
+            'fixtureDataPath' => '@common/fixtures/data', // добавлено
             'namespace' => 'common\fixtures',
-          ],
+        ],
     ],
     'components' => [
         'log' => [

@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS user_notifications
  */
 CREATE TABLE IF NOT EXISTS user_notification_settings
 (
-    `id_user_notification_setting`              INT NOT NULL AUTO_INCREMENT,
+    `id_user_notification_setting` INT NOT NULL AUTO_INCREMENT,
 	`user_id`         INT UNSIGNED NOT NULL,
     `notification_id` INT UNSIGNED NOT NULL,
     `on_off`          BOOL DEFAULT 1,
