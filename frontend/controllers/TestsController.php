@@ -11,7 +11,7 @@ use frontend\models\db\Users;
 use yii\web\NotFoundHttpException;
 
 
-class AnytestsController extends Controller
+class TestsController extends Controller
 {
 
     public function d($value) {
@@ -29,7 +29,7 @@ class AnytestsController extends Controller
     public function actionConn() {
         
         // Подключение к базе данных вручную
-        $db = new yii\db\Connection([
+        $conn = new yii\db\Connection([
             'dsn' => 'mysql:host=localhost;dbname=task_force',
             'username' => 'user',
             'password' => 'Universal85',
@@ -37,7 +37,7 @@ class AnytestsController extends Controller
         ]);
 
         // $table = Yii::$app->db->getTableSchema('categories'); // выполнение запросов с помощью подключения глобально из настроек приложения и его компонентов
-        $table = $db->getTableSchema('categories'); // выполнение запросов с использованием подключения вручную, те заданного не глобально а частно.
+        $table = $conn->getTableSchema('categories'); // выполнение запросов с использованием подключения вручную, те заданного не глобально а частно.
 
         $this->d($table);
 
