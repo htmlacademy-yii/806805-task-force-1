@@ -1,8 +1,8 @@
 <?php
 
 use yii\db\Migration;
-use yii\db\Query;
-use yii\db\Command;
+use yii\db\Query; 
+use yii\db\Schema; // https://www.yiiframework.com/doc/api/2.0/yii-db-schema
 
 /**
  * Class m200425_181448_first
@@ -14,8 +14,15 @@ class m200425_181448_first extends Migration
      */
     public function Up()
     {
+        // При удалении таблиц, сначала удаляются ключи, иначе выдается ошибки отсутствия таблицы
+        $this->dropForeignKey(
+            'fk-task_files-task_id',
+            'task_files'
+        );
+
         $this->dropTable('task_files');
-        echo "m200425_181448_first cannot be reverted.\n";
+
+        echo "m200425_181448_first can be reverted.\n";
     }
 
     /**
@@ -23,36 +30,40 @@ class m200425_181448_first extends Migration
      */
     public function Down()
     {
-        // $this->createTable('task_files', [
-        //     'id_task_file' => $this->primaryKey(),
-        //     'task_id' => $this->integer()->notNull(),
-        //     'file' => $this->string(),
-        // ]);
 
-        // $this->addForeignKey(
-        //     'fk-task_files-task_id',
-        //     'task_files',
-        //     'task_id',
-        //     'tasks',
-        //     'id_task',
-        //     'CASCADE'
-        // );
+        // ###1 Код не зависимый от СУБД
+        $this->createTable('task_files', [
+            'id_task_file' => $this->primaryKey(),
+            'task_id' => $this->integer()->notNull()->unsigned(), // Работает https://www.yiiframework.com/doc/api/2.0/yii-db-columnschemabuilder#unsigned()-detail
+            // 'task_id' => Schema::TYPE_INTEGER . ' NOT NULL', // Работает 
+            // 'task_id' => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL', // Не работает 
+            // 'task_id' => 'INT UNSIGNED NOT NULL', // Работает, дает в describe task_files; key - MUL. Не нашел аналог независимый СУБД 
+            'file' => $this->string(),
+        ]);
 
-        // $sql = "INSERT INTO task_files (task_id, file) VALUES (1, 'test_file_name.pdf');";
+        $this->addForeignKey(
+            'fk-task_files-task_id', // для выполнения без ошибок необходимо добавить для столбца task_id UNSIGNED
+            'task_files',
+            'task_id',
+            'tasks',
+            'id_task',
+            'CASCADE'
+        );
 
-        $sql = "
-            CREATE TABLE IF NOT EXISTS task_files
-            (
-                `id_task_file`      INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                `task_id` INT UNSIGNED NOT NULL,
-                `file`    VARCHAR(255),
-                PRIMARY KEY (id_task_file),
-                FOREIGN KEY (task_id) REFERENCES tasks(id_task)
-            );
-        ";
+        // ###2 Код зависимый от СУБД, но удобный и простой
+        // $sql = "
+        //     CREATE TABLE IF NOT EXISTS task_files
+        //     (
+        //         `id_task_file`      INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        //         `task_id` INT UNSIGNED NOT NULL,
+        //         `file`    VARCHAR(255),
+        //         PRIMARY KEY (id_task_file),
+        //         FOREIGN KEY (task_id) REFERENCES tasks(id_task)
+        //     );
+        // ";
+        // $this->execute($sql);
 
-        $this->execute($sql);
-
+        // ###3 Заполнение таблицы данными
         $sql = "
             INSERT INTO task_files (task_id, file)
             VALUES ('1', 'Robby_project_1.pdf');INSERT INTO task_files (task_id, file)
@@ -75,14 +86,18 @@ class m200425_181448_first extends Migration
             VALUES ('5', 'john_project_2-1.psd');INSERT INTO task_files (task_id, file)
             VALUES ('6', 'Robby_project_1-1.psd');
         ";
-
-        // $sql .= "INSERT INTO task_files (task_id, file) VALUES (2, 'test_file_name2.pdf');";
-        // Yii::$app->db->createCommand('source dump.sql;')->execute();
         $this->execute($sql);
 
-        echo "m200425_181448_first cannot be reverted.\n";
+        // $sql = "INSERT INTO task_files (task_id, file) VALUES (2, 'test_file_name2.pdf');";
+        // $this->execute($sql);
 
-        // return false;
+        // $sql = 'source dump.sql;';
+        // Yii::$app->db->createCommand($sql)->execute();
+
+
+        // ###4 Для не возвратных операций
+        // echo "m200425_181448_first cannot be reverted.\n";
+        // return false; 
     }
 
     /*
