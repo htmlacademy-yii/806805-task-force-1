@@ -10,7 +10,7 @@ use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
-AppAsset::register($this); // !!! Влияют на стили для форм! Создает стили по умолчанию которые влияют на шрифты и некоторые классы верстки, на главной страницы отключены
+// AppAsset::register($this); // !!! Удаляем. Создает стили по умолчанию которые влияют на шрифты и некоторые классы верстки, на др страницах влияет на формы при отключении
 ?>
 <?php $this->beginPage() ?><!-- Оставляем код -->
 <!DOCTYPE html>
@@ -26,18 +26,16 @@ AppAsset::register($this); // !!! Влияют на стили для форм! 
     <?php $this->head() ?><!-- Оставляем код, удаляем файл встроенного стиля css/site.css -->
 
     <link rel="stylesheet" href="css/normalize.css"><!-- Вставляем код -->
-    <link rel="stylesheet" href="css/style.css"><!-- Вставляем код -->
+    <link rel="stylesheet" href="css/style.css"><!-- Вставляем код, AppAsset::register($this); влияет на шрифт и некоторые классы -->
 </head>
-<body>
+<body class="landing">
 <?php $this->beginBody() ?><!-- Оставляем код -->
 <div class="table-layout">
-
-    <!-- Вставляем хедер  -->
-    <header class="page-header">
-        <div class="main-container page-header__container">
-            <div class="page-header__logo">
-                <a href="index.html">
-                    <svg class="page-header__logo-image" id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1634 646.35">
+    <header class="page-header--index">
+        <div class="main-container page-header__container page-header__container--index">
+            <div class="page-header__logo--index">
+                <a>
+                    <svg class="logo-image--index" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1634 646.35">
                         <title>taskforce_logo2-01</title>
                         <g>
                             <g>
@@ -62,88 +60,26 @@ AppAsset::register($this); // !!! Влияют на стили для форм! 
                         </g>
                     </svg>
                 </a>
+               <p>Работа там, где ты!</p>
             </div>
-            <div class="header__nav">
-                <ul class="header-nav__list site-list">
-                    <li class="site-list__item">
-                        <a href="#">Задания</a>
-                    </li>
-                    <li class="site-list__item">
-                        <a href="#">Исполнители</a>
-                    </li>
-                    <li class="site-list__item">
-                        <a href="#">Создать задание</a>
-                    </li>
-                    <li class="site-list__item">
-                        <a>Мой профиль</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="header__town">
-                <select class="multiple-select input town-select" size="1" name="town[]">
-                    <option value="Moscow">Москва</option>
-                    <option selected value="SPB">Санкт-Петербург</option>
-                    <option value="Krasnodar">Краснодар</option>
-                    <option value="Irkutsk">Иркутск</option>
-                    <option value="Vladivostok">Владивосток</option>
-                </select>
-            </div>
-            <div class="header__lightbulb"></div>
-            <div class="lightbulb__pop-up">
-                <h3>Новые события</h3>
-                <p class="lightbulb__new-task lightbulb__new-task--message">
-                    Новое сообщение в чате
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-                <p class="lightbulb__new-task lightbulb__new-task--executor">
-                    Выбран исполнитель для
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-                <p class="lightbulb__new-task lightbulb__new-task--close">
-                    Завершено задание
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-            </div>
-            <div class="header__account">
-                <a class="header__account-photo">
-                    <img src="./img/user-photo.png"
-                         width="43" height="44"
-                         alt="Аватар пользователя">
+            <div class="header__account--index">
+                <a href="#" class="header__account-enter open-modal" data-for="enter-form">
+                    <span>Вход</span></a>
+                или
+                <a href="signup.html" class="header__account-registration">
+                    Регистрация
                 </a>
-                <span class="header__account-name">
-                 Василий
-                </span>
-            </div>
-            <div class="account__pop-up">
-                <ul class="account__pop-up-list">
-                    <li>
-                        <a href="#">Мои задания</a>
-                    </li>
-                    <li>
-                        <a href="#">Настройки</a>
-                    </li>
-                    <li>
-                        <a href="#">Выход</a>
-                    </li>
-                </ul>
             </div>
         </div>
     </header>
 
-    <!-- Вставляем контент  -->
-    <main class="page-main">
-        <div class="main-container page-container">
-            <?= Breadcrumbs::widget([
-                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-            ]) ?>
-            <?= Alert::widget() ?>
-            
+    <main>
+        <div class="landing-container">
             <!-- Представление контент  -->
             <?= $content ?>
         </div>
     </main>
 
-    <!-- Вставляем футер  -->
     <footer class="page-footer">
         <div class="main-container page-footer__container">
             <div class="page-footer__info">
@@ -179,7 +115,7 @@ AppAsset::register($this); // !!! Влияют на стили для форм! 
                 </ul>
             </div>
             <div class="page-footer__copyright">
-                <a>
+                <a href="https://htmlacademy.ru">
                     <img class="copyright-logo"
                          src="./img/academy-logo.png"
                          width="185" height="63"
@@ -188,8 +124,27 @@ AppAsset::register($this); // !!! Влияют на стили для форм! 
             </div>
         </div>
     </footer>
-
+        <!-- Модальное окно -->
+    <section class="modal enter-form form-modal" id="enter-form">
+        <h2>Вход на сайт</h2>
+        <form action="#" method="post">
+            <p>
+                <label class="form-modal-description" for="enter-email">Email</label>
+                <input class="enter-form-email input input-middle" type="email" name="enter-email" id="enter-email">
+            </p>
+            <p>
+                <label class="form-modal-description" for="enter-password">Пароль</label>
+                <input class="enter-form-email input input-middle" type="password" name="enter-email" id="enter-password">
+            </p>
+            <button class="button" type="submit">Войти</button>
+        </form>
+        <button class="form-modal-close" type="button">Закрыть</button>
+    </section>
 </div>
+
+<div class="overlay"></div>
+<script src="js/main.js"></script>
+
 <?php $this->endBody() ?><!-- Оставляем код -->
 </body>
 </html>
