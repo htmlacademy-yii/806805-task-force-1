@@ -10,7 +10,7 @@ use yii\web\NotFoundHttpException;
 
 class StartController extends Controller
 {
-    public $layout = 'start'; // @app/views/layouts/start.php
+    public $layout = 'start'; // Шаблон @app/views/layouts/start.php
 
     public function actionIndex() 
     {
