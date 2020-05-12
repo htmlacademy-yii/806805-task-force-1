@@ -136,7 +136,7 @@ AppAsset::register($this); // !!! Влияют на стили для форм! 
             <?= Breadcrumbs::widget([
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
-            <?= Alert::widget() ?>
+            <?= Alert::widget() ?> 
             
             <!-- Представление контент  -->
             <?= $content ?>
