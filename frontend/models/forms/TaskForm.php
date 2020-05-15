@@ -10,8 +10,21 @@ class TaskForm extends Model
     public $categories;
     public $isOffers;
     public $isRemote;
-    public $date_interval;
+    public $dateInterval;
     public $search;
+
+    public static function getAttributeItems ($key) {
+
+        $items = [
+            'dateInterval' => [
+                'day' => 'За день',
+                'week' => 'За неделю',
+                'month' => 'За месяц'
+            ]
+        ];
+
+        return $items[$key];
+    }
 
     public function attributeLabels()
     {
@@ -19,7 +32,7 @@ class TaskForm extends Model
             'categories' => 'Категории',
             'isOffers' => 'Без откликов',
             'isRemote' => 'Удаленная работа',
-            'date_interval' => 'Период',
+            'dateInterval' => 'Период',
             'search' => 'Поиск по названию',
         ];
     }
@@ -27,7 +40,7 @@ class TaskForm extends Model
     public function rules()
     {
         return [
-            [['categories', 'isOffers', 'isRemote', 'date_interval', 'search'], 'safe'],
+            [['categories', 'isOffers', 'isRemote', 'dateInterval', 'search'], 'safe'],
         ];
     }
 

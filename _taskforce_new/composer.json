@@ -1,6 +1,6 @@
 {
-    "name": "allomir/task-force",
-    "description": "site TaskForce",
+    "name": "yiisoft/task-force",
+    "description": "site Yii 2 TaskForce",
     "type": "project",
     "license": "MIT",
     "authors": [

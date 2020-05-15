@@ -4,3 +4,7 @@
 4. Как работают альясы @app/views/layouts/main.php
 5. $form = ActiveForm::begin() ... echo $form->field($taskForm, 'search') !!!Почему создаются новые стили и новые теги 
 6. 
+
+
+Семантическое Версионирование 2.0.0 https://semver.org/lang/ru/
+https://proglib.io/
