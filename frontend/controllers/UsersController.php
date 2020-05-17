@@ -32,8 +32,8 @@ class UsersController extends Controller
         $allcustomers_id = new Query;
         $allcustomers_id->select(['customer_id'])->distinct()->from('tasks t')->where(['status_id' => '1'])->orWhere(['status_id' => '3'])
             // ->limit() // !!! This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'
-            // ->one()
             // ->asArray()
+            // ->one()
             // ->all() // Не сработает в самом запросе, необходима дополнительная переменная $this->d($allcustomers_id->all());
             // ->createCommand()->sql // показать sql-выражение, Не сработает в самом запросе
             // ->createCommand()->queryAll() // аналогично ->all(), Не сработает в самом запросе

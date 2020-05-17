@@ -25,6 +25,7 @@ class TasksController extends Controller
         $taskForm = new TaskForm;
         $taskForm->attributes = [1111111,2222222,333333333,444444,'search' => '5555555', 666666];
         // echo $taskForm->search; 
+
         return $this->render('index', ['tasks' => $tasks, 'taskForm' => $taskForm]);
     }
 }

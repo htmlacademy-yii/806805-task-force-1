@@ -15,14 +15,26 @@ class TaskForm extends Model
 
     public static function getAttributeItems ($key) {
 
+        // Вариант 1. Массив 'symbol' => 'name'
+        // $categories = \frontend\models\db\Categories::find()->select(['symbol', 'name'])->asArray()->all();
+        // $categories = array_column($categories, 'name', 'symbol');
+
+        // Вариант 2. Массив 'symbol' => 'name'
+        // $categories = \frontend\models\db\Categories::find()->select(['name', 'symbol'])->indexBy('symbol')->asArray()->column();
+        
+        // Вариант 3. Массив 'symbol' => 'name'
+        $categories = (new \yii\db\Query())->from('categories')->select(['name', 'symbol'])->indexBy('symbol')->column();
+
         $items = [
             'dateInterval' => [
                 'day' => 'За день',
                 'week' => 'За неделю',
                 'month' => 'За месяц'
-            ]
+            ],
+            'categories' => $categories
         ];
 
+      
         return $items[$key];
     }
 

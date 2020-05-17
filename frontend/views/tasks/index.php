@@ -80,8 +80,49 @@ $this->title = 'Задания (Верстка browse.html)';
                             <input class="visually-hidden checkbox__input" id="5" type="checkbox" name="" value="">
                             <label  for="5">Выгул животных </label> -->
 
+                        <?php 
+                            echo $form->field($taskForm, 'categories', [
+                                    'template' => "{input}", // Отвечает за показ первого общего лейбла , удаляем label
+                                ])
+                                ->checkboxList($taskForm->getAttributeItems('categories'), [
+                                        // 'template' => "{input}\n{label}",
+                                        // 'template' => "{input}\n{beginLabel}\n{labelTitle}\n{endLabel}",
+                                        // 'template' => '{label} <div class="row"><div class="col-sm-4">{input}{error}{hint}</div></div>',
+                                        // 'inputTemplate' => '<div class="input-group"><span class="input-group-addon">@</span>{input}</div>',
+                                        // http://man.hubwiz.com/docset/Yii.docset/Contents/Resources/Documents/www.yiiframework.com/extension/yiisoft/yii2-bootstrap4/doc/api/2.0/yii-bootstrap4-activefield.html
+                                        // https://stackoverflow.com/questions/40647675/yii2-create-radiolist-not-enclosed-by-label
+                                        // https://forum.yiiframework.com/t/how-to-customize-template-for-checkboxlist/80082
+                                        // 'id' => 6, // для общего контейнера div
+                                        'tag' => false, // Отклчает создание общего контейнера div
+                                        'name' => 'categories[]', // для общего контейнера div и общий для всех чекбоксов
+                                        // 'class' => 'visually-hidden checkbox__input', // Не существует, автоматически для общего div
+                                        'unselect' => null, // Не создвать скрытое поле, скрытое поле отправляется для нулевого значения, если не выбран ни один чекбокс
+                                        'itemOptions' => [ // Теги для чекбоксов
+                                            // 'class' => 'visually-hidden checkbox__input', // Класс для чекбоксов, не переносится в свойство item Html::checkbox 
+                                        ],
+                                        'item' => function ($index, $label, $name, $checked, $value) {
 
-                            
+                                            $index++;
+                                            if ($index === 1 OR $index === 2) {$checked = true;}
+
+                                            return 
+                                                Html::checkbox($name, $checked, $options = [
+                                                    'id' => $index,
+                                                    'class' => 'visually-hidden checkbox__input',
+                                                    'value' => $value,
+                                                    // 'label' => $label, // В виде обертки не подходит
+                                                ]) . // !!!конкатенация
+                                                Html::label($label, $for = $index, null) 
+                                            ;
+                                        },
+                                        
+                                    ])
+                                //     $enclosedByLabel = false) // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс (но на практике остается текст, а теги label нет)
+                                // ->label(null, ['for' => '6', 'class' => null]) // Обязательно null вначале
+                            ;
+                        ?>  
+
+
                         </fieldset>
 
                         <fieldset class="search-task__categories">
@@ -90,13 +131,11 @@ $this->title = 'Задания (Верстка browse.html)';
                             <!-- ПОЛЕ Без откликов тип чекбокс-->
                             <!-- <input class="visually-hidden checkbox__input" id="6" type="checkbox" name="" value="">
                             <label for="6">Без откликов</label>-->
-                            <?php 
+                        <?php 
                             echo $form->field($taskForm, 'isOffers', [
                                     'template' => "{input}\n{label}", // Обязательно !!!двойные кавычки, тк выводится на печать \n, символ переноса строки поддерживает только "\n"
                                 ])
-                                ->checkBox([
-                                        // 'labelOptions' => ['for' => '7', 'class' => null], // Вообще не работает внутри ->checkBox()
-                                        // 'inputOption' => ['class' => null], // Вообще не работает внутри ->checkBox()
+                                ->checkbox([
                                         'id' => 6,
                                         'name' => 'isOffers',
                                         'class' => 'visually-hidden checkbox__input',
