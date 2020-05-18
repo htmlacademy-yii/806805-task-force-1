@@ -1,224 +1,193 @@
 <?php 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use yii\widgets\ActiveField;
+// use yii\widgets\ActiveField; // Не используем
 
 $this->title = 'Задания (Верстка browse.html)';
 ?>
 
 <!-- Верстка browse.html контент -->
 
-            <section class="new-task">
+<section class="new-task">
 
-                <div class="new-task__wrapper">
-                    <h1>Новые задания</h1>
+    <div class="new-task__wrapper">
+        <h1>Новые задания</h1>
 
-                    <!-- begin single task -->
-                    <?php foreach ($tasks as $task): ?>
-                    <div class="new-task__card">
-                        <div class="new-task__title">
-                            <a href="#" class="link-regular"><h2><?= ucfirst($task->name) ?></h2></a>
-                            <a class="new-task__type link-regular" href="#"><p><?= $task->category->name ?></p></a>
-                        </div>
-                        <div class="new-task__icon new-task__icon--<?= $task->category->symbol ?>"></div>
-                            <p class="new-task_description">
-                                <?= $task->description ?>
-                            </p>
-                            <b class="new-task__price new-task__price--<?= $task->category->symbol ?>"><?= $task->price ?><b> ₽</b></b>
-                            <p class="new-task__place"><?= $task['address'] ?></p>
-                            <span class="new-task__time"><?= date( 'd.m.y',strtotime($task['add_time'])) ?></span>
-                    </div>
-                    <?php endforeach; ?>
-                    <!-- end single task -->
+        <!-- begin single task -->
+        <?php foreach ($tasks as $task): ?>
+        <div class="new-task__card">
+            <div class="new-task__title">
+                <a href="#" class="link-regular"><h2><?= ucfirst($task->name) ?></h2></a>
+                <a class="new-task__type link-regular" href="#"><p><?= $task->category->name ?></p></a>
+            </div>
+            <div class="new-task__icon new-task__icon--<?= $task->category->symbol ?>"></div>
+                <p class="new-task_description">
+                    <?= $task->description ?>
+                </p>
+                <b class="new-task__price new-task__price--<?= $task->category->symbol ?>"><?= $task->price ?><b> ₽</b></b>
+                <p class="new-task__place"><?= $task['address'] ?></p>
+                <span class="new-task__time"><?= date( 'd.m.y',strtotime($task['add_time'])) ?></span>
+        </div>
+        <?php endforeach; ?>
+        <!-- end single task -->
 
-                </div>
+    </div>
 
-                <!-- Верстка pagination --> 
-                <div class="new-task__pagination">
-                    <ul class="new-task__pagination-list">
-                        <li class="pagination__item"><a href="#"></a></li>
-                        <li class="pagination__item pagination__item--current">
-                            <a>1</a></li>
-                        <li class="pagination__item"><a href="#">2</a></li>
-                        <li class="pagination__item"><a href="#">3</a></li>
-                        <li class="pagination__item"><a href="#"></a></li>
-                    </ul>
-                </div>
-               
-            </section>
+    <!-- Верстка pagination --> 
+    <div class="new-task__pagination">
+        <ul class="new-task__pagination-list">
+            <li class="pagination__item"><a href="#"></a></li>
+            <li class="pagination__item pagination__item--current">
+                <a>1</a></li>
+            <li class="pagination__item"><a href="#">2</a></li>
+            <li class="pagination__item"><a href="#">3</a></li>
+            <li class="pagination__item"><a href="#"></a></li>
+        </ul>
+    </div>
+    
+</section>
 
-            <!-- Верстка right panel --> 
-            <section  class="search-task">
-                <div class="search-task__wrapper">
-                    <?php $form = ActiveForm::begin([
-                        'id' => 'task-form', 
-                        'options' => ['name' => 'test', 'class' => 'search-task__form'],
-                        'fieldConfig' => [
-                            'template' => "{label}\n{input}", // пример
-                            'options' => ['tag' => false], // отключение создания дополнительных тегов <div> для любых полей созданных с помощью activeForm (но не действует на new activeField), отключение Bootstrap does not work https://forum.yiiframework.com/t/how-to-generate-form-without-div-class-form-group/75797/2
-                        ], 
-                        'validationStateOn' => ActiveForm::VALIDATION_STATE_ON_INPUT, // или VALIDATION_STATE_ON_CONTAINER
-                        ]) ?>
-                    <!-- <form class="search-task__form" name="test" method="post" action="#"> -->
-                        <?php
-                        // Создаем все переменные как $ключ=значени c !!!префиксом form
-                        // extract($taskForm->attributeLabels(), EXTR_PREFIX_ALL, 'form');
-                        ?>
+<!-- Верстка right panel --> 
+<section  class="search-task">
+    <div class="search-task__wrapper">
+        <!-- Форма начало -->
+        <!-- <form class="search-task__form" name="test" method="post" action="#"> -->
 
-                        <fieldset class="search-task__categories">
-                            <legend>Категории</legend>
+        <?php 
+        $form = ActiveForm::begin([
+            'id' => 'task-form', 
+            'options' => ['name' => 'test', 'class' => 'search-task__form'],
+            'fieldConfig' => [
+                'template' => "{input}\n{label}", // Шаблон по умолчанию у большинства полей, также у каждого поля настраивается отдельно
+                'options' => ['tag' => false], // отключение создания дополнительных тегов <div> для любых полей созданных с помощью activeForm на уровне $form->field (но не действует на new activeField), отключение Bootstrap does not work https://forum.yiiframework.com/t/how-to-generate-form-without-div-class-form-group/75797/2
+            ], 
+            // 'validationStateOn' => ActiveForm::VALIDATION_STATE_ON_INPUT, // или VALIDATION_STATE_ON_CONTAINER
+        ]) 
+        ?>
 
-                            <!-- ПОЛЕ Категории тип чекбокс-список-->
-                            <!-- <input class="visually-hidden checkbox__input" id="1" type="checkbox" name="" value="" checked>
-                            <label for="1">Курьерские услуги </label>
-                            <input class="visually-hidden checkbox__input" id="2" type="checkbox" name="" value="" checked>
-                            <label  for="2">Грузоперевозки </label>
-                            <input class="visually-hidden checkbox__input" id="3" type="checkbox" name="" value="">
-                            <label  for="3">Переводы </label>
-                            <input class="visually-hidden checkbox__input" id="4" type="checkbox" name="" value="">
-                            <label  for="4">Строительство и ремонт </label>
-                            <input class="visually-hidden checkbox__input" id="5" type="checkbox" name="" value="">
-                            <label  for="5">Выгул животных </label> -->
+            <fieldset class="search-task__categories">
+                <legend>Категории</legend>
 
-                        <?php 
-                            echo $form->field($taskForm, 'categories', [
-                                    'template' => "{input}", // Отвечает за показ первого общего лейбла , удаляем label
-                                ])
-                                ->checkboxList($taskForm->getAttributeItems('categories'), [
-                                        // 'template' => "{input}\n{label}",
-                                        // 'template' => "{input}\n{beginLabel}\n{labelTitle}\n{endLabel}",
-                                        // 'template' => '{label} <div class="row"><div class="col-sm-4">{input}{error}{hint}</div></div>',
-                                        // 'inputTemplate' => '<div class="input-group"><span class="input-group-addon">@</span>{input}</div>',
-                                        // http://man.hubwiz.com/docset/Yii.docset/Contents/Resources/Documents/www.yiiframework.com/extension/yiisoft/yii2-bootstrap4/doc/api/2.0/yii-bootstrap4-activefield.html
-                                        // https://stackoverflow.com/questions/40647675/yii2-create-radiolist-not-enclosed-by-label
-                                        // https://forum.yiiframework.com/t/how-to-customize-template-for-checkboxlist/80082
-                                        // 'id' => 6, // для общего контейнера div
-                                        'tag' => false, // Отклчает создание общего контейнера div
-                                        'name' => 'categories[]', // для общего контейнера div и общий для всех чекбоксов
-                                        // 'class' => 'visually-hidden checkbox__input', // Не существует, автоматически для общего div
-                                        'unselect' => null, // Не создвать скрытое поле, скрытое поле отправляется для нулевого значения, если не выбран ни один чекбокс
-                                        'itemOptions' => [ // Теги для чекбоксов
-                                            // 'class' => 'visually-hidden checkbox__input', // Класс для чекбоксов, не переносится в свойство item Html::checkbox 
-                                        ],
-                                        'item' => function ($index, $label, $name, $checked, $value) {
+                <!-- ПОЛЕ Категории тип чекбокс-список-->
+                <!-- Верстка -->
+                <!-- <input class="visually-hidden checkbox__input" id="1" type="checkbox" name="" value="" checked>
+                <label for="1">Курьерские услуги </label>
+                <input class="visually-hidden checkbox__input" id="2" type="checkbox" name="" value="" checked>
+                <label  for="2">Грузоперевозки </label>
+                <input class="visually-hidden checkbox__input" id="3" type="checkbox" name="" value="">
+                <label  for="3">Переводы </label>
+                <input class="visually-hidden checkbox__input" id="4" type="checkbox" name="" value="">
+                <label  for="4">Строительство и ремонт </label>
+                <input class="visually-hidden checkbox__input" id="5" type="checkbox" name="" value="">
+                <label  for="5">Выгул животных </label> -->
 
-                                            $index++;
-                                            if ($index === 1 OR $index === 2) {$checked = true;}
+                <?php /* ПОЛЕ Категории с помощью ActiveForm */
+                    echo $form->field($tasksForm, 'categories', [
+                        'template' => "{input}", // убираем показ лейбла для всего контейнера списка чекбоксов
+                    ])
+                    ->checkboxList($tasksForm->getAttributeItems('categories'), [
+                        'tag' => false, // Отклчает создание общего контейнера div
+                        'name' => 'categories[]', // для общего контейнера div и общий для всех чекбоксов
+                        'unselect' => null, // Не создвать скрытое поле, скрытое поле отправляется для нулевого значения, если не выбран ни один чекбокс
+                        'item' => function ($index, $label, $name, $checked, $value) {
+                            $index++;
 
-                                            return 
-                                                Html::checkbox($name, $checked, $options = [
-                                                    'id' => $index,
-                                                    'class' => 'visually-hidden checkbox__input',
-                                                    'value' => $value,
-                                                    // 'label' => $label, // В виде обертки не подходит
-                                                ]) . // !!!конкатенация
-                                                Html::label($label, $for = $index, null) 
-                                            ;
-                                        },
-                                        
-                                    ])
-                                //     $enclosedByLabel = false) // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс (но на практике остается текст, а теги label нет)
-                                // ->label(null, ['for' => '6', 'class' => null]) // Обязательно null вначале
-                            ;
-                        ?>  
+                            if ($index === 1 OR $index === 2) {
+                                $checked = true;
+                            }
 
+                            return 
+                                Html::checkbox($name, $checked, $options = [
+                                    'id' => $index,
+                                    'class' => 'visually-hidden checkbox__input',
+                                    'value' => $value,
+                                    // 'label' => $label, // В виде обертки не подходит
+                                ]) . // !!!конкатенация
+                                Html::label($label, $for = $index, $options = null);
+                        }
+                    ]); 
+                ?>  
+        
+            </fieldset>
 
-                        </fieldset>
+            <fieldset class="search-task__categories">
+                <legend>Дополнительно</legend>
+                
+                <!-- ПОЛЕ Без откликов. тип чекбокс не выбран -->
+                <!-- <input class="visually-hidden checkbox__input" id="6" type="checkbox" name="" value="">
+                <label for="6">Без откликов</label>-->
+                <?php 
+                    echo $form->field($tasksForm, 'isOffers')
+                        ->checkbox([
+                                'id' => 20,
+                                'name' => 'isOffers',
+                                'class' => 'visually-hidden checkbox__input',
+                                // 'value' => '', // Также создает атрибут !!!checked если пусто '', елси не указать по умолчанию =1 но атрибут checked не создается
+                                'uncheck' => null, // Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем isRemote и value=0
+                            ],
+                            $enclosedByLabel = false // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс (но на практике остается текст, а теги label нет)
+                        ) 
+                        ->label($label = null, ['for' => '20', 'class' => null]) // Обязательно null вначале
+                    ;
+                ?>  
 
-                        <fieldset class="search-task__categories">
-                            <legend>Дополнительно</legend>
-                            
-                            <!-- ПОЛЕ Без откликов тип чекбокс-->
-                            <!-- <input class="visually-hidden checkbox__input" id="6" type="checkbox" name="" value="">
-                            <label for="6">Без откликов</label>-->
-                        <?php 
-                            echo $form->field($taskForm, 'isOffers', [
-                                    'template' => "{input}\n{label}", // Обязательно !!!двойные кавычки, тк выводится на печать \n, символ переноса строки поддерживает только "\n"
-                                ])
-                                ->checkbox([
-                                        'id' => 6,
-                                        'name' => 'isOffers',
-                                        'class' => 'visually-hidden checkbox__input',
-                                        // 'value' => '', // Также создает атрибут !!!checked если пусто '', елси не указать по умолчанию =1 но атрибут checked не создается
-                                        'uncheck' => null, // Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем isRemote и value=0
-                                        // 'label' => null, // По умолчанию, Не защищен. Если $enclosedByLabel = false то если ввести тектс !!!обычный текст, сам тег пропадает 
-                                    ],
-                                    $enclosedByLabel = false) // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс (но на практике остается текст, а теги label нет)
-                                ->label(null, ['for' => '6', 'class' => null]) // Обязательно null вначале
-                            ;
-                        ?>  
+                <!-- ПОЛЕ Удаленная работа. тип чекбокс выбран -->
+                <!-- <input class="visually-hidden checkbox__input" id="7" type="checkbox" name="" value="" checked>
+                <label for="7">Удаленная работа </label> -->
+                <?php 
+                    echo $form->field($tasksForm, 'isRemote')
+                        ->checkBox([
+                                'id' => 21,
+                                'name' => 'isRemote',
+                                'class' => 'visually-hidden checkbox__input',
+                                // 'value' => '', // Также создает атрибут !!!checked если пусто '', елси не указать по умолчанию =1 но атрибут checked не создается
+                                'checked' => true, // передать значение на сервер по умолчанию, но в yii можно с помощью value = '' создается checked
+                                'uncheck' => null, // Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем isRemote и value=0
+                            ],
+                            $enclosedByLabel = false) // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс (но на практике остается текст, а теги label нет)
+                        ->label($label = null, ['for' => '21', 'class' => null]) // Обязательно null вначале
+                    ;
+                ?>  
+            </fieldset>
 
-                            <!-- ПОЛЕ Удаленная работа тип чекбокс-->
-                            <!-- <input class="visually-hidden checkbox__input" id="7" type="checkbox" name="" value="" checked>
-                            <label for="7">Удаленная работа </label> -->
-                        <?php 
-                            echo $form->field($taskForm, 'isRemote', [
-                                    'template' => "{input}\n{label}", // Обязательно !!!двойные кавычки, тк выводится на печать \n, символ переноса строки поддерживает только "\n"
-                                ])
-                                ->checkBox([
-                                        // 'labelOptions' => ['for' => '7', 'class' => null], // Вообще не работает внутри ->checkBox()
-                                        // 'inputOption' => ['class' => null], // Вообще не работает внутри ->checkBox()
-                                        'id' => 7,
-                                        'name' => 'isRemote',
-                                        'class' => 'visually-hidden checkbox__input',
-                                        // 'value' => '', // Также создает атрибут !!!checked если пусто '', елси не указать по умолчанию =1 но атрибут checked не создается
-                                        'checked' => true, // передать значение на сервер по умолчанию, но в yii можно с помощью value = '' создается checked
-                                        'uncheck' => null, // Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем isRemote и value=0
-                                        // 'label' => null, // По умолчанию, Не защищен. Если $enclosedByLabel = false то если ввести тектс !!!обычный текст, сам тег пропадает 
-                                    ],
-                                    $enclosedByLabel = false) // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс (но на практике остается текст, а теги label нет)
-                                ->label(null, ['for' => '7', 'class' => null]) // Обязательно null вначале
-                            ;
-                        ?>  
-                        </fieldset>
+            <!-- ПОЛЕ Период. тип выпадающий список|селектор-->
+            <!-- Верстка -->
+            <!-- <label class="search-task__name" for="8">Период</label>
+                <select class="multiple-select input" id="8"size="1" name="time[]">
+                <option value="day">За день</option>
+                <option selected value="week">За неделю</option>
+                <option value="month">За месяц</option>
+            </select> -->
+            <?php
+                echo $form->field($tasksForm, 'dateInterval', [
+                        'template' => "{label}\n{input}", // отличается от общего в форме, Обязательно !!!двойные кавычки, тк выводится на печать \n, символ переноса строки поддерживает только "\n"
+                        'labelOptions' => ['for' => '30', 'class' => 'search-task__name'],
+                        'inputOptions' => ['id' => '30', 'name' => 'time', 'class' => 'multiple-select input', 'size' => 1,],
+                    ])
+                    ->dropdownList($tasksForm->getAttributeItems('dateInterval'), [
+                        'options' => ['week' => ['selected' => true]]
+                    ])
+                ;
+            ?>
 
-                        <!-- ПОЛЕ Период тип выпадающий список селектор-->
-                        <!-- <label class="search-task__name" for="8">Период</label>
-                           <select class="multiple-select input" id="8"size="1" name="time[]">
-                            <option value="day">За день</option>
-                            <option selected value="week">За неделю</option>
-                            <option value="month">За месяц</option>
-                        </select> -->
+            <!-- ПОЛЕ Поиск по названию. тип search-->
+            <!-- Верстка -->
+            <!-- <label class="search-task__name" for="9">Поиск по названию</label>
+                <input class="input-middle input" id="9" type="search" name="q" placeholder=""> -->
+            <?php 
+                echo $form->field($tasksForm, 'search', [
+                        'template' => "{label}\n{input}", // отличается от общего в форме, Обязательно !!!двойные кавычки, тк выводится на печать \n, символ переноса строки поддерживает только "\n"
+                    ]) 
+                    ->label($label = null, ['for' => '31','class' => 'search-task__name'])
+                    ->input('search', ['id' => '31', 'name' => 'q', 'class' => 'input-middle input', 'placeholder' => ''])
+                ;
+            ?>
 
-                        <?php
-                            echo $form->field($taskForm, 'dateInterval', [
-                                    'labelOptions' => ['for' => '8', 'class' => 'search-task__name'],
-                                    'inputOptions' => ['id' => '8', 'name' => 'time', 'class' => 'multiple-select input', 'size' => 1,],
-                                ])
-                                ->dropdownList($taskForm->getAttributeItems('dateInterval'), [
-                                    'options' => ['week' => ['selected' => true]]
-                                ])
-                            ;
-                        ?>
-
-                        <!-- ПОЛЕ Поиск по названию тип текст-->
-                        <!-- <label class="search-task__name" for="9">Поиск по названию</label>
-                            <input class="input-middle ipunt" id="9" type="search" name="q" placeholder=""> -->
-
-                        <?php 
-                            // Вариант-1 создание поля type text с помощью только ActiveForm
-                            echo $form->field($taskForm, 'search') 
-                                ->label(null, ['for' => '9','class' => 'search-task__name'])
-                                ->input('search', ['id' => '9', 'name' => 'q', 'class' => 'input-middle ipunt', 'placeholder' => ''])
-                            ;
-                        ?>
-                        <?php 
-                            // Вариант-2 создание поля type text с помощью ActiveField
-                            // $field = (new ActiveField([
-                            //         'form' => $form,
-                            //         'model' => $taskForm, 
-                            //         'attribute' => 'search',
-                            //     ]))
-                            //     ->input('search', ['name' => 'q', 'id' => '9', 'class' => 'input-middle ipunt', 'placeholder' => ''])
-                            //     ->label(null, ['for' => '9','class' => 'search-task__name'])
-                            //     ->render()
-                            // ;
-                            // echo $field;
-                        ?>
-                        <button class="button" type="submit">Искать</button>
-                    <?php ActiveForm::end() ?>
-                    <!-- </form> -->
-                </div>
-            </section>
+            <button class="button" type="submit">Искать</button>
+        <?php ActiveForm::end() ?>
+        <!-- Форма окончание -->
+        <!-- </form> --> 
+    </div>
+</section>
 
 

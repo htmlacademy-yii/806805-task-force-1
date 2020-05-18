@@ -8,6 +8,7 @@ use frontend\models\db\Tasks;
 use frontend\models\db\Users;
 use frontend\models\db\UserSpecializations;
 use frontend\models\db\TaskRunnings;
+use frontend\models\forms\UsersForm;
 use yii\web\NotFoundHttpException;
 
 
@@ -70,8 +71,10 @@ class UsersController extends Controller
             ->all()
         ;
 
+        $usersForm = new UsersForm;
+
         // $this->d($rating);
-        return $this->render('index', ['users' => $users, 'rating' => $rating]);
+        return $this->render('index', ['users' => $users, 'rating' => $rating, 'usersForm' => $usersForm]);
     }
 
 }
