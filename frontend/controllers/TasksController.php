@@ -21,12 +21,13 @@ class TasksController extends Controller
     public function actionIndex() 
     {
         // $this->enableCsrfValidation = false; // Не изучено, Согласно примера академии
-        if (isset($_POST['FormName'])) {
-            $model->attributes = $_POST['FormName'];
-            if ($model->save()) {
-                // handle success
-            }
-        }
+
+        // if (isset($_POST['FormName'])) {
+        //     $model->attributes = $_POST['FormName'];
+        //     if ($model->save()) {
+        //         // handle success
+        //     }
+        // }
 
         /* Модель для формы, страница Tasks */
         $tasksForm = new TasksForm;
