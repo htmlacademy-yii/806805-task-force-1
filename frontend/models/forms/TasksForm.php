@@ -13,6 +13,10 @@ class TasksForm extends Model {
     public $dateInterval;
     public $search;
 
+    public function formName() {
+        return 'TasksForm';
+    }
+
     /* Элементы для формы, список чекбоксов, выпадающий спикок. */
     // $key - атрибут модели в форме 
     public static function getAttributeItems ($key) {
@@ -34,6 +38,8 @@ class TasksForm extends Model {
       
         return $items[$key];
     }
+
+    
 
     public function attributeLabels()
     {

@@ -56,7 +56,10 @@ $this->title = 'Задания (Верстка browse.html)';
         <?php 
         $form = ActiveForm::begin([
             'id' => 'task-form', 
-            'options' => ['name' => 'test', 'class' => 'search-task__form'],
+            'options' => [
+                'name' => 'test', // Имя формы не используется в ActiveForm, получение тела запроса производится по имени таблицы в модели в зависимости от модели в полях, которые автоматически назначаются при указании модели
+                'class' => 'search-task__form'
+            ],
             'fieldConfig' => [
                 'template' => "{input}\n{label}", // Шаблон по умолчанию у большинства полей, также у каждого поля настраивается отдельно
                 'options' => ['tag' => false], // отключение создания дополнительных тегов <div> для любых полей созданных с помощью activeForm на уровне $form->field (но не действует на new activeField), отключение Bootstrap does not work https://forum.yiiframework.com/t/how-to-generate-form-without-div-class-form-group/75797/2
@@ -83,24 +86,19 @@ $this->title = 'Задания (Верстка browse.html)';
 
                 <?php /* ПОЛЕ Категории с помощью ActiveForm */
                     echo $form->field($tasksForm, 'categories', [
-                        'template' => "{input}", // убираем показ лейбла для всего контейнера списка чекбоксов
+                        'template' => "{input}", // убираем показ label для общего контейнера списка чекбоксов
                     ])
                     ->checkboxList($tasksForm->getAttributeItems('categories'), [
                         'tag' => false, // Отклчает создание общего контейнера div
-                        'name' => 'categories[]', // для общего контейнера div и общий для всех чекбоксов
-                        'unselect' => null, // Не создвать скрытое поле, скрытое поле отправляется для нулевого значения, если не выбран ни один чекбокс
+                        // 'name' => 'categories[]', // для общего контейнера div и общий для всех чекбоксов // Задается автоматически согласно метода load(), если задать вручную, то не попадает в load() в массив с именем формы как в модели
+                        // 'unselect' => 0, // null - Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем value=0
                         'item' => function ($index, $label, $name, $checked, $value) {
-                            $index++;
-
-                            if ($index === 1 OR $index === 2) {
-                                $checked = true;
-                            }
 
                             return 
                                 Html::checkbox($name, $checked, $options = [
-                                    'id' => $index,
+                                    'id' => ++$index,
                                     'class' => 'visually-hidden checkbox__input',
-                                    'value' => $value,
+                                    // 'value' => $value, // создается автоматически, по умолчанию всегда =1 !!!если задать значение, то влияет на сортировку но текущее состояние не отображается
                                     // 'label' => $label, // В виде обертки не подходит
                                 ]) . // !!!конкатенация
                                 Html::label($label, $for = $index, $options = null);
@@ -120,14 +118,14 @@ $this->title = 'Задания (Верстка browse.html)';
                     echo $form->field($tasksForm, 'isOffers')
                         ->checkbox([
                                 'id' => 20,
-                                'name' => 'isOffers',
+                                // 'name' => 'isOffers', // Задается автоматически согласно метода load(), если задать вручную, то не попадает в load() в массив с именем формы как в модели
                                 'class' => 'visually-hidden checkbox__input',
-                                // 'value' => '', // Также создает атрибут !!!checked если пусто '', елси не указать по умолчанию =1 но атрибут checked не создается
-                                'uncheck' => null, // Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем isRemote и value=0
+                                // 'value' => '', // создается автоматически, по умолчанию всегда =1 !!!если задать значение, то влияет на сортировку но текущее состояние не отображается
+                                // 'uncheck' => 0, // null - Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем value=0
                             ],
-                            $enclosedByLabel = false // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс (но на практике остается текст, а теги label нет)
+                            $enclosedByLabel = false // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс 
                         ) 
-                        ->label($label = null, ['for' => '20', 'class' => null]) // Обязательно null вначале
+                        // ->label($label = null, ['for' => '20', 'class' => null]) // Обязательно null вначале, нужен если изменить настройки label, аналогичен labelOptions
                     ;
                 ?>  
 
@@ -138,14 +136,15 @@ $this->title = 'Задания (Верстка browse.html)';
                     echo $form->field($tasksForm, 'isRemote')
                         ->checkBox([
                                 'id' => 21,
-                                'name' => 'isRemote',
+                                // 'name' => 'isRemote', // Задается автоматически согласно метода load(), если задать вручную, то не попадает в load() в массив с именем формы как в модели
                                 'class' => 'visually-hidden checkbox__input',
-                                // 'value' => '', // Также создает атрибут !!!checked если пусто '', елси не указать по умолчанию =1 но атрибут checked не создается
-                                'checked' => true, // передать значение на сервер по умолчанию, но в yii можно с помощью value = '' создается checked
-                                'uncheck' => null, // Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем isRemote и value=0
+                                // 'value' => 1, // создается автоматически, по умолчанию всегда =1 !!!если задать значение, то влияет на сортировку но текущее состояние не отображается
+                                // 'checked' => true, // отправляется, влияет на сортировку но не отображается, как будто остается всегда включенным
+                                // 'uncheck' => 0, // null - Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем value=0
                             ],
-                            $enclosedByLabel = false) // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс (но на практике остается текст, а теги label нет)
-                        ->label($label = null, ['for' => '21', 'class' => null]) // Обязательно null вначале
+                            $enclosedByLabel = false // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс 
+                        ) 
+                        // ->label($label = null, ['for' => '21', 'class' => null]) // Обязательно null вначале, нужен если нужно изменить настройки label, аналогичен labelOptions
                     ;
                 ?>  
             </fieldset>
@@ -162,10 +161,14 @@ $this->title = 'Задания (Верстка browse.html)';
                 echo $form->field($tasksForm, 'dateInterval', [
                         'template' => "{label}\n{input}", // отличается от общего в форме, Обязательно !!!двойные кавычки, тк выводится на печать \n, символ переноса строки поддерживает только "\n"
                         'labelOptions' => ['for' => '30', 'class' => 'search-task__name'],
-                        'inputOptions' => ['id' => '30', 'name' => 'time', 'class' => 'multiple-select input', 'size' => 1,],
+                        'inputOptions' => ['id' => '30', 
+                            // 'name' => 'time', // Задается автоматически согласно метода load(), если задать вручную, то не попадает в load() в массив с именем формы как в модели
+                            'class' => 'multiple-select input', 
+                            'size' => 1,
+                        ],
                     ])
                     ->dropdownList($tasksForm->getAttributeItems('dateInterval'), [
-                        'options' => ['week' => ['selected' => true]]
+                        // 'options' => ['week' => ['selected' => true]] // Задать значение по умолчанию не получится, по умолчанию задается в объект модели в контроллере
                     ])
                 ;
             ?>
@@ -179,11 +182,18 @@ $this->title = 'Задания (Верстка browse.html)';
                         'template' => "{label}\n{input}", // отличается от общего в форме, Обязательно !!!двойные кавычки, тк выводится на печать \n, символ переноса строки поддерживает только "\n"
                     ]) 
                     ->label($label = null, ['for' => '31','class' => 'search-task__name'])
-                    ->input('search', ['id' => '31', 'name' => 'q', 'class' => 'input-middle input', 'placeholder' => ''])
+                    ->input('search', [
+                        'id' => '31', 
+                        // 'name' => 'q', // Задается автоматически согласно метода load(), если задать вручную, то не попадает в load() в массив с именем формы как в модели
+                        'class' => 'input-middle input', 
+                        'placeholder' => ''
+                    ])
                 ;
             ?>
 
-            <button class="button" type="submit">Искать</button>
+            <!-- <button class="button" type="submit">Искать</button> -->
+            <?= Html::submitButton('Искать', ['class' => 'button']) ?>
+
         <?php ActiveForm::end() ?>
         <!-- Форма окончание -->
         <!-- </form> --> 

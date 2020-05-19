@@ -230,8 +230,9 @@ $this->title = 'Исполнители (верстка Users.html)';
                 ;
             ?>
 
-            <button class="button" type="submit">Искать</button>
-        
+            <!-- <button class="button" type="submit">Искать</button> -->
+            <?= Html::submitButton('Искать', ['class' => 'button']) ?>
+
         <?php ActiveForm::end() ?>
         <!-- Форма окончание -->
         <!-- </form> -->
