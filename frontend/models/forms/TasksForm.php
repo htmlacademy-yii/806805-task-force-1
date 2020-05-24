@@ -5,8 +5,8 @@ namespace frontend\models\forms;
 use Yii;
 use yii\base\Model;
 
-class TasksForm extends Model {
-
+class TasksForm extends Model 
+{
     public $categories;
     public $isOffers;
     public $isRemote;
@@ -36,10 +36,10 @@ class TasksForm extends Model {
     }
 
     /* Элементы для формы, список чекбоксов, выпадающий спикок. */
-    // $key - атрибут модели в форме 
-    public static function getAttributeItems ($key) {
+    // $key - имя атрибут модели в форме 
+    public static function getAttributeItems (string $key) : array {
 
-        /* Список чекбоксов категории. Массив 'symbol' => 'name'*/
+        /* Список чекбоксов категории. Массив 'id_category' => 'name'*/
         $categories = (new \yii\db\Query())->from('categories')->select(['name', 'id_category'])->indexBy('id_category')->orderBy('id_category')->column();
 
         /* Массив. Элементы для формы. */
@@ -51,13 +51,13 @@ class TasksForm extends Model {
                 'month' => 'За месяц'
             ],
             /* Список чекбоксов категории */
-            'categories' => $categories
+            'categories' => $categories,
         ];
       
         return $items[$key];
     }
 
-    public function defaultValues ($submit) : void {
+    public function defaultValues () : void {
         
         $defaults = [
             'categories' => [1, 2],
@@ -67,10 +67,6 @@ class TasksForm extends Model {
             'search' => null,
         ];
 
-        // Проверка что форма не отправлена
-        if(!isset($submit[$this->formName()])) {
-            $this->attributes = $defaults;
-        }
+        $this->attributes = $defaults;
     }
-
 }
