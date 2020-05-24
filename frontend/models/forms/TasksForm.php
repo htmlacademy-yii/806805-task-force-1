@@ -14,32 +14,8 @@ class TasksForm extends Model {
     public $search;
 
     public function formName() {
-        return 'TasksForm';
+        return 'TasksForm'; // Имя формы при отправке в представлении, по умолчанию соответствует имени модели. 
     }
-
-    /* Элементы для формы, список чекбоксов, выпадающий спикок. */
-    // $key - атрибут модели в форме 
-    public static function getAttributeItems ($key) {
-
-        /* Список чекбоксов категории. Массив 'symbol' => 'name'*/
-        $categories = (new \yii\db\Query())->from('categories')->select(['name', 'symbol'])->indexBy('symbol')->column();
-
-        /* Массив. Элементы для формы. */
-        $items = [
-            /* Выпадающий список, период времени */
-            'dateInterval' => [
-                'day' => 'За день',
-                'week' => 'За неделю',
-                'month' => 'За месяц'
-            ],
-            /* Список чекбоксов категории */
-            'categories' => $categories
-        ];
-      
-        return $items[$key];
-    }
-
-    
 
     public function attributeLabels()
     {
@@ -57,6 +33,44 @@ class TasksForm extends Model {
         return [
             [['categories', 'isOffers', 'isRemote', 'dateInterval', 'search'], 'safe'],
         ];
+    }
+
+    /* Элементы для формы, список чекбоксов, выпадающий спикок. */
+    // $key - атрибут модели в форме 
+    public static function getAttributeItems ($key) {
+
+        /* Список чекбоксов категории. Массив 'symbol' => 'name'*/
+        $categories = (new \yii\db\Query())->from('categories')->select(['name', 'id_category'])->indexBy('id_category')->orderBy('id_category')->column();
+
+        /* Массив. Элементы для формы. */
+        $items = [
+            /* Выпадающий список, период времени */
+            'dateInterval' => [
+                'day' => 'За день',
+                'week' => 'За неделю',
+                'month' => 'За месяц'
+            ],
+            /* Список чекбоксов категории */
+            'categories' => $categories
+        ];
+      
+        return $items[$key];
+    }
+
+    public function defaultValues ($submit) : void {
+        
+        $defaults = [
+            'categories' => [1, 2],
+            'isOffers' => null,
+            'isRemote' => 1,
+            'dateInterval' => 'week',
+            'search' => null,
+        ];
+
+        // Проверка что форма не отправлена
+        if(!isset($submit[$this->formName()])) {
+            $this->attributes = $defaults;
+        }
     }
 
 }
