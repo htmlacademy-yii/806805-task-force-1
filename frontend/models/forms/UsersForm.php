@@ -53,12 +53,13 @@ class UsersForm extends Model
         return $items[$key];
     }
 
+    // Значения атрибутов по умолчанию
     public function defaultValues () : void {
         
         $defaults = [
             'categories' => [1, 2],
             'isAvailable' => null, 
-            'isOnLine' => 1, 
+            'isOnLine' => null, 
             'isFeedbacks' => 1, 
             'isFavorite' => 1, 
         ];

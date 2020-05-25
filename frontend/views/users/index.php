@@ -58,7 +58,7 @@ $this->title = 'Исполнители (верстка Users.html)';
                     <?= $user->about ?>
                 </p>
             </div>
-            <span class="new-task__time">Был на сайте  <?= date('d.m.y',strtotime($user['reg_time'])) ?></span>
+            <span class="new-task__time">Был на сайте  <?= date('d.m.y',strtotime($user['activity_time'])) ?></span>
         </div>
         <div class="link-specialization user__search-link--bottom">
             <!-- итерация категории пользователя c использованием свойства-связи с viaTable -->
@@ -70,6 +70,21 @@ $this->title = 'Исполнители (верстка Users.html)';
     </div>
     <?php endforeach; ?>
     <!-- end single user -->
+
+    <!-- Верстка pagination --> 
+    
+    <?php if(count($users) >= 5) : ?>
+    <div class="new-task__pagination">
+        <ul class="new-task__pagination-list">
+            <li class="pagination__item"><a href="#"></a></li>
+            <li class="pagination__item pagination__item--current">
+                <a>1</a></li>
+            <li class="pagination__item"><a href="#">2</a></li>
+            <li class="pagination__item"><a href="#">3</a></li>
+            <li class="pagination__item"><a href="#"></a></li>
+        </ul>
+    </div>
+    <?php endif; ?>
 
 </section>
 
@@ -147,7 +162,7 @@ $this->title = 'Исполнители (верстка Users.html)';
                                 // 'name' => 'isAvailable',
                                 'class' => 'visually-hidden checkbox__input',
                                 // 'value' => '', // Также создает атрибут !!!checked если пусто '', елси не указать по умолчанию =1 но атрибут checked не создается
-                                // 'disabled' => true, // Отключен по умолчанию, но фильтр сделан
+                                'disabled' => true, // Отключен по умолчанию, но фильтр сделан
                                 'uncheck' => null, // Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем isRemote и value=0
                             ],
                             $enclosedByLabel = false // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс 

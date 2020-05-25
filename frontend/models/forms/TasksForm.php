@@ -57,6 +57,7 @@ class TasksForm extends Model
         return $items[$key];
     }
 
+    // Значения атрибутов по умолчанию
     public function defaultValues () : void {
         
         $defaults = [

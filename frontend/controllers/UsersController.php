@@ -5,10 +5,10 @@ namespace frontend\controllers;
 use yii;
 use yii\db\Query;
 use yii\web\Controller;
-use frontend\models\db\Tasks;
 use frontend\models\db\Users;
 use frontend\models\db\UserSpecializations;
-use frontend\models\db\Task;
+use frontend\models\db\UserFavorites;
+use frontend\models\db\Tasks;
 use frontend\models\db\TaskRunnings;
 use frontend\models\forms\UsersForm;
 use yii\web\NotFoundHttpException;
@@ -54,27 +54,7 @@ class UsersController extends Controller
         $usersAll = Users::find()->where(['IN', 'id_user', $contractorsAll])
             ->orderBy(['reg_time' => SORT_DESC])
             ->indexBy('id_user');
-        
-        /* Фильтр Категории. массив пуст или id_task из формы */
-        $filters = $contractorsAll->andFilterWhere(['IN', 'category_id', $usersForm->categories]); 
-        $usersAll->andFilterWhere(['IN', 'id_user', $filters]); 
-            // ****
-            // print_r($filters);
-            // print_r($users->all());
-
-        /* Фильтр Сейчас свободен. null или 1 */
-        // SELECT MAX(id_task_running), `contractor_id` FROM `task_runnings` GROUP BY `task_running_id`; // Выборка id правильная, но остальное не правильно, чтобы выдовал предупреждение включаем настройку БД
-        // Настройка БД SET sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-        // select contractor_id from task_runnings where id_task_running IN (SELECT MAX(id_task_running) FROM `task_runnings` GROUP BY `task_running_id`);        
-        if($usersForm->isAvailable) {
-            $filtersSub = TaskRunnings::find()->select(['MAX(id_task_running)'])->groupBy('task_running_id');
-            $filters = TaskRunnings::find()->select(['contractor_id'])->where(['IN', 'id_task_running', $filtersSub]);
-            $usersAll->andWhere(['IN', 'id_user', $filters]);
-        }
-
-
-        
-        $users = $usersAll->all();
+        $users = $usersAll->limit(5)->all(); // Запрос если фильтры не используются, если фильтр применяется то перезаписать
 
         // Используется для фильтров как выборка рейтинга, массив со значениями id исполнителей
         $contractors = array_keys($users);
@@ -88,6 +68,59 @@ class UsersController extends Controller
             ->indexBy('user_rated_id')
             ->all()
         ;
+    
+        $filters; // Если фильтр используется, те не null, то перезаписываем $users
+        
+        /* Фильтр Категории. массив по умолчанию, id_category из формы или пусто, если снять галочки*/
+        $filters = $contractorsAll->andFilterWhere(['IN', 'category_id', $usersForm->categories]); 
+        $usersAll->andFilterWhere(['IN', 'id_user', $filters]); 
+            // ****
+            // print_r($filters);
+            // print_r($users->all());
+
+        /* Фильтр Сейчас свободен */
+        // Находим задания которые выполняются из Tasks status_id = 3
+        // Находим задания которые были в разработке или были в разработке, но провалены. Подзапрос - из таблицы task_runnings выбираем уникальные задания, и последние (макс) id, при этом исполнители не группируются
+        // SELECT MAX(id_task_running), `contractor_id` FROM `task_runnings` GROUP BY `task_running_id`; // Выборка id правильная, но остальное не правильно, чтобы выдовал предупреждение включаем настройку БД
+        // Настройка БД SET sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+        // Находим последних исполнителей. Запрос - из таблицы task_runnings выбираем исполнителей которые имеют максимальный id_task_running, те являются последними кто работает с проектом
+        // select contractor_id from task_runnings where id_task_running IN (SELECT MAX(id_task_running) FROM `task_runnings` GROUP BY `task_running_id`);
+        if($usersForm->isAvailable) {
+            $runTasks = Tasks::find()->select('id_task')->where(['status_id' => 3]);
+            $filtersSub = TaskRunnings::find()->select(['MAX(id_task_running)'])->where(['IN', 'task_running_id', $runTasks])->groupBy('task_running_id');
+            $filters = TaskRunnings::find()->select(['contractor_id'])->where(['IN', 'id_task_running', $filtersSub]);
+            $usersAll->andWhere(['IN', 'id_user', $filters]);
+        }
+
+        /* Фильтр сейчас онлайн. */
+        // Создается точка времени полчача назад.
+        // Запрос - найти пользователей у который users.activity_time > точки времени
+        if($usersForm->isOnLine) {
+            $filters = $datePoint = Yii::$app->formatter->asDatetime('-30 minutes', 'php:Y-m-d H:i:s'); // формат БД
+            $usersAll->andWhere(['>', 'activity_time', $datePoint]);
+        }
+        
+        /* Фильтр. Есть отзывы */
+        // Пользователи с рейтингом, у которых есть отзыв, определены в $rating, создаем массив ключей этих пользователей
+        if($usersForm->isFeedbacks) {
+            $filters = array_keys($rating);
+            $usersAll->andWhere(['IN', 'id_user', $filters]);
+        }
+
+        /* Фильтр. В избранном */
+        // добавляет к условию фильтрации показ пользователей, которые были добавлены в избранное
+        if($usersForm->isFavorite) {
+            $currentUser = 1; // !!!Пример
+            // $filters = UserFavorites::find()->select('favorite_id')->where(['user_id' => $currentUser]);
+            $filters = (new Query)->select('favorite_id')->from('user_favorites')->where(['user_id' => $currentUser]);
+            $usersAll->andWhere(['IN', 'id_user', $filters]);
+            print_r($filters->all());
+        }
+
+        // Если фильтр используется, те не null, то перезаписываем $users
+        if($filters) {
+            $users = $usersAll->all();
+        }
 
         return $this->render('index', ['users' => $users, 'rating' => $rating, 'usersForm' => $usersForm]);
     }
