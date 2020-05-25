@@ -162,7 +162,7 @@ $this->title = 'Исполнители (верстка Users.html)';
                                 // 'name' => 'isAvailable',
                                 'class' => 'visually-hidden checkbox__input',
                                 // 'value' => '', // Также создает атрибут !!!checked если пусто '', елси не указать по умолчанию =1 но атрибут checked не создается
-                                'disabled' => true, // Отключен по умолчанию, но фильтр сделан
+                                // 'disabled' => true, 
                                 'uncheck' => null, // Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется скрытое поле с именем isRemote и value=0
                             ],
                             $enclosedByLabel = false // или true - чекбокс внутри, false - label отдельный и не содержит чекбокс 

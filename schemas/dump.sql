@@ -138,6 +138,30 @@ INSERT INTO `messages` VALUES (1,1,1,11,'Boss I am start tommorow','2019-11-25 1
 UNLOCK TABLES;
 
 --
+-- Table structure for table `migration`
+--
+
+DROP TABLE IF EXISTS `migration`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `migration` (
+  `version` varchar(180) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `apply_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `migration`
+--
+
+LOCK TABLES `migration` WRITE;
+/*!40000 ALTER TABLE `migration` DISABLE KEYS */;
+INSERT INTO `migration` VALUES ('m000000_000000_base',1587837209),('m130524_201442_init',1587922949),('m190124_110200_add_verification_token_column_to_user_table',1588048279);
+/*!40000 ALTER TABLE `migration` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `offers`
 --
 
@@ -154,7 +178,7 @@ CREATE TABLE `offers` (
   KEY `contractor_id` (`contractor_id`),
   CONSTRAINT `offers_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`),
   CONSTRAINT `offers_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,7 +187,7 @@ CREATE TABLE `offers` (
 
 LOCK TABLES `offers` WRITE;
 /*!40000 ALTER TABLE `offers` DISABLE KEYS */;
-INSERT INTO `offers` VALUES (1,1,11,'I best Piano mover'),(2,2,12,'We will do everything without noise and dust'),(3,3,13,'I am grut'),(4,4,14,'Can do it one month'),(5,5,15,' gkeik lvllep nale lnlks lne'),(6,6,16,'I best Piano mover'),(7,7,17,'We will do everything without noise and dust'),(8,8,18,'I am grut'),(9,9,19,'Can do it one month'),(10,10,20,' gkeik lvllep nale lnlks lne'),(11,1,11,'I best Piano mover'),(12,2,12,'We will do everything without noise and dust'),(13,3,13,'I am grut'),(14,4,14,'Can do it one month'),(15,5,15,' gkeik lvllep nale lnlks lne'),(16,1,16,'I best Piano mover'),(17,2,17,'We will do everything without noise and dust'),(18,3,18,'I am grut'),(19,4,19,'Can do it one month'),(20,5,20,' gkeik lvllep nale lnlks lne');
+INSERT INTO `offers` VALUES (2,2,12,'We will do everything without noise and dust'),(5,5,15,' gkeik lvllep nale lnlks lne'),(7,7,17,'We will do everything without noise and dust'),(8,8,18,'I am grut'),(9,9,19,'Can do it one month'),(10,10,20,' gkeik lvllep nale lnlks lne'),(12,2,12,'We will do everything without noise and dust'),(15,5,15,' gkeik lvllep nale lnlks lne'),(17,2,17,'We will do everything without noise and dust'),(20,5,20,' gkeik lvllep nale lnlks lne'),(21,1,11,'I best piano mover'),(22,1,11,'I best piano mover'),(23,1,16,'I best piano mover');
 /*!40000 ALTER TABLE `offers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -202,12 +226,12 @@ DROP TABLE IF EXISTS `task_files`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_files` (
-  `id_task_file` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `task_id` int(10) unsigned NOT NULL,
-  `file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `id_task_file` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) unsigned NOT NULL,
+  `file` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id_task_file`),
-  KEY `task_id` (`task_id`),
-  CONSTRAINT `task_files_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`)
+  KEY `fk-task_files-task_id` (`task_id`),
+  CONSTRAINT `fk-task_files-task_id` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -237,7 +261,7 @@ CREATE TABLE `task_runnings` (
   KEY `contractor_id` (`contractor_id`),
   CONSTRAINT `task_runnings_ibfk_1` FOREIGN KEY (`task_running_id`) REFERENCES `tasks` (`id_task`),
   CONSTRAINT `task_runnings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -246,7 +270,7 @@ CREATE TABLE `task_runnings` (
 
 LOCK TABLES `task_runnings` WRITE;
 /*!40000 ALTER TABLE `task_runnings` DISABLE KEYS */;
-INSERT INTO `task_runnings` VALUES (1,1,11),(2,2,12),(3,3,13),(4,4,14),(5,5,15),(6,6,16);
+INSERT INTO `task_runnings` VALUES (1,1,11),(2,2,12),(3,3,13),(4,4,14),(5,5,15),(6,6,16),(7,1,17);
 /*!40000 ALTER TABLE `task_runnings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -317,8 +341,42 @@ CREATE TABLE `tasks` (
 
 LOCK TABLES `tasks` WRITE;
 /*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (1,1,2,1,1,'enable impactful technologies','Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst.',6587,'1 Eagan Crossing','6.9641667','158.2083333','2019-03-09 00:00:00','2019-11-15 00:00:00',0),(2,1,3,2,2,'exploit revolutionary portals','Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus. Curabitur at ipsum ac tellus semper interdum. Mauris ullamcorper purus sit amet nulla. Quisque arcu libero, rutrum ac, lobortis vel, dapibus at, diam.',2904,'24043 Paget Alley','5.623505','10.2544044','2019-07-03 00:00:00','2019-12-07 00:00:00',0),(3,1,2,3,3,'matrix next-generation e-commerce','Nulla ut erat id mauris vulputate elementum. Nullam varius. Nulla facilisi. Cras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque. Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.',1170,'2867 Dryden Pass','63.593219','53.9068532','2019-06-27 00:00:00','2019-11-23 00:00:00',0),(4,1,1,4,4,'benchmark plug-and-play infomediaries','Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat. Nulla nisl. Nunc nisl.',838,'80 Cambridge Street','20.5800358','-75.2435307','2019-01-01 00:00:00','2019-11-10 00:00:00',0),(5,1,3,5,5,'integrate cross-platform e-business','Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.',7484,'1 Stone Corner Junction','14.9326574','-91.6941845','2019-09-07 00:00:00','2019-12-15 00:00:00',0),(6,1,7,6,6,'enable dot-com niches','Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.',5725,'12 Stephen Terrace','40.163127','116.638868','2018-11-01 00:00:00','2019-11-24 00:00:00',0),(7,2,5,7,7,'transform web-enabled relationships','Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.',4414,'6213 Lake View Drive','44.3794871','20.2638941','2019-09-13 00:00:00','2019-11-19 00:00:00',0),(8,3,8,8,8,'strategize frictionless solutions','Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat. Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.',3454,'994 Corry Park','-7.3251485','108.3607464','2019-04-01 00:00:00','2019-11-14 00:00:00',0),(9,4,4,9,9,'innovate seamless metrics','Cras mi pede, malesuada in, imperdiet et, commodo vulputate, justo. In blandit ultrices enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',3101,'2 Bluestem Park','43','-87.97','2019-03-28 00:00:00','2019-12-12 00:00:00',0),(10,5,4,10,10,'integrate wireless infomediaries','Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien sapien non mi. Integer ac neque.',6562,'1 Dexter Hill','41.3410168','-8.3169303','2019-05-01 00:00:00','2019-12-19 00:00:00',0);
+INSERT INTO `tasks` VALUES (1,1,2,1,1,'enable impactful technologies','Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst.',6587,'1 Eagan Crossing','6.9641667','158.2083333','2020-03-09 00:00:01','2019-11-15 00:00:00',1),(2,1,3,2,2,'exploit revolutionary portals','Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus. Curabitur at ipsum ac tellus semper interdum. Mauris ullamcorper purus sit amet nulla. Quisque arcu libero, rutrum ac, lobortis vel, dapibus at, diam.',2904,'24043 Paget Alley','5.623505','10.2544044','2020-04-24 00:00:01','2019-12-07 00:00:00',1),(3,1,2,3,3,'matrix next-generation e-commerce','Nulla ut erat id mauris vulputate elementum. Nullam varius. Nulla facilisi. Cras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque. Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.',1170,'2867 Dryden Pass','63.593219','53.9068532','2020-04-27 00:00:01','2019-11-23 00:00:00',1),(4,1,1,4,4,'benchmark plug-and-play infomediaries','Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat. Nulla nisl. Nunc nisl.',838,'80 Cambridge Street','20.5800358','-75.2435307','2020-05-20 00:00:01','2019-11-10 00:00:00',1),(5,1,3,5,5,'integrate cross-platform e-business','Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.',7484,'1 Stone Corner Junction','14.9326574','-91.6941845','2020-05-21 00:00:01','2019-12-15 00:00:00',0),(6,1,7,6,6,'enable dot-com niches','Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.',5725,'12 Stephen Terrace','40.163127','116.638868','2020-05-24 00:00:01','2019-11-24 00:00:00',0),(7,2,5,7,7,'transform web-enabled relationships','Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.',4414,'6213 Lake View Drive','44.3794871','20.2638941','2020-05-24 12:00:01','2019-11-19 00:00:00',0),(8,3,8,8,8,'strategize frictionless solutions','Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat. Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.',3454,'994 Corry Park','-7.3251485','108.3607464','2020-05-24 00:00:01','2019-11-14 00:00:00',0),(9,4,4,9,9,'innovate seamless metrics','Cras mi pede, malesuada in, imperdiet et, commodo vulputate, justo. In blandit ultrices enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',3101,'2 Bluestem Park','43','-87.97','2020-05-24 12:00:01','2019-12-12 00:00:00',0),(10,5,4,10,10,'integrate wireless infomediaries','Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien sapien non mi. Integer ac neque.',6562,'1 Dexter Hill','41.3410168','-8.3169303','2020-05-24 15:00:01','2019-12-19 00:00:00',0);
 /*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `auth_key` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `password_hash` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `password_reset_token` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `status` smallint(6) NOT NULL DEFAULT '10',
+  `created_at` int(11) NOT NULL,
+  `updated_at` int(11) NOT NULL,
+  `verification_token` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `password_reset_token` (`password_reset_token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -347,7 +405,7 @@ CREATE TABLE `user_favorites` (
 
 LOCK TABLES `user_favorites` WRITE;
 /*!40000 ALTER TABLE `user_favorites` DISABLE KEYS */;
-INSERT INTO `user_favorites` VALUES (1,1,11,1),(2,2,12,1),(3,3,13,0),(4,4,14,0),(5,5,15,0),(6,6,16,1),(7,7,17,1),(8,8,18,0),(9,9,19,1),(10,10,20,1),(11,1,20,1),(12,2,19,1),(13,3,18,0),(14,4,17,0),(15,5,16,0),(16,6,11,1),(17,7,12,1),(18,8,13,0),(19,9,14,1),(20,10,15,1),(21,1,15,1),(22,2,14,1),(23,3,13,0),(24,4,12,0),(25,5,11,0);
+INSERT INTO `user_favorites` VALUES (1,1,11,1),(2,2,12,1),(3,3,13,1),(4,4,14,1),(5,5,15,1),(6,6,16,1),(7,7,17,1),(8,8,18,1),(9,9,19,1),(10,10,20,1),(11,1,20,1),(12,2,19,1),(13,3,18,1),(14,4,17,1),(15,5,16,1),(16,6,11,1),(17,7,12,1),(18,8,13,1),(19,9,14,1),(20,10,15,1),(21,1,15,1),(22,2,14,1),(23,3,13,1),(24,4,12,1),(25,5,11,1);
 /*!40000 ALTER TABLE `user_favorites` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -531,7 +589,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,1,1,'Karrie Buttress',NULL,'kbuttress0@1und1.de','JcfoKBYAB4k','high-level','64574473047',NULL,'38737 Moose Avenue','In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat.','2019-08-10 00:00:00','1989-11-11','2019-11-01 12:00:00',0,0),(2,1,2,'Bob Aymer',NULL,'baymer1@hp.com','ZEE54kg','mobile','75531015353',NULL,'738 Hagan Lane','Pellentesque ultrices mattis odio.','2018-12-21 00:00:00','1989-03-05','2019-11-02 12:00:00',0,0),(3,1,3,'Zilvia Boulding',NULL,'zboulding2@macromedia.com','VJyMV1Zat','Re-engineered','16371407508',NULL,'758 Old Shore Parkway','Morbi a ipsum. Integer a nibh. In quis justo.','2019-07-25 00:00:00','1989-12-30','2019-11-03 12:00:00',0,0),(4,1,4,'Emalee Mollon',NULL,'emollon3@bloglovin.com','XUIeJ693h','Grass-roots','21468788926',NULL,'11 Dovetail Junction','Suspendisse potenti.','2018-11-13 00:00:00','0629-03-03','2019-11-04 12:00:00',0,0),(5,1,5,'Maria Mulberry',NULL,'mmulberry4@cmu.edu','oWspnl','fault-tolerant','62931646367',NULL,'050 Bowman Alley','Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo.','2019-07-20 00:00:00','1989-04-08','2019-11-05 12:00:00',0,0),(6,1,6,'Levey By',NULL,'lby5@mozilla.com','GdtcUU','Team-oriented','63271348718',NULL,'5 Iowa Avenue','Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam.','2019-02-12 00:00:00','1989-04-18','2019-11-06 12:00:00',0,0),(7,1,7,'Baron Eates',NULL,'beates6@last.fm','UQw6VeA','portal','41056175169',NULL,'87119 Northland Hill','Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.','2019-05-03 00:00:00','1989-03-20','2019-11-07 12:00:00',0,0),(8,1,8,'Trip Vink',NULL,'tvink7@fotki.com','49znXd7haFGz','intermediate','72882384431',NULL,'6823 Lillian Point','Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui. Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc.','2019-01-13 00:00:00','1989-12-13','2019-11-08 12:00:00',0,0),(9,1,9,'Boonie Terbeck',NULL,'bterbeck8@about.me','unCjJTF7sjs','local area network','69043821394',NULL,'43 Marquette Plaza','Morbi ut odio.','2019-09-15 00:00:00','1989-01-14','2019-11-09 12:00:00',0,0),(10,1,10,'Alonzo Traviss',NULL,'atraviss9@auda.org.au','dLuVMAg','upward-trending','28396220507',NULL,'5303 Village Green Hill','Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat.','2018-12-19 00:00:00','1989-02-03','2019-11-10 12:00:00',0,0),(11,1,11,'Natassia Wittering',NULL,'nwitteringa@google.com.br','tQlUG4n','grid-enabled','83344513307',NULL,'67399 Reindahl Place','Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.','2019-03-24 00:00:00','1989-05-23','2019-11-11 12:00:00',0,0),(12,1,12,'Felice Brooke',NULL,'fbrookeb@nba.com','s9y9Mcfgy1g','background','64890419671',NULL,'45 Twin Pines Hill','Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl. Aenean lectus. Pellentesque eget nunc.','2019-09-27 00:00:00','1989-07-06','2019-11-12 12:00:00',0,0),(13,1,13,'Carlen Viccary',NULL,'cviccaryc@amazon.co.uk','9qd747vh','challenge','23005580487',NULL,'46 Sheridan Place','Quisque ut erat. Curabitur gravida nisi at nibh. In hac habitasse platea dictumst.','2018-12-06 00:00:00','1903-04-16','2019-11-13 12:00:00',0,0),(14,1,14,'Hendrik Gethings',NULL,'hgethingsd@sogou.com','zzN5c4','coherent','27052074771',NULL,'73 Kedzie Terrace','Pellentesque at nulla. Suspendisse potenti. Cras in purus eu magna vulputate luctus.','2018-11-18 00:00:00','1989-11-07','2019-11-14 12:00:00',0,0),(15,1,15,'Dunc Girodias',NULL,'dgirodiase@stanford.edu','j9QW6GQI','neutral','14800371520',NULL,'85509 Ludington Drive','Cras pellentesque volutpat dui.','2018-10-14 00:00:00','1989-02-13','2019-11-15 12:00:00',0,0),(16,1,16,'Bibbie Tanman',NULL,'btanmanf@smh.com.au','1aukKNEIneq','Programmable','75569924500',NULL,'67 Northwestern Center','Aliquam erat volutpat. In congue.','2019-05-03 00:00:00','1989-07-07','2019-11-16 12:00:00',0,0),(17,1,17,'Barnabas Bartoletti',NULL,'bbartolettig@simplemachines.org','3chTNtqhoo','encompassing','37349256497',NULL,'725 Eagle Crest Hill','Nulla ac enim. In tempor, turpis nec euismod scelerisque, quam turpis adipiscing lorem, vitae mattis nibh ligula nec sem. Duis aliquam convallis nunc.','2018-12-25 00:00:00','1989-09-29','2019-11-17 12:00:00',0,0),(18,1,18,'Nixie Cullip',NULL,'nculliph@fc2.com','2UdKIR2f','knowledge base','12403580562',NULL,'507 Graceland Junction','Suspendisse potenti.','2019-04-07 00:00:00','1989-03-19','2019-11-18 12:00:00',0,0),(19,1,19,'Matilde Pimblott',NULL,'mpimblotti@xing.com','nGZ8disdg','dynamic','40139478003',NULL,'92 Gina Park','Phasellus sit amet erat.','2019-07-18 00:00:00','1989-09-29','2019-11-19 12:00:00',0,0),(20,1,20,'Al Skurray',NULL,'askurrayj@un.org','bL9tAf','solution','76657531985',NULL,'8 Ridgeview Trail','Cras pellentesque volutpat dui.','2018-11-25 00:00:00','1989-12-21','2019-11-15 20:00:00',0,0);
+INSERT INTO `users` VALUES (1,1,1,'Karrie Buttress',NULL,'kbuttress0@1und1.de','JcfoKBYAB4k','high-level','64574473047',NULL,'38737 Moose Avenue','In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat.','2019-08-10 00:00:00','1989-11-11','2020-05-25 07:50:00',0,0),(2,1,2,'Bob Aymer',NULL,'baymer1@hp.com','ZEE54kg','mobile','75531015353',NULL,'738 Hagan Lane','Pellentesque ultrices mattis odio.','2018-12-21 00:00:00','1989-03-05','2020-05-25 07:50:00',0,0),(3,1,3,'Zilvia Boulding',NULL,'zboulding2@macromedia.com','VJyMV1Zat','Re-engineered','16371407508',NULL,'758 Old Shore Parkway','Morbi a ipsum. Integer a nibh. In quis justo.','2019-07-25 00:00:00','1989-12-30','2020-05-25 07:50:00',0,0),(4,1,4,'Emalee Mollon',NULL,'emollon3@bloglovin.com','XUIeJ693h','Grass-roots','21468788926',NULL,'11 Dovetail Junction','Suspendisse potenti.','2018-11-13 00:00:00','0629-03-03','2020-05-25 07:50:00',0,0),(5,1,5,'Maria Mulberry',NULL,'mmulberry4@cmu.edu','oWspnl','fault-tolerant','62931646367',NULL,'050 Bowman Alley','Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo.','2019-07-20 00:00:00','1989-04-08','2020-05-25 07:50:00',0,0),(6,1,6,'Levey By',NULL,'lby5@mozilla.com','GdtcUU','Team-oriented','63271348718',NULL,'5 Iowa Avenue','Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam.','2019-02-12 00:00:00','1989-04-18','2020-05-25 07:50:00',0,0),(7,1,7,'Baron Eates',NULL,'beates6@last.fm','UQw6VeA','portal','41056175169',NULL,'87119 Northland Hill','Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.','2019-05-03 00:00:00','1989-03-20','2020-05-25 07:50:00',0,0),(8,1,8,'Trip Vink',NULL,'tvink7@fotki.com','49znXd7haFGz','intermediate','72882384431',NULL,'6823 Lillian Point','Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui. Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc.','2019-01-13 00:00:00','1989-12-13','2020-05-25 07:50:00',0,0),(9,1,9,'Boonie Terbeck',NULL,'bterbeck8@about.me','unCjJTF7sjs','local area network','69043821394',NULL,'43 Marquette Plaza','Morbi ut odio.','2019-09-15 00:00:00','1989-01-14','2020-05-25 07:50:00',0,0),(10,1,10,'Alonzo Traviss',NULL,'atraviss9@auda.org.au','dLuVMAg','upward-trending','28396220507',NULL,'5303 Village Green Hill','Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat.','2018-12-19 00:00:00','1989-02-03','2020-05-25 07:50:00',0,0),(11,1,11,'Natassia Wittering',NULL,'nwitteringa@google.com.br','tQlUG4n','grid-enabled','83344513307',NULL,'67399 Reindahl Place','Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.','2019-03-24 00:00:00','1989-05-23','2020-05-25 07:50:00',0,0),(12,1,12,'Felice Brooke',NULL,'fbrookeb@nba.com','s9y9Mcfgy1g','background','64890419671',NULL,'45 Twin Pines Hill','Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl. Aenean lectus. Pellentesque eget nunc.','2019-09-27 00:00:00','1989-07-06','2020-05-25 07:50:00',0,0),(13,1,13,'Carlen Viccary',NULL,'cviccaryc@amazon.co.uk','9qd747vh','challenge','23005580487',NULL,'46 Sheridan Place','Quisque ut erat. Curabitur gravida nisi at nibh. In hac habitasse platea dictumst.','2018-12-06 00:00:00','1903-04-16','2020-05-25 07:50:00',0,0),(14,1,14,'Hendrik Gethings',NULL,'hgethingsd@sogou.com','zzN5c4','coherent','27052074771',NULL,'73 Kedzie Terrace','Pellentesque at nulla. Suspendisse potenti. Cras in purus eu magna vulputate luctus.','2018-11-18 00:00:00','1989-11-07','2020-05-25 07:50:00',0,0),(15,1,15,'Dunc Girodias',NULL,'dgirodiase@stanford.edu','j9QW6GQI','neutral','14800371520',NULL,'85509 Ludington Drive','Cras pellentesque volutpat dui.','2018-10-14 00:00:00','1989-02-13','2020-05-25 07:50:00',0,0),(16,1,16,'Bibbie Tanman',NULL,'btanmanf@smh.com.au','1aukKNEIneq','Programmable','75569924500',NULL,'67 Northwestern Center','Aliquam erat volutpat. In congue.','2019-05-03 00:00:00','1989-07-07','2020-05-25 07:50:00',0,0),(17,1,17,'Barnabas Bartoletti',NULL,'bbartolettig@simplemachines.org','3chTNtqhoo','encompassing','37349256497',NULL,'725 Eagle Crest Hill','Nulla ac enim. In tempor, turpis nec euismod scelerisque, quam turpis adipiscing lorem, vitae mattis nibh ligula nec sem. Duis aliquam convallis nunc.','2018-12-25 00:00:00','1989-09-29','2020-05-25 07:50:00',0,0),(18,1,18,'Nixie Cullip',NULL,'nculliph@fc2.com','2UdKIR2f','knowledge base','12403580562',NULL,'507 Graceland Junction','Suspendisse potenti.','2019-04-07 00:00:00','1989-03-19','2020-05-25 07:50:00',0,0),(19,1,19,'Matilde Pimblott',NULL,'mpimblotti@xing.com','nGZ8disdg','dynamic','40139478003',NULL,'92 Gina Park','Phasellus sit amet erat.','2019-07-18 00:00:00','1989-09-29','2020-05-25 07:50:00',0,0),(20,1,20,'Al Skurray',NULL,'askurrayj@un.org','bL9tAf','solution','76657531985',NULL,'8 Ridgeview Trail','Cras pellentesque volutpat dui.','2018-11-25 00:00:00','1989-12-21','2020-05-25 07:50:00',0,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -544,4 +602,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-01-19 15:03:39
+-- Dump completed on 2020-05-25 18:02:36

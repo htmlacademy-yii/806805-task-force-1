@@ -44,7 +44,7 @@ class UsersController extends Controller
         // также  Query позволяет легко делать подзапросы, здесь Удаляем id заказчиков из исполнителей
         $contractorsAll = new \yii\db\Query;
         $contractorsAll->select(['user_id'])->distinct()->from('user_specializations')
-            ->where(['not in', 'user_id', $customersAll])
+            ->where(['NOT IN', 'user_id', $customersAll])
             // ->all() // Не сработает в самом запросе -нужна доп переменная  $allcustomers_id = $allcustomers_id->all();
             // ->createCommand()->sql // показать sql-выражение, Не сработает в самом запросе -нужна доп переменная
             // ->createCommand()->queryAll() // аналогично ->all(), Не сработает в самом запросе -нужна доп переменная
@@ -54,7 +54,7 @@ class UsersController extends Controller
         $usersAll = Users::find()->where(['IN', 'id_user', $contractorsAll])
             ->orderBy(['reg_time' => SORT_DESC])
             ->indexBy('id_user');
-        $users = $usersAll->limit(5)->all(); // Запрос если фильтры не используются, если фильтр применяется то перезаписать
+        $users = $usersAll->all(); // Запрос если фильтры не используются, если фильтр применяется то перезаписать
 
         // Используется для фильтров как выборка рейтинга, массив со значениями id исполнителей
         $contractors = array_keys($users);
@@ -79,17 +79,20 @@ class UsersController extends Controller
             // print_r($users->all());
 
         /* Фильтр Сейчас свободен */
-        // Находим задания которые выполняются из Tasks status_id = 3
-        // Находим задания которые были в разработке или были в разработке, но провалены. Подзапрос - из таблицы task_runnings выбираем уникальные задания, и последние (макс) id, при этом исполнители не группируются
-        // SELECT MAX(id_task_running), `contractor_id` FROM `task_runnings` GROUP BY `task_running_id`; // Выборка id правильная, но остальное не правильно, чтобы выдовал предупреждение включаем настройку БД
-        // Настройка БД SET sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-        // Находим последних исполнителей. Запрос - из таблицы task_runnings выбираем исполнителей которые имеют максимальный id_task_running, те являются последними кто работает с проектом
-        // select contractor_id from task_runnings where id_task_running IN (SELECT MAX(id_task_running) FROM `task_runnings` GROUP BY `task_running_id`);
+        // Задания выполняются. Находим задания которые выполняются из Tasks status_id = 3
+        // Подзапрос. Находим задания которые добавлены в таблицу task_runnings, те исполняются, но могут быть и провалены, поэтому группируем - из таблицы task_runnings выбираем уникальные задания, и последние (макс) id, при этом исполнители не группируются
+        // SELECT MAX(id_task_running), `contractor_id` FROM `task_runnings` WHERE task_running_id IN (8) GROUP BY `task_running_id`; // Выборка id правильная, но остальное не правильно, чтобы выдовал предупреждение включаем настройку БД
+            // Настройка БД SET sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+        // Запрос. Получение исполнителей - из таблицы task_runnings выбираем исполнителей которые имеют максимальный id_task_running, те являются последними кто работает с проектом
+        // select contractor_id from task_runnings where id_task_running IN (SELECT MAX(id_task_running) FROM `task_runnings` GROUP BY `task_running_id`) AND task_running_id NOT IN (8);
         if($usersForm->isAvailable) {
-            $runTasks = Tasks::find()->select('id_task')->where(['status_id' => 3]);
-            $filtersSub = TaskRunnings::find()->select(['MAX(id_task_running)'])->where(['IN', 'task_running_id', $runTasks])->groupBy('task_running_id');
-            $filters = TaskRunnings::find()->select(['contractor_id'])->where(['IN', 'id_task_running', $filtersSub]);
-            $usersAll->andWhere(['IN', 'id_user', $filters]);
+            // $runTasks = Tasks::find()->select('id_task')->where(['status_id' => '3']);
+            $runTasks = (new Query)->select('id_task')->from('tasks')->where(['status_id' => '3']);
+            // $filtersSub = TaskRunnings::find()->select(['MAX(id_task_running)'])->where(['IN', 'task_running_id', $runTasks])->groupBy('task_running_id');
+            $filtersSub = (new Query)->select(['MAX(id_task_running)'])->from('task_runnings')->where(['IN', 'task_running_id', $runTasks])->groupBy('task_running_id');
+            // $filters = TaskRunnings::find()->select(['contractor_id'])->where(['IN', 'id_task_running', $filtersSub]);
+            $filters = (new Query)->select(['contractor_id'])->from('task_runnings')->where(['IN', 'id_task_running', $filtersSub]);
+            $usersAll->andWhere(['NOT IN', 'id_user', $filters]);
         }
 
         /* Фильтр сейчас онлайн. */
@@ -114,7 +117,6 @@ class UsersController extends Controller
             // $filters = UserFavorites::find()->select('favorite_id')->where(['user_id' => $currentUser]);
             $filters = (new Query)->select('favorite_id')->from('user_favorites')->where(['user_id' => $currentUser]);
             $usersAll->andWhere(['IN', 'id_user', $filters]);
-            print_r($filters->all());
         }
 
         // Если фильтр используется, те не null, то перезаписываем $users
