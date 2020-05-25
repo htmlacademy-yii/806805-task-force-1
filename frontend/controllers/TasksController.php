@@ -54,14 +54,13 @@ class TasksController extends Controller
         // }
 
         /* Фильтр - без откликов (предложения) offers. false true */
-        $isOffers = Yii::$app->request->post('TasksForm')['isOffers'] ?? null;
-        if ($isOffers) {
+        if ($tasksForm->isOffers) {
             $offers = Offers::find()->select('task_id')->distinct(); // Задания с откликами, в любом статусе, статус определен $tasks
             $tasks->andWhere(['NOT IN', 'id_task', $offers]); // Без откликов, исключаем задания с откликами
         }
 
         /* Фильтр Период */
-        // Условие выполнятся при первой загрузке страницы, по умолчанию week
+        // Условие выполнятся всегда, при первой загрузке страницы по умолчанию week
         $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $tasksForm->dateInterval, 'php:Y-m-d H:i:s'); // формат БД
         $tasks->andWhere(['>', 'add_time', $datePoint]);
 
