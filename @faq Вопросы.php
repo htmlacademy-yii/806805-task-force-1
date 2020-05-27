@@ -14,7 +14,39 @@
 - переписать комменты в стандарт на усмотрение
 - Осталось поле поиска по имени и названию
 - Осталось сортировка по дате 
+- Переделываю на метод rules значения полей по умолчанию https://yiiframework.com.ua/ru/doc/guide/2/tutorial-core-validators/
+- Настрой PSR или набей руку. PSR: https://www.php-fig.org/psr/psr-2/
+
+
 
 Сайты 
 Семантическое Версионирование 2.0.0 https://semver.org/lang/ru/
 https://proglib.io/
+
+
+*** Варианты решения ***
+
+/* Фильтр Сейчас свободен. true = сейчас свободен */
+        /* Вариант 1 - В таблице task_runnings есть занания которые исполняются или провалены */
+        // Запрос id заданий которые выполняются status_id = 3 из tasks
+        // Запрос выбираем уникальные id заданий из task_runnings и последние (макс) id_task_running (id строк), при этом исполнители (последними кто работает с проектом) не группируются. + подзапрос runTasks
+        // Запрос id исполнителей - из таблицы task_runnings которые имеют максимальный id-строк, те являются последними кто работает с проектом
+        // Добавление условия в запрос - исключаем пользователи являются последними кто работает с заданиями и задания исполняются
+
+        if($usersForm->isAvailable) {
+            $runTasks = (new Query)->select('id_task')->from('tasks')
+                ->where(['status_id' => '3'])
+            ;
+            // SELECT MAX(id_task_running), `contractor_id` FROM `task_runnings` WHERE task_running_id IN (8) GROUP BY `task_running_id`; 
+            $filtersSub = (new Query)->select(['MAX(id_task_running)'])->from('task_runnings')
+                ->where(['IN', 'task_running_id', $runTasks])
+                ->groupBy('task_running_id')
+            ;
+            // select contractor_id from task_runnings where id_task_running IN (SELECT MAX(id_task_running) FROM `task_runnings` GROUP BY `task_running_id`) AND task_running_id NOT IN (8); // 8 - пример или подзапрос
+            $filters = (new Query)->select(['contractor_id'])->from('task_runnings')
+                ->where(['IN', 'id_task_running', $filtersSub]);
+
+            $usersAll->andWhere(['NOT IN', 'id_user', $filters]);
+        }
+
+    
