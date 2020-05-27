@@ -88,7 +88,7 @@ $this->title = 'Задания (Верстка browse.html)';
                     echo $form->field($tasksForm, 'categories', [
                         'template' => "{input}", // убираем показ label для общего контейнера списка чекбоксов
                     ])
-                    ->checkboxList($tasksForm->getAttributeItems('categories'), [
+                    ->checkboxList($tasksForm->getFieldItemsForAttributeByName('categories'), [
                         'tag' => false, // Отклчает создание общего контейнера div
                         // 'name' => 'categories[]', // для общего контейнера div и общий для всех чекбоксов // Задается автоматически согласно метода load(), если задать вручную, то не попадает в load() в массив с именем формы как в модели
                         // 'unselect' => null, // null - Не создвать скрытое поле, по умолчанию 0 - скрытое поле отправляется с именем value=0. Здесь ставим null, чтобы показать все задания во всех категориях. Хотя результат с 0 совпадает, зато меньше запросов в БД. Причем это нужно для корректной работы andFilterWhere, в то время как andWhere удобнее использовать скрытую отправку 0, тк не придется делать проверку на существование.
@@ -169,7 +169,7 @@ $this->title = 'Задания (Верстка browse.html)';
                             'size' => 1,
                         ],
                     ])
-                    ->dropdownList($tasksForm->getAttributeItems('dateInterval'), [
+                    ->dropdownList($tasksForm->getFieldItemsForAttributeByName('dateInterval'), [
                         // 'options' => ['week' => ['selected' => true]] // Задать значение по умолчанию не получится, по умолчанию задается в объект модели 
                     ])
                 ;

@@ -23,47 +23,40 @@ class TasksController extends Controller
     {
         // $this->enableCsrfValidation = false; // Не изучено, Согласно примера академии
 
-        /* Модель для формы, страница Tasks */
+        /* Модель для формы фильтров, страница tasks */
         $tasksForm = new TasksForm; 
         
-        // Условие отправки формы. Присваивание и сохранение данных формы если форма по имени модели отправлена, тк содержит ключ модели и массив со ствойствами, (для обычного POST, нужно дополнительный параметр null). Yii::$app->request->post() всегда существует, Соответствует $_POST, но переопрелен на специальный буфер
-        if(!$tasksForm->load(Yii::$app->request->post())) {
-            $tasksForm->defaultValues(); // Загружаем значения по умолчанию при первом запуске, те если форма не отправлена
-        }; 
+        /* Проверка. Если форма отправлена с именем как в модели загрузить значения формы в модель*/
+        $tasksForm->load(Yii::$app->request->post());
 
-        /* Данные из модели Tasks с учетом жадной загрузки категорий + фильтры */
-        $tasks = Tasks::find()->where(['status_id' => 1])->joinWith('category')->orderBy(['add_time' => SORT_DESC]);
+        /* Запрос данные заданий новые с учетом жадной загрузки категорий + условия с проверкой фильтров  */
+        $tasks = Tasks::find()
+            ->where(['status_id' => 1])
+            ->joinWith('category')
+            ->orderBy(['add_time' => SORT_DESC])
+        ;
         
-        /* Фильтр Категории. массив пуст или id_task из формы */
-        // вариант 1
+        /* Фильтр Категории. Добавление условия в запрос. Атрибут пуст или из формы или по умолчанию */
         $tasks->andFilterWhere(['IN', 'category_id', $tasksForm->categories]); 
-        // вариант 2
-        // if($categories = $tasksForm->categories) {
-        //     $tasks = $tasks->andWhere(['IN', 'category_id', $categories]); // 
-        // }
 
-        /* Фильтр Удаленная работа. false true*/
-        // Вариант 1. С помощью фильтра ActiveQuery
-        $tasks->andFilterWhere(['is_remote' => $tasksForm->isRemote]); // Иногда значение задано по умолчанию, которые берем из модели формы. uncheck = null удобно, если 0 то в выборку попадут только значения 0, а не все значения 1 и 0. Но значение по умолчанию не переписывается!!! Блть
-        
-        // Вариант 2. С помощью условия отправки формы, кроме 0, те $tasksPost['is_remote'] === 0 не учитывается, при методом uncheck = null приходится делать проверку на существование
-        // $isRemote = Yii::$app->request->post('TasksForm')['isRemote'] ?? null;
-        // if ($isRemote) {
-        //     $tasks = $tasks->andWhere(['is_remote' => $isRemote]);
-        //     print_r('Удаленка');
-        // }
-
-        /* Фильтр - без откликов (предложения) offers. false true */
-        if ($tasksForm->isOffers) {
-            $offers = Offers::find()->select('task_id')->distinct(); // Задания с откликами, в любом статусе, статус определен $tasks
-            $tasks->andWhere(['NOT IN', 'id_task', $offers]); // Без откликов, исключаем задания с откликами
+        /* Фильтр - без откликов (предложения offers). true = без откликов */
+        if ($tasksForm->isOffers) 
+        {
+            // Запрос id заданий с откликами уникальные, в любом статусе, статус определен $tasks
+            $taskWithOffers = (new Query)->select('task_id')->from('offers')
+                ->distinct()
+            ;
+            // Добавление условия в запрос. Без откликов, исключаем задания с откликами подзапросом
+            $tasks->andWhere(['NOT IN', 'id_task', $taskWithOffers]); 
         }
 
-        /* Фильтр Период */
-        // Условие выполнятся всегда, при первой загрузке страницы по умолчанию week
-        $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $tasksForm->dateInterval, 'php:Y-m-d H:i:s'); // формат БД
+        /* Фильтр Период. Выполнятся всегда, при первой загрузке страницы по умолчанию week */
+        // Точка времени - текущее время минус Значение фильтра, формат времени как в БД
+        $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $tasksForm->dateInterval, 'php:Y-m-d H:i:s');
+        // Добавление условия в запрос. 
         $tasks->andWhere(['>', 'add_time', $datePoint]);
 
+        // Запись данных всех заданий в массив
         $tasks = (array) $tasks->all(); 
 
         return $this->render('index', ['tasks' => $tasks, 'tasksForm' => $tasksForm]);

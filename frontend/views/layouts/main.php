@@ -136,7 +136,6 @@ AppAsset::register($this); // !!! Включен. В шаблоне главно
             <?= Breadcrumbs::widget([
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
-            <?= Alert::widget() ?> 
             
             <!-- Представление контент  -->
             <?= $content ?>

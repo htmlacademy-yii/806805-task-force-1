@@ -14,7 +14,7 @@ class TasksForm extends Model
     public $search;
 
     public function formName() {
-        return 'TasksForm'; // Имя формы при отправке в представлении, по умолчанию соответствует имени модели. 
+        return 'TasksForm'; 
     }
 
     public function attributeLabels()
@@ -36,11 +36,15 @@ class TasksForm extends Model
     }
 
     /* Элементы для формы, список чекбоксов, выпадающий спикок. */
-    // $key - имя атрибут модели в форме 
-    public static function getAttributeItems (string $key) : array {
-
-        /* Список чекбоксов категории. Массив 'id_category' => 'name'*/
-        $categories = (new \yii\db\Query())->from('categories')->select(['name', 'id_category'])->indexBy('id_category')->orderBy('id_category')->column();
+    public static function getFieldItemsForAttributeByName (string $name) : array 
+    {
+        /* Массив 'id_category' => 'name'*/
+        $categories = (new \yii\db\Query())
+            ->from('categories')
+            ->select(['name', 'id_category'])
+            ->indexBy('id_category')
+            ->orderBy('id_category')
+            ->column();
 
         /* Массив. Элементы для формы. */
         $items = [
@@ -54,20 +58,6 @@ class TasksForm extends Model
             'categories' => $categories,
         ];
       
-        return $items[$key];
-    }
-
-    // Значения атрибутов по умолчанию
-    public function defaultValues () : void {
-        
-        $defaults = [
-            'categories' => [1, 2],
-            'isOffers' => null,
-            'isRemote' => 1,
-            'dateInterval' => 'week',
-            'search' => null,
-        ];
-
-        $this->attributes = $defaults;
+        return $items[$name];
     }
 }
