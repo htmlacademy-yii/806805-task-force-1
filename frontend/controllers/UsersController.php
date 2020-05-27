@@ -21,7 +21,7 @@ class UsersController extends Controller
         /* Модель для формы, страница Users */
         $usersForm = new UsersForm;
 
-        /* Условие загрузка данных формы если форма отправлена*/
+        /* Если не загружены данные то форма не отправлена */
         if(!$usersForm->load(Yii::$app->request->post())) {
             $usersForm->defaultValues(); // Загружаем значения по умолчанию при первом запуске, те если форма не отправлена
         }; 
@@ -32,10 +32,8 @@ class UsersController extends Controller
         // те проверяем что пользователь не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
 
         // Все действующие Заказчики. Получаем массив со значениями user_id из tasks DISTINCT
-        $customersAll = new Query;
-        $customersAll->select(['customer_id'])->distinct()->from('tasks t')->where(['status_id' => '1'])->orWhere(['status_id' => '3'])
-            // ->limit() // !!! This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'
-            // ->all() // Не сработает в самом запросе -нужна доп переменная $allcustomers_id = $allcustomers_id->all();
+        $customers = new Query;
+        $customers->select(['customer_id'])->distinct()->from('tasks t')->where(['status_id' => '1'])->orWhere(['status_id' => '3'])
             // ->createCommand()->sql // показать sql-выражение, Не сработает в самом запросе -нужна доп переменная
             // ->createCommand()->queryAll() // аналогично ->all(), Не сработает в самом запросе -нужна доп переменная
         ;
@@ -44,8 +42,7 @@ class UsersController extends Controller
         // также  Query позволяет легко делать подзапросы, здесь Удаляем id заказчиков из исполнителей
         $contractorsAll = new \yii\db\Query;
         $contractorsAll->select(['user_id'])->distinct()->from('user_specializations')
-            ->where(['NOT IN', 'user_id', $customersAll])
-            // ->all() // Не сработает в самом запросе -нужна доп переменная  $allcustomers_id = $allcustomers_id->all();
+            ->where(['NOT IN', 'user_id', $customers])
             // ->createCommand()->sql // показать sql-выражение, Не сработает в самом запросе -нужна доп переменная
             // ->createCommand()->queryAll() // аналогично ->all(), Не сработает в самом запросе -нужна доп переменная
         ;
