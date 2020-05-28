@@ -25,7 +25,6 @@ use Yii;
  * @property Feedbacks[] $feedbacks
  * @property Messages[] $messages
  * @property Offers[] $offers
- * @property TaskFailings[] $taskFailings
  * @property TaskFiles[] $taskFiles
  * @property TaskRunnings[] $taskRunnings
  * @property TaskStatuses $status
@@ -106,14 +105,6 @@ class Tasks extends \yii\db\ActiveRecord
     public function getOffers()
     {
         return $this->hasMany(Offers::className(), ['task_id' => 'id_task']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTaskFailings()
-    {
-        return $this->hasMany(TaskFailings::className(), ['task_failing_id' => 'id_task']);
     }
 
     /**

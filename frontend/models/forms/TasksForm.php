@@ -19,7 +19,8 @@ class TasksForm extends Model
 
     public function attributeLabels()
     {
-        return [
+        return 
+        [
             'categories' => 'Категории',
             'isOffers' => 'Без откликов',
             'isRemote' => 'Удаленная работа',
@@ -30,15 +31,19 @@ class TasksForm extends Model
 
     public function rules()
     {
-        return [
+        return 
+        [
             [['categories', 'isOffers', 'isRemote', 'dateInterval', 'search'], 'safe'],
+            ['isOffers', 'default', 'value' => '1'],
+            ['isRemote', 'default', 'value' => '1'],
+            ['dateInterval', 'default', 'value' => 'week'],
         ];
     }
 
-    /* Элементы для формы, список чекбоксов, выпадающий спикок. */
+    /* Элементы для полей формы согласно имени атрибута*/
     public static function getFieldItemsForAttributeByName (string $name) : array 
     {
-        /* Массив 'id_category' => 'name'*/
+        /* Категории - список чекбоксов Массив id_category - name */
         $categories = (new \yii\db\Query())
             ->from('categories')
             ->select(['name', 'id_category'])
@@ -46,15 +51,14 @@ class TasksForm extends Model
             ->orderBy('id_category')
             ->column();
 
-        /* Массив. Элементы для формы. */
-        $items = [
+        $items = 
+        [
             /* Выпадающий список, период времени */
             'dateInterval' => [
                 'day' => 'За день',
                 'week' => 'За неделю',
                 'month' => 'За месяц'
             ],
-            /* Список чекбоксов категории */
             'categories' => $categories,
         ];
       

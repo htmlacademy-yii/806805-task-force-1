@@ -52,8 +52,8 @@ class TasksController extends Controller
 
         /* Фильтр Период. Выполнятся всегда, при первой загрузке страницы по умолчанию week */
         // Точка времени - текущее время минус Значение фильтра, формат времени как в БД
-        $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $tasksForm->dateInterval, 'php:Y-m-d H:i:s');
         // Добавление условия в запрос. 
+        $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $tasksForm->dateInterval, 'php:Y-m-d H:i:s');
         $tasks->andWhere(['>', 'add_time', $datePoint]);
 
         // Запись данных всех заданий в массив

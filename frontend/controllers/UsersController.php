@@ -85,7 +85,7 @@ class UsersController extends Controller
 
         if($usersForm->isAvailable) {
             $filters = (new Query)->select('contractor_id')->from('tasks t')
-                ->join('LEFT JOIN', 'task_runnings tr', 'tr.task_running_id = t.id_task')
+                ->join('INNER JOIN', 'task_runnings tr', 'tr.task_running_id = t.id_task')
                 ->where(['status_id' => '3'])
             ;
             $usersAll->andWhere(['NOT IN', 'id_user', $filters]);
@@ -108,7 +108,7 @@ class UsersController extends Controller
         }
 
         /* Фильтр. В избранном */
-        // Запрос - найти id пользователей в избранном текщего пользователя (добавлен как пример)
+        // Запрос - найти id пользователей в избранном текщего пользователя ($currentUser добавлен как пример)
         // Добавление условия в запрос -  показ пользователей, которые были добавлены в избранное
         if($usersForm->isFavorite) {
             $currentUser = 1; // !!!Пример
