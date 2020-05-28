@@ -13,7 +13,8 @@ class TasksForm extends Model
     public $dateInterval;
     public $search;
 
-    public function formName() {
+    public function formName() 
+    {
         return 'TasksForm'; 
     }
 

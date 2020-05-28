@@ -83,7 +83,7 @@ class UsersController extends Controller
         // Запрос id исполнителей из tasks_runnings, если задания выполняются status_id = 3 из tasks
         // Добавление условия в запрос - исключаем пользователи с заданиями в статусе исполняются
 
-        if($usersForm->isAvailable) {
+        if ($usersForm->isAvailable) {
             $filters = (new Query)->select('contractor_id')->from('tasks t')
                 ->join('INNER JOIN', 'task_runnings tr', 'tr.task_running_id = t.id_task')
                 ->where(['status_id' => '3'])
@@ -94,7 +94,7 @@ class UsersController extends Controller
         /* Фильтр Сейчас онлайн. true = свободен */
         // Создается точка времени полчача назад.
         // Добавление условия в запрос - пользователи у который users.activity_time > точки времени
-        if($usersForm->isOnLine) {
+        if ($usersForm->isOnLine) {
             $filters = $datePoint = Yii::$app->formatter->asDatetime('-30 minutes', 'php:Y-m-d H:i:s'); // формат БД
             $usersAll->andWhere(['>', 'activity_time', $datePoint]);
         }
@@ -102,7 +102,7 @@ class UsersController extends Controller
         /* Фильтр. Есть отзывы. true = есть */
         // Создаем массив id пользователей с рейтингом из $rating
         // Добавление условия в запрос - id пользователей с рейтингом
-        if($usersForm->isFeedbacks) {
+        if ($usersForm->isFeedbacks) {
             $filters = array_keys($rating);
             $usersAll->andWhere(['IN', 'id_user', $filters]);
         }
@@ -110,7 +110,7 @@ class UsersController extends Controller
         /* Фильтр. В избранном */
         // Запрос - найти id пользователей в избранном текщего пользователя ($currentUser добавлен как пример)
         // Добавление условия в запрос -  показ пользователей, которые были добавлены в избранное
-        if($usersForm->isFavorite) {
+        if ($usersForm->isFavorite) {
             $currentUser = 1; // !!!Пример
             $filters = (new Query)->select('favorite_id')->from('user_favorites')
                 ->where(['user_id' => $currentUser])
@@ -119,7 +119,7 @@ class UsersController extends Controller
         }
 
         // Если фильтр не null (используется), то перезаписываем $users
-        if($filters !== null) {
+        if ($filters !== null) {
             $users = (array) $usersAll->all();
         }
 

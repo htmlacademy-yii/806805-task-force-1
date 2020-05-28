@@ -14,7 +14,8 @@ class UsersForm extends Model
     public $isFavorite;
     public $search;
 
-    public function formName() {
+    public function formName()
+    {
         return 'UsersForm'; 
     }
 

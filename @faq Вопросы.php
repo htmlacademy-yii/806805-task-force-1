@@ -15,7 +15,7 @@
 - Осталось поле поиска по имени и названию
 - Осталось сортировка по дате 
 - Переделываю на метод rules значения полей по умолчанию https://yiiframework.com.ua/ru/doc/guide/2/tutorial-core-validators/
-- Настрой PSR или набей руку. PSR: https://www.php-fig.org/psr/psr-2/
+- Настрой PSR или набей руку. PSR: https://www.php-fig.org/psr/psr-2/ https://svyatoslav.biz/misc/psr_translation/#_PSR-1
 
 
 

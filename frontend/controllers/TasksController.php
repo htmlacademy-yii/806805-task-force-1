@@ -40,8 +40,7 @@ class TasksController extends Controller
         $tasks->andFilterWhere(['IN', 'category_id', $tasksForm->categories]); 
 
         /* Фильтр - без откликов (предложения offers). true = без откликов */
-        if ($tasksForm->isOffers) 
-        {
+        if ($tasksForm->isOffers) {
             // Запрос id заданий с откликами уникальные, в любом статусе, статус определен $tasks
             $taskWithOffers = (new Query)->select('task_id')->from('offers')
                 ->distinct()
