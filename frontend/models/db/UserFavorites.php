@@ -33,8 +33,20 @@ class UserFavorites extends \yii\db\ActiveRecord
         return [
             [['user_id', 'favorite_id'], 'required'],
             [['user_id', 'favorite_id', 'on_off'], 'integer'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id_user']],
-            [['favorite_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['favorite_id' => 'id_user']],
+            [
+                ['user_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['user_id' => 'id_user']
+            ],
+            [
+                ['favorite_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['favorite_id' => 'id_user']
+            ],
         ];
     }
 

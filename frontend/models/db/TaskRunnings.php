@@ -32,8 +32,20 @@ class TaskRunnings extends \yii\db\ActiveRecord
         return [
             [['task_running_id', 'contractor_id'], 'required'],
             [['task_running_id', 'contractor_id'], 'integer'],
-            [['task_running_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_running_id' => 'id_task']],
-            [['contractor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['contractor_id' => 'id_user']],
+            [
+                ['task_running_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Tasks::className(), 
+                'targetAttribute' => ['task_running_id' => 'id_task']
+            ],
+            [
+                ['contractor_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['contractor_id' => 'id_user']
+            ],
         ];
     }
 

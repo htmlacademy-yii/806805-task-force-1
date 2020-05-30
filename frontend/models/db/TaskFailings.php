@@ -32,8 +32,20 @@ class TaskFailings extends \yii\db\ActiveRecord
         return [
             [['task_failing_id', 'contractor_id'], 'required'],
             [['task_failing_id', 'contractor_id'], 'integer'],
-            [['task_failing_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_failing_id' => 'id_task']],
-            [['contractor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['contractor_id' => 'id_user']],
+            [
+                ['task_failing_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Tasks::className(), 
+                'targetAttribute' => ['task_failing_id' => 'id_task']
+            ],
+            [
+                ['contractor_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['contractor_id' => 'id_user']
+            ],
         ];
     }
 

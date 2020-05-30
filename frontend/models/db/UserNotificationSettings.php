@@ -33,8 +33,19 @@ class UserNotificationSettings extends \yii\db\ActiveRecord
         return [
             [['user_id', 'notification_id'], 'required'],
             [['user_id', 'notification_id', 'on_off'], 'integer'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id_user']],
-            [['notification_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserNotifications::className(), 'targetAttribute' => ['notification_id' => 'id_user_notification']],
+            [
+                ['user_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['user_id' => 'id_user']
+            ],
+            [
+                ['notification_id'], 
+                'exist', 'skipOnError' => true, 
+                'targetClass' => UserNotifications::className(), 
+                'targetAttribute' => ['notification_id' => 'id_user_notification']
+            ],
         ];
     }
 

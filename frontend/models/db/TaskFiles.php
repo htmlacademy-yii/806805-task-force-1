@@ -32,7 +32,13 @@ class TaskFiles extends \yii\db\ActiveRecord
             [['task_id'], 'required'],
             [['task_id'], 'integer'],
             [['file'], 'string', 'max' => 255],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'id_task']],
+            [
+                ['task_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Tasks::className(), 
+                'targetAttribute' => ['task_id' => 'id_task']
+            ],
         ];
     }
 

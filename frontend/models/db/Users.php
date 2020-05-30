@@ -68,8 +68,20 @@ class Users extends \yii\db\ActiveRecord
             [['avatar', 'password', 'other_contacts', 'address'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 11],
             [['email'], 'unique'],
-            [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRoles::className(), 'targetAttribute' => ['role_id' => 'id_user_role']],
-            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::className(), 'targetAttribute' => ['location_id' => 'id_location']],
+            [
+                ['role_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => UserRoles::className(), 
+                'targetAttribute' => ['role_id' => 'id_user_role']
+            ],
+            [
+                ['location_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Locations::className(), 
+                'targetAttribute' => ['location_id' => 'id_location']
+            ],
         ];
     }
 
