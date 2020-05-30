@@ -35,14 +35,14 @@ class TasksForm extends Model
         return 
         [
             [['categories', 'isOffers', 'isRemote', 'dateInterval', 'search'], 'safe'],
-            ['isOffers', 'default', 'value' => '1'],
+            ['isOffers', 'default', 'value' => '0'],
             ['isRemote', 'default', 'value' => '1'],
             ['dateInterval', 'default', 'value' => 'week'],
         ];
     }
 
-    /* Элементы для полей формы согласно имени атрибута*/
-    public static function getFieldItemsForAttributeByName (string $name) : array 
+    /* Элементы для полей формы согласно имени атрибута */
+    public static function getAttributeItems(string $attributeName) : array 
     {
         /* Категории - список чекбоксов Массив id_category - name */
         $categories = (new \yii\db\Query())
@@ -63,6 +63,6 @@ class TasksForm extends Model
             'categories' => $categories,
         ];
       
-        return $items[$name];
+        return $items[$attributeName];
     }
 }

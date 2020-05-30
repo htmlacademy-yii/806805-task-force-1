@@ -39,7 +39,7 @@ class UsersForm extends Model
     }
 
     /* Элементы для полей формы согласно имени атрибута */
-    public static function getFieldItemsForAttributeByName (string $name) : array 
+    public static function getAttributeItems(string $attributeName = 'categories') : array 
     {
         /* Категории - список чекбоксов Массив id_category - name */
         $categories = (new \yii\db\Query())
@@ -48,11 +48,7 @@ class UsersForm extends Model
             ->indexBy('id_category')
             ->orderBy('id_category')
             ->column();
-        
-        $items = [
-            'categories' => $categories,
-        ];
-      
-        return $items[$name];
+
+        return $$attributeName;
     }
 }

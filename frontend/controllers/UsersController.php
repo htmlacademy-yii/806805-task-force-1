@@ -18,8 +18,8 @@ class UsersController extends Controller
 {
     public function actionIndex() 
     {
-        /* Модель для формы фильтров, страница users */
         $usersForm = new UsersForm;
+        
         /* Проверка. Если форма отправлена с именем как в модели загрузить значения формы в модель*/
         $usersForm->load(Yii::$app->request->post());
 
@@ -28,7 +28,7 @@ class UsersController extends Controller
         // Нужно удалить тех пользователей, если пользователь стал Заказчиком, даже если у него есть специализация
         // те проверяем что пользователь не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
 
-        /* Запрос id действующие Заказчики */
+        // Запрос id действующие Заказчики 
         $customers = new Query;
         $customers->select(['customer_id'])->from('tasks t')
             ->distinct()
@@ -36,7 +36,7 @@ class UsersController extends Controller
             ->orWhere(['status_id' => '3'])
         ;
 
-        /* Запрос id все Исполнители при первой загрузке без фильтров. */
+        // Запрос id все Исполнители при первой загрузке без фильтров.
         // С использованием подзапроса удаляем id действующих заказчиков из исполнителей
         $contractorsAll = new \yii\db\Query;
         $contractorsAll->select(['user_id'])
@@ -45,7 +45,7 @@ class UsersController extends Controller
             ->where(['NOT IN', 'user_id', $customers])
         ;
 
-        /* Запрос данных всех пользователей-исполнителей с подзапросом id всех исполнителей */
+        // Запрос данных всех пользователей-исполнителей с подзапросом id всех исполнителей
         $usersAll = Users::find()
             ->where(['IN', 'id_user', $contractorsAll])
             ->orderBy(['reg_time' => SORT_DESC])
@@ -55,6 +55,7 @@ class UsersController extends Controller
         /* Запись данных всех пользователей в массив при загрузке страницы, если фильтры применяется то перезаписать */
         $users = (array)  $usersAll->all(); 
 
+        /* Рейтинг пользователей */
         // Запрос данные о рейтинге (значит есть рейтинг) пользователей при загрузке без фильтров, с подзапросом id всех исполнителей 
         $rating = new Query();
         $rating = $rating
@@ -79,7 +80,7 @@ class UsersController extends Controller
         $usersAll->andFilterWhere(['IN', 'id_user', $filters]); 
 
         /* Фильтр Сейчас свободен. true = сейчас свободен */
-        /* Вариант 2 - В таблице task_runnings есть задания которым были назначены исполнители, связь один к одному от задания к исполнителю */
+        // В таблице task_runnings есть задания которым были назначены исполнители, связь один к одному от задания к исполнителю
         // Запрос id исполнителей из tasks_runnings, если задания выполняются status_id = 3 из tasks
         // Добавление условия в запрос - исключаем пользователи с заданиями в статусе исполняются
 
@@ -118,7 +119,6 @@ class UsersController extends Controller
             $usersAll->andWhere(['IN', 'id_user', $filters]);
         }
 
-        // Если фильтр не null (используется), то перезаписываем $users
         if ($filters !== null) {
             $users = (array) $usersAll->all();
         }

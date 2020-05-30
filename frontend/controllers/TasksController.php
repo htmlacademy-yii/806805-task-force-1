@@ -12,18 +12,8 @@ use yii\web\NotFoundHttpException;
 
 class TasksController extends Controller
 {
-    /* Не изучено, Согласно примера академии */
-    // public function beforeAction($action)
-    // {
-    //     $this->enableCsrfValidation = false;
-    //     return true;
-    // }
-
     public function actionIndex() 
     {
-        // $this->enableCsrfValidation = false; // Не изучено, Согласно примера академии
-
-        /* Модель для формы фильтров, страница tasks */
         $tasksForm = new TasksForm; 
         
         /* Проверка. Если форма отправлена с именем как в модели загрузить значения формы в модель*/
@@ -55,7 +45,6 @@ class TasksController extends Controller
         $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $tasksForm->dateInterval, 'php:Y-m-d H:i:s');
         $tasks->andWhere(['>', 'add_time', $datePoint]);
 
-        // Запись данных всех заданий в массив
         $tasks = (array) $tasks->all(); 
 
         return $this->render('index', ['tasks' => $tasks, 'tasksForm' => $tasksForm]);
