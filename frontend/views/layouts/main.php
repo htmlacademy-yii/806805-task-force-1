@@ -10,7 +10,7 @@ use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
-AppAsset::register($this); // !!! Включен. В шаблоне главной страницы отключен! Влияют на стили для форм! Также Создает стили по умолчанию которые влияют на шрифты и некоторые классы верстки
+AppAsset::register($this); 
 ?>
 <?php $this->beginPage() ?><!-- Оставляем код -->
 <!DOCTYPE html>
@@ -23,7 +23,7 @@ AppAsset::register($this); // !!! Включен. В шаблоне главно
     <?php $this->registerCsrfMetaTags() ?><!-- Оставляем код -->
     <title><?= Html::encode($this->title) ?></title><!-- Оставляем код -->
 
-    <?php $this->head() ?><!-- Оставляем код, удаляем файл встроенного стиля css/site.css -->
+    <?php $this->head() ?><!-- Оставляем код -->
 
     <link rel="stylesheet" href="css/normalize.css"><!-- Вставляем код -->
     <link rel="stylesheet" href="css/style.css"><!-- Вставляем код -->

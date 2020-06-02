@@ -39,7 +39,7 @@ class UsersForm extends Model
     }
 
     /* Элементы для полей формы согласно имени атрибута */
-    public static function getAttributeItems(string $attributeName = 'categories') : array 
+    public static function getAttributeItems(string $attributeName) : array 
     {
         /* Категории - список чекбоксов Массив id_category - name */
         $categories = (new \yii\db\Query())
