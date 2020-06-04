@@ -12,28 +12,29 @@ use yii\base\Model;
 use yii\db\Query;
 
 class UsersFilters 
-{
-    public function getUsers($usersId)
+{   // $usersId - либо тип массив или тип объект (запрос класса Query)
+    public function getUsers($usersId) : array
     {
         // Запрос данных всех пользователей-исполнителей с подзапросом id всех исполнителей
         $users = Users::find()
             ->where(['IN', 'id_user', $usersId])
             ->orderBy(['reg_time' => SORT_DESC])
             ->indexBy('id_user')
+            ->all()
         ;
 
-        return $users->all();
+        return $users;
     }
 
     /* Получение исполнителей */
     // По заданию Пользователь является исполнитель, у которого есть специализация user_specializations, те выбираем уникальные user_id
     // Нужно удалить тех пользователей, если пользователь стал Заказчиком, даже если у него есть специализация
     // те проверяем что пользователь не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
-    public function getContractorsFilters($usersForm) 
+    public function getContractors(?Model $usersForm = null) : array 
     {
         // Запрос id действующие Заказчики 
         $customers = new Query;
-        $customers->select(['customer_id'])->from('tasks t')
+        $customers->select(['customer_id'])->from('tasks')
             ->distinct()
             ->where(['status_id' => '1'])
             ->orWhere(['status_id' => '3'])
@@ -41,14 +42,19 @@ class UsersFilters
 
         // Запрос id все Исполнители при первой загрузке без фильтров.
         // С использованием подзапроса удаляем id действующих заказчиков из исполнителей
-        $contractors = new \yii\db\Query;
+        $contractors = new Query;
         $contractors->select(['user_id'])
             ->distinct()
             ->from('user_specializations')
             ->where(['NOT IN', 'user_id', $customers])
         ;
 
-        /* Фильтры начало */
+        // если форма не отправлена
+        if ($usersForm === null) {
+            return $this->getUsers($contractors);
+        }
+
+        /* Фильтры, если форма отправлена */
         
         /* Фильтр Категории. Добавление условия в запрос. Атрибут пуст или из формы или по умолчанию */
         $contractors->andFilterWhere(['IN', 'category_id', $usersForm->categories]); 
@@ -94,7 +100,7 @@ class UsersFilters
 
     /* Рейтинг пользователей */
     // Запрос данные о рейтинге (значит есть рейтинг) пользователей при загрузке без фильтров, с подзапросом id всех исполнителей 
-    public function getRatings($usersId) 
+    public function getRatings(array $usersId) : array 
     {
         $rating = new Query();
         $rating = $rating

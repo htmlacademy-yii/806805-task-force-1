@@ -10,7 +10,7 @@ use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
-// AppAsset::register($this); // !!! Отключаем или используем style--new.css с правками вместо style.css. Создает стили по умолчанию которые влияют на шрифты и некоторые классы верстки, на др страницах влияет на формы при отключении
+// AppAsset::register($this); // !!! Отключаем Создает стили по умолчанию которые влияют на шрифты и некоторые классы верстки, на др страницах влияет на формы при отключении
 ?>
 <?php $this->beginPage() ?><!-- Оставляем код -->
 <!DOCTYPE html>

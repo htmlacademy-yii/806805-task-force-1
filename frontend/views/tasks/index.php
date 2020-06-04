@@ -170,6 +170,7 @@ $this->title = 'Задания (Верстка browse.html)';
                         ],
                     ])
                     ->dropdownList($tasksForm->getAttributeItems('dateInterval'), [
+                        'prompt' =>  'За всё время',
                         // 'options' => ['week' => ['selected' => true]] // Задать значение по умолчанию не получится, по умолчанию задается в объект модели 
                     ])
                 ;

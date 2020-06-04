@@ -37,14 +37,13 @@ class TasksForm extends Model
             [['categories', 'isOffers', 'isRemote', 'dateInterval', 'search'], 'safe'],
             ['isOffers', 'default', 'value' => '0'],
             ['isRemote', 'default', 'value' => '1'],
-            ['dateInterval', 'default', 'value' => 'week'],
         ];
     }
 
     /* Элементы для полей формы согласно имени атрибута */
     public static function getAttributeItems(string $attributeName) : array 
     {
-        /* Категории - список чекбоксов Массив id_category - name */
+        /* Фильтр Категории - список чекбоксов id_category - name */
         $categories = (new \yii\db\Query())
             ->from('categories')
             ->select(['name', 'id_category'])
@@ -54,8 +53,9 @@ class TasksForm extends Model
 
         $items = 
         [
-            /* Выпадающий список, период времени */
+            /* Фильтр Период времени - выпадающий список */
             'dateInterval' => [
+                // 'all' => 'За все время',  // !!! "За все время", отображается как 1ая опция (задается activeField promt), значение пусто
                 'day' => 'За день',
                 'week' => 'За неделю',
                 'month' => 'За месяц'

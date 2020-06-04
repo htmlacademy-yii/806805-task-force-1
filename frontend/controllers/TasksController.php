@@ -13,11 +13,14 @@ class TasksController extends Controller
     public function actionIndex() 
     {
         $tasksForm = new TasksForm; 
-        
-        $tasksForm->load(Yii::$app->request->post());
-
         $tasksFilters = new TasksFilters;
-        $tasks = $tasksFilters->getNewTasksFilters($tasksForm);
+
+        $tasks = [];
+        if ($tasksForm->load(Yii::$app->request->post()) === false) {
+            $tasks = $tasksFilters->getNewTasks();
+        } else {
+            $tasks = $tasksFilters->getNewTasks($tasksForm);
+        }
 
         return $this->render('index', ['tasks' => $tasks, 'tasksForm' => $tasksForm]);
     }

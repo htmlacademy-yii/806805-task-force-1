@@ -10,7 +10,7 @@ use yii\db\Query;
 
 class TasksFilters 
 {
-    public function getNewTasksFilters($tasksForm) 
+    public function getNewTasks(?Model $tasksForm = null) : array 
     {
         /* Запрос данные заданий новые с учетом жадной загрузки категорий */
         $tasks = Tasks::find()
@@ -18,6 +18,13 @@ class TasksFilters
             ->joinWith('category')
             ->orderBy(['add_time' => SORT_DESC])
         ;
+
+        // если форма не отправлена
+        if ($tasksForm === null) {
+            return $tasks->all(); 
+        }
+
+        /* Фильтры, если форма отправлена */
 
         /* Фильтр Категории. Добавление условия в запрос. Атрибут пуст или из формы или по умолчанию */
         $tasks->andFilterWhere(['IN', 'category_id', $tasksForm->categories]); 
@@ -29,10 +36,12 @@ class TasksFilters
             $tasks->andWhere(['NOT IN', 'id_task', $taskWithOffers]); 
         }
 
-        /* Фильтр Период. Выполнятся всегда, при первой загрузке страницы по умолчанию week */
+        /* Фильтр Период. по умолчанию пустое значение соответствует "За все время", отображается как 1ая опция (задается activeField promt) */
         // Точка времени - текущее время минус Значение фильтра, формат времени как в БД
-        $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $tasksForm->dateInterval, 'php:Y-m-d H:i:s');
-        $tasks->andWhere(['>', 'add_time', $datePoint]);
+        if ($tasksForm->dateInterval) {
+            $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $tasksForm->dateInterval, 'php:Y-m-d H:i:s');
+            $tasks->andWhere(['>', 'add_time', $datePoint]);
+        }
 
         return $tasks->all(); 
     }
