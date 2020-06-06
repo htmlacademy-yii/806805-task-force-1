@@ -16,7 +16,6 @@ AppAsset::register($this);
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
 <head>
-    <meta charset="UTF-8"><!-- Вставляем код -->
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,8 +24,8 @@ AppAsset::register($this);
 
     <?php $this->head() ?><!-- Оставляем код -->
 
-    <link rel="stylesheet" href="css/normalize.css"><!-- Вставляем код -->
-    <link rel="stylesheet" href="css/style.css"><!-- Вставляем код -->
+    <link rel="stylesheet" href="/css/normalize.css"><!-- Вставляем код -->
+    <link rel="stylesheet" href="/css/style.css"><!-- Вставляем код -->
 </head>
 <body>
 <?php $this->beginBody() ?><!-- Оставляем код -->

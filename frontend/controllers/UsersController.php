@@ -23,7 +23,11 @@ class UsersController extends Controller
             $users = $usersFilters->getContractors($usersForm);
         }
 
-        $rating = $usersFilters->getRatings(array_column($users, 'id_user'));
+        $rating = $usersFilters->getRating();
+
+        if ($type = Yii::$app->request->get('sorting')) {
+            $users = $usersFilters->getSortedUsers($type);
+        }
 
         return $this->render('index', ['users' => $users, 'rating' => $rating, 'usersForm' => $usersForm]);
     }

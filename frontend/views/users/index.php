@@ -14,14 +14,14 @@ $this->title = 'Исполнители (верстка Users.html)';
     <div class="user__search-link">
         <p>Сортировать по:</p>
         <ul class="user__search-list">
-            <li class="user__search-item user__search-item--current">
-                <a href="#" class="link-regular">Рейтингу</a>
+            <li class="user__search-item <?= Yii::$app->request->get('sorting') === 'rating' ? 'user__search-item--current' : '' ?>">
+                <a href="/users?sorting=rating" class="link-regular">Рейтингу</a>
             </li>
-            <li class="user__search-item">
-                <a href="#" class="link-regular">Числу заказов</a>
+            <li class="user__search-item <?= Yii::$app->request->get('sorting') === 'deals' ? 'user__search-item--current' : '' ?>">
+                <a href="/users?sorting=deals" class="link-regular">Числу заказов</a>
             </li>
-            <li class="user__search-item">
-                <a href="#" class="link-regular">Популярности</a>
+            <li class="user__search-item <?= Yii::$app->request->get('sorting') === 'popularity' ? 'user__search-item--current' : '' ?>">
+                <a href="/users?sorting=popularity" class="link-regular">Популярности</a>
             </li>
         </ul>
     </div>
@@ -42,17 +42,17 @@ $this->title = 'Исполнители (верстка Users.html)';
                 <?php $avg_point = $rating[$user->id_user]['avg_point'] ?? 0; ?>
 
                 <!-- итерация желтой звездочки -->
-                <?php for($i=1; $i <= $avg_point ; $i++): ?>
-                <span></span>
+                <?php for ($i=1; $i <= $avg_point; $i++) : ?>
+                    <span></span>
                 <?php endfor; ?>
 
                 <!-- итерация белой звездочки -->
-                <?php for($i=$avg_point; $i < 5; $i++): ?>
-                <span class="star-disabled"></span>
+                <?php for ($i=$avg_point; $i < 5; $i++) : ?>
+                    <span class="star-disabled"></span>
                 <?php endfor; ?>
 
                 <!-- Оценка рейтинг -->
-                <b><?= substr($avg_point, 0, 4); ?></b>
+                <b><?= substr($avg_point, 0, 4) ?></b>
 
                 <p class="user__search-content">
                     <?= $user->about ?>
@@ -62,7 +62,7 @@ $this->title = 'Исполнители (верстка Users.html)';
         </div>
         <div class="link-specialization user__search-link--bottom">
             <!-- итерация категории пользователя c использованием свойства-связи с viaTable -->
-            <?php foreach($user->userCategories as $category): ?>
+            <?php foreach ($user->userCategories as $category) : ?>
             <a href="#" class="link-regular"><?= $category->name ?></a>
             <?php endforeach; ?>
 
@@ -73,7 +73,7 @@ $this->title = 'Исполнители (верстка Users.html)';
 
     <!-- Верстка pagination --> 
     
-    <?php if(count($users) >= 5) : ?>
+    <?php if (count($users) >= 5) : ?>
     <div class="new-task__pagination">
         <ul class="new-task__pagination-list">
             <li class="pagination__item"><a href="#"></a></li>

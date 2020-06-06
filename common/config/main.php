@@ -19,7 +19,13 @@ return [
             'rules' => [
                 '//' => '/',
                 'users' => 'users/index',
+                'users/<sorting>' => 'users/index',
                 'tasks' => 'tasks/index',
+                [
+                    'pattern' => 'users/<sorting>',
+                    'route' => 'users/index',
+                    'defaults' => ['sorting' => ''],                
+                ],
             ],
         ],
     ],
