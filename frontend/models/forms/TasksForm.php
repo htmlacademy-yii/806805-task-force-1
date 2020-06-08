@@ -20,8 +20,7 @@ class TasksForm extends Model
 
     public function attributeLabels()
     {
-        return
-            [
+        return [
             'categories' => 'Категории',
             'isOffers' => 'Без откликов',
             'isRemote' => 'Удаленная работа',
@@ -32,8 +31,7 @@ class TasksForm extends Model
 
     public function rules()
     {
-        return
-            [
+        return [
             [['categories', 'isOffers', 'isRemote', 'dateInterval', 'search'], 'safe'],
             ['isOffers', 'default', 'value' => '0'],
             ['isRemote', 'default', 'value' => '1'],
@@ -51,8 +49,7 @@ class TasksForm extends Model
             ->orderBy('id_category')
             ->column();
 
-        $items =
-            [
+        $items = [
             /* Фильтр Период времени - выпадающий список */
             'dateInterval' => [
                 // 'all' => 'За все время',  // !!! "За все время", отображается как 1ая опция (задается activeField promt), значение пусто

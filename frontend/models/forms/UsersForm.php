@@ -42,7 +42,7 @@ class UsersForm extends Model
     public static function getAttributeItems(string $attributeName): ?array
     {
         /* Категории - список чекбоксов Массив id_category - name */
-        $categories = (new \yii\db\Query)
+        $categories = (new \yii\db\Query())
             ->from('categories')
             ->select(['name', 'id_category'])
             ->indexBy('id_category')

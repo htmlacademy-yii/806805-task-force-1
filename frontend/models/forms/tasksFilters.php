@@ -15,8 +15,7 @@ class TasksFilters
         $tasks = Tasks::find()
             ->where(['status_id' => 1])
             ->joinWith('category')
-            ->orderBy(['add_time' => SORT_DESC])
-        ;
+            ->orderBy(['add_time' => SORT_DESC]);
 
         // если форма не отправлена
         if ($tasksForm === null) {
@@ -31,7 +30,7 @@ class TasksFilters
         /* Фильтр - без откликов (предложения offers). true = без откликов */
         // Запрос id заданий с откликами уникальные, в любом статусе, статус определен $tasks
         if ($tasksForm->isOffers) {
-            $taskWithOffers = (new Query)->select('task_id')->distinct()->from('offers');
+            $taskWithOffers = (new Query())->select('task_id')->distinct()->from('offers');
             $tasks->andWhere(['NOT IN', 'id_task', $taskWithOffers]);
         }
 

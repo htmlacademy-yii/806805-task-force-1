@@ -22,8 +22,7 @@ class UsersFilters
             ->where(['IN', 'id_user', $usersId])
             ->orderBy(['reg_time' => SORT_DESC])
             ->indexBy('id_user')
-            ->all()
-        ;
+            ->all();
 
         return $this->users;
     }
@@ -35,21 +34,19 @@ class UsersFilters
     public function getContractors(?Model $usersForm = null): array
     {
         // Запрос id действующие Заказчики
-        $customers = new Query;
+        $customers = new Query();
         $customers->select(['customer_id'])->from('tasks')
             ->distinct()
             ->where(['status_id' => '1'])
-            ->orWhere(['status_id' => '3'])
-        ;
+            ->orWhere(['status_id' => '3']);
 
         // Запрос id все Исполнители при первой загрузке без фильтров.
         // С использованием подзапроса удаляем id действующих заказчиков из исполнителей
-        $contractors = new Query;
+        $contractors = new Query();
         $contractors->select(['user_id'])
             ->distinct()
             ->from('user_specializations')
-            ->where(['NOT IN', 'user_id', $customers])
-        ;
+            ->where(['NOT IN', 'user_id', $customers]);
 
         // если форма не отправлена
         if ($usersForm === null) {
@@ -66,25 +63,23 @@ class UsersFilters
         // Запрос id исполнителей из tasks_runnings, если задания выполняются status_id = 3 из tasks
         // Добавление условия в запрос - исключаем пользователи с заданиями в статусе исполняются
         if ($usersForm->isAvailable) {
-            $filters = (new Query)->select('contractor_id')->from('tasks t')
+            $filters = (new Query())->select('contractor_id')->from('tasks t')
                 ->join('INNER JOIN', 'task_runnings tr', 'tr.task_running_id = t.id_task')
-                ->where(['status_id' => '3'])
-            ;
+                ->where(['status_id' => '3']);
             $contractors->andWhere(['NOT IN', 'user_id', $filters]);
         }
 
         /* Фильтр Сейчас онлайн. true = свободен */
         if ($usersForm->isOnLine) {
             $datePoint = Yii::$app->formatter->asDatetime('-30 minutes', 'php:Y-m-d H:i:s'); // формат БД
-            $filters = (new Query)->select('id_user')->from('users')
-                ->where(['>', 'activity_time', $datePoint])
-            ;
+            $filters = (new Query())->select('id_user')->from('users')
+                ->where(['>', 'activity_time', $datePoint]);
             $contractors->andWhere(['IN', 'user_id', $filters]);
         }
 
         /* Фильтр. Есть отзывы. true = есть */
         if ($usersForm->isFeedbacks) {
-            $filters = (new Query)->select(['user_rated_id'])->distinct()->from('feedbacks');
+            $filters = (new Query())->select(['user_rated_id'])->distinct()->from('feedbacks');
             $contractors->andWhere(['IN', 'user_id', $filters]);
         }
 
@@ -92,8 +87,7 @@ class UsersFilters
         if ($usersForm->isFavorite) {
             $currentUser = 1; // !!!Пример
             $filters = (new Query)->select('favorite_id')->from('user_favorites')
-                ->where(['user_id' => $currentUser])
-            ;
+                ->where(['user_id' => $currentUser]);
             $contractors->andWhere(['IN', 'user_id', $filters]);
         }
 
@@ -106,7 +100,7 @@ class UsersFilters
     {
         ($usersId !== null) ?: $usersId = array_keys($this->users);
 
-        $this->rating = (new Query)
+        $this->rating = (new Query())
             ->select([
                 'user_rated_id',
                 'count(user_rated_id) as num_feedbacks',
@@ -118,8 +112,7 @@ class UsersFilters
             ->groupBy('user_rated_id')
             ->orderBy(['avg_point' => SORT_DESC])
             ->indexBy('user_rated_id')
-            ->all()
-        ;
+            ->all();
 
         return $this->rating;
     }
@@ -129,7 +122,7 @@ class UsersFilters
     {
         ($usersId !== null) ?: $usersId = array_keys($this->users);
 
-        $this->deals = (new Query)
+        $this->deals = (new Query())
             ->select([
                 'contractor_id',
                 'count(contractor_id) AS num_tasks',
@@ -139,8 +132,7 @@ class UsersFilters
             ->groupBy('contractor_id')
             ->orderBy(['num_tasks' => SORT_DESC])
             ->indexBy('contractor_id')
-            ->all()
-        ;
+            ->all();
 
         return $this->deals;
     }
@@ -153,15 +145,12 @@ class UsersFilters
             case 'rating':
                 ($this->rating !== null) ?: $this->getRating();
                 return array_replace($this->rating, $this->users);
-                break;
             case 'deals':
                 ($this->deals !== null) ?: $this->getDeals();
                 return array_replace($this->deals, $this->users);
-                break;
             case 'popularity':
                 // тело конструкции
                 return $this->users;
-                break;
             default:
                 // Если тип сортировки не передан ($type пуст) или не соответствует, то сортировка по умолчанию
                 return $this->users;

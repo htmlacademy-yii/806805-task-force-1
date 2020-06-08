@@ -11,8 +11,8 @@ class TasksController extends Controller
 {
     public function actionIndex()
     {
-        $tasksForm = new TasksForm;
-        $tasksFilters = new TasksFilters;
+        $tasksForm = new TasksForm();
+        $tasksFilters = new TasksFilters();
 
         $tasks = [];
         if ($tasksForm->load(Yii::$app->request->post()) === false) {

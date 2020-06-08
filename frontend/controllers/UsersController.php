@@ -11,8 +11,8 @@ class UsersController extends Controller
 {
     public function actionIndex()
     {
-        $usersForm = new UsersForm;
-        $usersFilters = new UsersFilters;
+        $usersForm = new UsersForm();
+        $usersFilters = new UsersFilters();
 
         $users = [];
         if ($usersForm->load(Yii::$app->request->post()) === false) {
