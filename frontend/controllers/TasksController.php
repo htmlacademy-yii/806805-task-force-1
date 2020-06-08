@@ -2,17 +2,16 @@
 
 namespace frontend\controllers;
 
-use frontend\models\forms\TasksForm;
 use frontend\models\forms\TasksFilters;
+use frontend\models\forms\TasksForm;
 use yii;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 
 class TasksController extends Controller
 {
-    public function actionIndex() 
+    public function actionIndex()
     {
-        $tasksForm = new TasksForm; 
+        $tasksForm = new TasksForm;
         $tasksFilters = new TasksFilters;
 
         $tasks = [];

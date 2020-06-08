@@ -2,16 +2,14 @@
 
 namespace frontend\controllers;
 
-use frontend\models\forms\UsersForm;
 use frontend\models\forms\UsersFilters;
+use frontend\models\forms\UsersForm;
 use yii;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-
 
 class UsersController extends Controller
 {
-    public function actionIndex() 
+    public function actionIndex()
     {
         $usersForm = new UsersForm;
         $usersFilters = new UsersFilters;

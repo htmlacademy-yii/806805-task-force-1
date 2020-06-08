@@ -5,7 +5,7 @@ namespace frontend\models\forms;
 use Yii;
 use yii\base\Model;
 
-class TasksForm extends Model 
+class TasksForm extends Model
 {
     public $categories;
     public $isOffers;
@@ -13,15 +13,15 @@ class TasksForm extends Model
     public $dateInterval;
     public $search;
 
-    public function formName() 
+    public function formName()
     {
-        return 'TasksForm'; 
+        return 'TasksForm';
     }
 
     public function attributeLabels()
     {
-        return 
-        [
+        return
+            [
             'categories' => 'Категории',
             'isOffers' => 'Без откликов',
             'isRemote' => 'Удаленная работа',
@@ -32,8 +32,8 @@ class TasksForm extends Model
 
     public function rules()
     {
-        return 
-        [
+        return
+            [
             [['categories', 'isOffers', 'isRemote', 'dateInterval', 'search'], 'safe'],
             ['isOffers', 'default', 'value' => '0'],
             ['isRemote', 'default', 'value' => '1'],
@@ -41,7 +41,7 @@ class TasksForm extends Model
     }
 
     /* Элементы для полей формы согласно имени атрибута */
-    public static function getAttributeItems(string $attributeName) : array 
+    public static function getAttributeItems(string $attributeName): array
     {
         /* Фильтр Категории - список чекбоксов id_category - name */
         $categories = (new \yii\db\Query())
@@ -51,18 +51,18 @@ class TasksForm extends Model
             ->orderBy('id_category')
             ->column();
 
-        $items = 
-        [
+        $items =
+            [
             /* Фильтр Период времени - выпадающий список */
             'dateInterval' => [
                 // 'all' => 'За все время',  // !!! "За все время", отображается как 1ая опция (задается activeField promt), значение пусто
                 'day' => 'За день',
                 'week' => 'За неделю',
-                'month' => 'За месяц'
+                'month' => 'За месяц',
             ],
             'categories' => $categories,
         ];
-      
+
         return $items[$attributeName];
     }
 }

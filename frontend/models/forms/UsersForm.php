@@ -5,7 +5,7 @@ namespace frontend\models\forms;
 use Yii;
 use yii\base\Model;
 
-class UsersForm extends Model 
+class UsersForm extends Model
 {
     public $categories;
     public $isAvailable;
@@ -16,7 +16,7 @@ class UsersForm extends Model
 
     public function formName()
     {
-        return 'UsersForm'; 
+        return 'UsersForm';
     }
 
     public function attributeLabels()
@@ -39,7 +39,7 @@ class UsersForm extends Model
     }
 
     /* Элементы для полей формы согласно имени атрибута */
-    public static function getAttributeItems(string $attributeName) : ?array 
+    public static function getAttributeItems(string $attributeName): ?array
     {
         /* Категории - список чекбоксов Массив id_category - name */
         $categories = (new \yii\db\Query)

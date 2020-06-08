@@ -3,15 +3,11 @@
 namespace frontend\models\forms;
 
 use frontend\models\db\Users;
-use frontend\models\db\UserSpecializations;
-use frontend\models\db\UserFavorites;
-use frontend\models\db\Tasks;
-use frontend\models\db\TaskRunnings;
 use yii;
 use yii\base\Model;
 use yii\db\Query;
 
-class UsersFilters 
+class UsersFilters
 {
     public $users;
     public $rating;
@@ -19,7 +15,7 @@ class UsersFilters
 
     /* Данные выбранных пользователей и Сортировка по умолчанию (время регистрации) */
     // $usersId - либо тип массив или тип объект (запрос класса Query)
-    public function getUsers($usersId) : array
+    public function getUsers($usersId): array
     {
         // Запрос данных всех пользователей-исполнителей с подзапросом id всех исполнителей
         $this->users = Users::find()
@@ -36,9 +32,9 @@ class UsersFilters
     // По заданию Пользователь является исполнитель, у которого есть специализация user_specializations, те выбираем уникальные user_id
     // Нужно удалить тех пользователей, если пользователь стал Заказчиком, даже если у него есть специализация
     // те проверяем что пользователь не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
-    public function getContractors(?Model $usersForm = null) : array 
+    public function getContractors(?Model $usersForm = null): array
     {
-        // Запрос id действующие Заказчики 
+        // Запрос id действующие Заказчики
         $customers = new Query;
         $customers->select(['customer_id'])->from('tasks')
             ->distinct()
@@ -61,9 +57,9 @@ class UsersFilters
         }
 
         /* Фильтры, если форма отправлена */
-        
+
         /* Фильтр Категории. Добавление условия в запрос. Атрибут пуст или из формы или по умолчанию */
-        $contractors->andFilterWhere(['IN', 'category_id', $usersForm->categories]); 
+        $contractors->andFilterWhere(['IN', 'category_id', $usersForm->categories]);
 
         /* Фильтр Сейчас свободен. true = сейчас свободен */
         // В таблице task_runnings есть задания которым были назначены исполнители, связь один к одному от задания к исполнителю
@@ -85,7 +81,7 @@ class UsersFilters
             ;
             $contractors->andWhere(['IN', 'user_id', $filters]);
         }
-        
+
         /* Фильтр. Есть отзывы. true = есть */
         if ($usersForm->isFeedbacks) {
             $filters = (new Query)->select(['user_rated_id'])->distinct()->from('feedbacks');
@@ -106,16 +102,16 @@ class UsersFilters
 
     /* Рейтинг выбранных пользователей */
     // Запрос данные о рейтинге из таблицы (значит есть рейтинг) пользователей
-    public function getRating(?array $usersId = null) : array 
+    public function getRating(?array $usersId = null): array
     {
         ($usersId !== null) ?: $usersId = array_keys($this->users);
-        
+
         $this->rating = (new Query)
             ->select([
-                'user_rated_id', 
-                'count(user_rated_id) as num_feedbacks', 
-                'sum(point) as sum_point', 
-                'sum(point)/count(user_rated_id) as avg_point'
+                'user_rated_id',
+                'count(user_rated_id) as num_feedbacks',
+                'sum(point) as sum_point',
+                'sum(point)/count(user_rated_id) as avg_point',
             ])
             ->from('feedbacks')
             ->where(['IN', 'user_rated_id', $usersId])
@@ -129,14 +125,14 @@ class UsersFilters
     }
 
     /* Количество сделок выбранных пользователей */
-    public function getDeals(?array $usersId = null) : array 
+    public function getDeals(?array $usersId = null): array
     {
         ($usersId !== null) ?: $usersId = array_keys($this->users);
 
         $this->deals = (new Query)
             ->select([
-                'contractor_id' , 
-                'count(contractor_id) AS num_tasks'
+                'contractor_id',
+                'count(contractor_id) AS num_tasks',
             ])
             ->from('task_runnings')
             ->where(['IN', 'contractor_id', $usersId])
@@ -151,24 +147,24 @@ class UsersFilters
 
     /* Сортировка согласно строки запроса $sorting или параметра действия контроллера (при использовании ЧПУ) */
     // По умолчанию сортировка задана в методе getUsers
-    public function getSortedUsers(?string $type) : array
+    public function getSortedUsers(?string $type): array
     {
         switch ($type) {
-            case 'rating': 
+            case 'rating':
                 ($this->rating !== null) ?: $this->getRating();
                 return array_replace($this->rating, $this->users);
                 break;
-            case 'deals': 
+            case 'deals':
                 ($this->deals !== null) ?: $this->getDeals();
                 return array_replace($this->deals, $this->users);
-                break;   
-            case 'popularity': 
+                break;
+            case 'popularity':
                 // тело конструкции
                 return $this->users;
-                break;              
+                break;
             default:
                 // Если тип сортировки не передан ($type пуст) или не соответствует, то сортировка по умолчанию
-                return $this->users; 
+                return $this->users;
         }
     }
 }
