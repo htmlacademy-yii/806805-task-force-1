@@ -9,7 +9,7 @@ use yii\db\Query;
 
 class TasksFilters
 {
-    public function getNewTasks(?Model $tasksForm = null): array
+    public function getNewTasks(Model $tasksForm = null): array
     {
         /* Запрос данные заданий новые с учетом жадной загрузки категорий */
         $tasks = Tasks::find()

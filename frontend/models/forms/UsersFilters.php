@@ -31,7 +31,7 @@ class UsersFilters
     // По заданию Пользователь является исполнитель, у которого есть специализация user_specializations, те выбираем уникальные user_id
     // Нужно удалить тех пользователей, если пользователь стал Заказчиком, даже если у него есть специализация
     // те проверяем что пользователь не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
-    public function getContractors(?Model $usersForm = null): array
+    public function getContractors(Model $usersForm = null): array
     {
         // Запрос id действующие Заказчики
         $customers = new Query();
@@ -96,7 +96,7 @@ class UsersFilters
 
     /* Рейтинг выбранных пользователей */
     // Запрос данные о рейтинге из таблицы (значит есть рейтинг) пользователей
-    public function getRating(?array $usersId = null): array
+    public function getRating(array $usersId = null): array
     {
         ($usersId !== null) ?: $usersId = array_keys($this->users);
 
@@ -118,7 +118,7 @@ class UsersFilters
     }
 
     /* Количество сделок выбранных пользователей */
-    public function getDeals(?array $usersId = null): array
+    public function getDeals(array $usersId = null): array
     {
         ($usersId !== null) ?: $usersId = array_keys($this->users);
 
