@@ -14,12 +14,12 @@ class UsersFilters
     public $deals;
 
     /* Данные выбранных пользователей и Сортировка по умолчанию (время регистрации) */
-    // $usersId - либо тип массив или тип объект (запрос класса Query)
-    public function getUsers($usersId): array
+    // $userIds - либо тип массив или тип объект (запрос класса Query)
+    public function getUsers($userIds): array
     {
         // Запрос данных всех пользователей-исполнителей с подзапросом id всех исполнителей
         $this->users = Users::find()
-            ->where(['IN', 'id_user', $usersId])
+            ->where(['IN', 'id_user', $userIds])
             ->orderBy(['reg_time' => SORT_DESC])
             ->indexBy('id_user')
             ->all();
@@ -96,9 +96,9 @@ class UsersFilters
 
     /* Рейтинг выбранных пользователей */
     // Запрос данные о рейтинге из таблицы (значит есть рейтинг) пользователей
-    public function getRating(array $usersId = null): array
+    public function getRating(array $userIds = null): array
     {
-        ($usersId !== null) ?: $usersId = array_keys($this->users);
+        ($userIds !== null) ?: $userIds = array_keys($this->users);
 
         $this->rating = (new Query())
             ->select([
@@ -108,7 +108,7 @@ class UsersFilters
                 'sum(point)/count(user_rated_id) as avg_point',
             ])
             ->from('feedbacks')
-            ->where(['IN', 'user_rated_id', $usersId])
+            ->where(['IN', 'user_rated_id', $userIds])
             ->groupBy('user_rated_id')
             ->orderBy(['avg_point' => SORT_DESC])
             ->indexBy('user_rated_id')
@@ -118,9 +118,9 @@ class UsersFilters
     }
 
     /* Количество сделок выбранных пользователей */
-    public function getDeals(array $usersId = null): array
+    public function getDeals(array $userIds = null): array
     {
-        ($usersId !== null) ?: $usersId = array_keys($this->users);
+        ($userIds !== null) ?: $userIds = array_keys($this->users);
 
         $this->deals = (new Query())
             ->select([
@@ -128,7 +128,7 @@ class UsersFilters
                 'count(contractor_id) AS num_tasks',
             ])
             ->from('task_runnings')
-            ->where(['IN', 'contractor_id', $usersId])
+            ->where(['IN', 'contractor_id', $userIds])
             ->groupBy('contractor_id')
             ->orderBy(['num_tasks' => SORT_DESC])
             ->indexBy('contractor_id')
