@@ -2,21 +2,25 @@
 
 namespace frontend\controllers;
 
+use frontend\models\forms\TasksFilters;
+use frontend\models\forms\TasksForm;
+use yii;
 use yii\web\Controller;
-use yii\db\Query;
-use frontend\models\db\Tasks;
-use yii\web\NotFoundHttpException;
-
 
 class TasksController extends Controller
 {
-
-    public function actionIndex() 
+    public function actionIndex()
     {
+        $tasksForm = new TasksForm();
+        $tasksFilters = new TasksFilters();
 
-        $tasks = Tasks::find()->where(['status_id' => 1])->orderBy(['add_time' => SORT_DESC])->all(); 
-        
-        return $this->render('index', ['tasks' => $tasks]);
+        $tasks = [];
+        if ($tasksForm->load(Yii::$app->request->post()) === false) {
+            $tasks = $tasksFilters->getNewTasks();
+        } else {
+            $tasks = $tasksFilters->getNewTasks($tasksForm);
+        }
+
+        return $this->render('index', ['tasks' => $tasks, 'tasksForm' => $tasksForm]);
     }
-
 }

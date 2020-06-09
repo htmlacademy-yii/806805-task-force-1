@@ -38,9 +38,26 @@ class Messages extends \yii\db\ActiveRecord
             [['task_id', 'sender_id', 'recipient_id'], 'integer'],
             [['mess'], 'string'],
             [['add_time'], 'safe'],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'id_task']],
-            [['sender_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['sender_id' => 'id_user']],
-            [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['recipient_id' => 'id_user']],
+            [
+                ['task_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Tasks::className(), 
+                'targetAttribute' => ['task_id' => 'id_task']
+            ],
+            [
+                ['sender_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['sender_id' => 'id_user']
+            ],
+            [
+                ['recipient_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['recipient_id' => 'id_user']],
         ];
     }
 

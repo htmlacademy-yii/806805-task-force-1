@@ -5,23 +5,23 @@ namespace frontend\models\db;
 use Yii;
 
 /**
- * This is the model class for table "task_runnings".
+ * This is the model class for table "task_failings".
  *
- * @property int $id_task_running
- * @property int $task_running_id
+ * @property int $id_task_failing
+ * @property int $task_failing_id
  * @property int $contractor_id
  *
- * @property Tasks $taskRunning
+ * @property Tasks $taskFailing
  * @property Users $contractor
  */
-class TaskRunnings extends \yii\db\ActiveRecord
+class TaskFailings extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'task_runnings';
+        return 'task_failings';
     }
 
     /**
@@ -30,14 +30,14 @@ class TaskRunnings extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['task_running_id', 'contractor_id'], 'required'],
-            [['task_running_id', 'contractor_id'], 'integer'],
+            [['task_failing_id', 'contractor_id'], 'required'],
+            [['task_failing_id', 'contractor_id'], 'integer'],
             [
-                ['task_running_id'], 
+                ['task_failing_id'], 
                 'exist', 
                 'skipOnError' => true, 
                 'targetClass' => Tasks::className(), 
-                'targetAttribute' => ['task_running_id' => 'id_task']
+                'targetAttribute' => ['task_failing_id' => 'id_task']
             ],
             [
                 ['contractor_id'], 
@@ -55,8 +55,8 @@ class TaskRunnings extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_task_running' => 'Id Task Running',
-            'task_running_id' => 'Task Running ID',
+            'id_task_failing' => 'Id Task Failing',
+            'task_failing_id' => 'Task Failing ID',
             'contractor_id' => 'Contractor ID',
         ];
     }
@@ -64,9 +64,9 @@ class TaskRunnings extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTaskRunning()
+    public function getTaskFailing()
     {
-        return $this->hasOne(Tasks::className(), ['id_task' => 'task_running_id']);
+        return $this->hasOne(Tasks::className(), ['id_task' => 'task_failing_id']);
     }
 
     /**

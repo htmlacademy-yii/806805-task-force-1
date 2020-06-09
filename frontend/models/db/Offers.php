@@ -34,8 +34,20 @@ class Offers extends \yii\db\ActiveRecord
             [['task_id', 'contractor_id', 'desk'], 'required'],
             [['task_id', 'contractor_id'], 'integer'],
             [['desk'], 'string'],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'id_task']],
-            [['contractor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['contractor_id' => 'id_user']],
+            [
+                ['task_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Tasks::className(), 
+                'targetAttribute' => ['task_id' => 'id_task']
+            ],
+            [
+                ['contractor_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['contractor_id' => 'id_user']
+            ],
         ];
     }
 

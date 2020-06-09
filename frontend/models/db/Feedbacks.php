@@ -35,13 +35,34 @@ class Feedbacks extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'user_rated_id', 'task_id', 'point', 'add_time'], 'required'],
+            [
+                ['user_id', 'user_rated_id', 'task_id', 'point', 'add_time'], 
+                'required'
+            ],
             [['user_id', 'user_rated_id', 'task_id', 'point'], 'integer'],
             [['desk'], 'string'],
             [['add_time'], 'safe'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id_user']],
-            [['user_rated_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_rated_id' => 'id_user']],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'id_task']],
+            [
+                ['user_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['user_id' => 'id_user']
+            ],
+            [
+                ['user_rated_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['user_rated_id' => 'id_user']
+            ],
+            [
+                ['task_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Tasks::className(), 
+                'targetAttribute' => ['task_id' => 'id_task']
+            ],
         ];
     }
 
