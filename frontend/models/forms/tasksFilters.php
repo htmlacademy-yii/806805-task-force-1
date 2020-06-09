@@ -41,6 +41,19 @@ class TasksFilters
             $tasks->andWhere(['>', 'add_time', $datePoint]);
         }
 
+        /* Фильтр Нестрогий поиск по полю название задания */
+        // Специальные символы для полнотекстового поиска удаляются из строки поиска
+        // Словам добавляется в конце специальный символ * для полнотекстового поиска
+        // Полнотексовый поиск выполняется правильно только в соответствии с первыми буквами слова
+        if ($search = $tasksForm->search) {
+            $symbol = ['+', '-', '*', '<', '>', '~', '@', '(', ')', '"', '"'];
+            $saveSearch = trim(str_replace($symbol, ' ', $search));
+            $words = array_filter(explode(' ', $saveSearch));
+            $logicWords = array_map(function($value) {return $value . '*';}, $words);
+            $logicSearch = implode(' ', $logicWords);
+            $tasks->andWhere("MATCH(tasks.name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
+        }
+
         return $tasks->all();
     }
 }
