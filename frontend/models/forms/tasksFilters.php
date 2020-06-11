@@ -49,7 +49,7 @@ class TasksFilters
             $symbol = ['+', '-', '*', '<', '>', '~', '@', '(', ')', '"', '"'];
             $saveSearch = trim(str_replace($symbol, ' ', $search));
             $words = array_filter(explode(' ', $saveSearch));
-            $logicWords = array_map(function($value) {return $value . '*';}, $words);
+            $logicWords = array_map(function ($value) {return $value . '*';}, $words);
             $logicSearch = implode(' ', $logicWords);
             $tasks->andWhere("MATCH(tasks.name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
         }
