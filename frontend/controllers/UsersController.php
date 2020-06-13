@@ -9,6 +9,8 @@ use yii\web\Controller;
 
 class UsersController extends Controller
 {
+    // первый комми в ветке
+
     public function actionIndex()
     {
         $usersForm = new UsersForm();
@@ -17,6 +19,12 @@ class UsersController extends Controller
         $users = [];
         if ($usersForm->load(Yii::$app->request->post()) === false) {
             $users = $usersFilters->getContractors();
+        } elseif ($search = $usersForm->search) {
+            unset($usersForm);
+            $usersForm = new UsersForm();
+            $usersForm->search = $search;
+
+            $users = $usersFilters->getContractors($usersForm);
         } else {
             $users = $usersFilters->getContractors($usersForm);
         }

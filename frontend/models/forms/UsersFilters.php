@@ -35,7 +35,9 @@ class UsersFilters
     {
         // Запрос id действующие Заказчики
         $customers = new Query();
-        $customers->select(['customer_id'])->from('tasks')
+        $customers
+            ->select(['customer_id'])
+            ->from('tasks')
             ->distinct()
             ->where(['status_id' => '1'])
             ->orWhere(['status_id' => '3']);
@@ -43,7 +45,8 @@ class UsersFilters
         // Запрос id все Исполнители при первой загрузке без фильтров.
         // С использованием подзапроса удаляем id действующих заказчиков из исполнителей
         $contractors = new Query();
-        $contractors->select(['user_id'])
+        $contractors
+            ->select(['user_id'])
             ->distinct()
             ->from('user_specializations')
             ->where(['NOT IN', 'user_id', $customers]);
@@ -54,6 +57,29 @@ class UsersFilters
         }
 
         /* Фильтры, если форма отправлена */
+
+        /* Фильтр поиск по полю название задания. нужен Fulltext index в БД */
+        // Специальные символы для полнотекстового поиска удаляются из строки поиска
+        // Словам добавляется в конце специальный символ * для полнотекстового поиска
+        // Полнотексовый поиск выполняется правильно только в соответствии с первыми буквами слова
+        // Согласно ТЗ, поиск сбрасывает другие фильтры -
+        if ($search = $usersForm->search) {
+            $symbol = ['+', '-', '*', '<', '>', '~', '@', '(', ')', '"', '"'];
+            $saveSearch = trim(str_replace($symbol, ' ', $search));
+            $words = array_filter(explode(' ', $saveSearch));
+            $logicWords = array_map(function ($value) {return $value . '*';}, $words);
+            $logicSearch = implode(' ', $logicWords);
+
+            $contractorsBySearch = new Query();
+            $contractorsBySearch
+                ->select(['id_user'])
+                ->distinct()
+                ->from('users')
+                ->where(['IN', 'id_user', $contractors])
+                ->andWhere("MATCH(users.name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
+
+            return $this->getUsers($contractorsBySearch);
+        }
 
         /* Фильтр Категории. Добавление условия в запрос. Атрибут пуст или из формы или по умолчанию */
         $contractors->andFilterWhere(['IN', 'category_id', $usersForm->categories]);
