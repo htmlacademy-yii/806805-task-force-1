@@ -23,13 +23,13 @@ DROP TABLE IF EXISTS `categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categories` (
-  `id_category` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_category`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `category_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `label` varchar(64) NOT NULL,
+  PRIMARY KEY (`category_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `label` (`label`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,21 +40,21 @@ DROP TABLE IF EXISTS `feedbacks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `feedbacks` (
-  `id_feedback` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `user_rated_id` int(10) unsigned NOT NULL,
-  `task_id` int(10) unsigned NOT NULL,
-  `desk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `point` tinyint(3) unsigned NOT NULL,
+  `feedback_id` int(11) NOT NULL AUTO_INCREMENT,
+  `author_id` int(11) NOT NULL,
+  `recipient_id` int(11) NOT NULL,
+  `task_id` int(11) NOT NULL,
+  `desc_text` text,
+  `point_num` int(11) NOT NULL,
   `add_time` datetime NOT NULL,
-  PRIMARY KEY (`id_feedback`),
-  KEY `user_id` (`user_id`),
-  KEY `user_rated_id` (`user_rated_id`),
+  PRIMARY KEY (`feedback_id`),
+  KEY `author_id` (`author_id`),
+  KEY `recipient_id` (`recipient_id`),
   KEY `task_id` (`task_id`),
-  CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `feedbacks_ibfk_2` FOREIGN KEY (`user_rated_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `feedbacks_ibfk_3` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `feedbacks_ibfk_2` FOREIGN KEY (`recipient_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `feedbacks_ibfk_3` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,12 +65,12 @@ DROP TABLE IF EXISTS `locations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `locations` (
-  `id_location` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `city` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `latitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `longitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_location`)
-) ENGINE=InnoDB AUTO_INCREMENT=1109 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `location_id` int(11) NOT NULL AUTO_INCREMENT,
+  `city` varchar(64) NOT NULL,
+  `latitude` varchar(255) NOT NULL,
+  `longitude` varchar(255) NOT NULL,
+  PRIMARY KEY (`location_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1109 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,20 +81,20 @@ DROP TABLE IF EXISTS `messages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `messages` (
-  `id_message` int(11) NOT NULL AUTO_INCREMENT,
-  `task_id` int(10) unsigned NOT NULL,
-  `sender_id` int(10) unsigned NOT NULL,
-  `recipient_id` int(10) unsigned NOT NULL,
-  `mess` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `message_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `mess_text` text NOT NULL,
   `add_time` datetime NOT NULL,
-  PRIMARY KEY (`id_message`),
+  PRIMARY KEY (`message_id`),
   KEY `task_id` (`task_id`),
   KEY `sender_id` (`sender_id`),
-  KEY `recipient_id` (`recipient_id`),
-  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`),
-  CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `messages_ibfk_3` FOREIGN KEY (`recipient_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `receiver_id` (`receiver_id`),
+  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
+  CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `messages_ibfk_3` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -105,16 +105,16 @@ DROP TABLE IF EXISTS `offers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `offers` (
-  `id_offer` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `task_id` int(10) unsigned NOT NULL,
-  `contractor_id` int(10) unsigned NOT NULL,
-  `desk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_offer`),
+  `offer_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `contractor_id` int(11) NOT NULL,
+  `desc_text` text NOT NULL,
+  PRIMARY KEY (`offer_id`),
   KEY `task_id` (`task_id`),
   KEY `contractor_id` (`contractor_id`),
-  CONSTRAINT `offers_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`),
-  CONSTRAINT `offers_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `offers_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
+  CONSTRAINT `offers_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,13 +125,13 @@ DROP TABLE IF EXISTS `task_actions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_actions` (
-  `id_task_action` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_task_action`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `action_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `const_name` varchar(64) NOT NULL,
+  PRIMARY KEY (`action_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `const_name` (`const_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -142,15 +142,15 @@ DROP TABLE IF EXISTS `task_failings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_failings` (
-  `id_task_failing` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `task_failing_id` int(10) unsigned NOT NULL,
-  `contractor_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id_task_failing`),
-  KEY `task_failing_id` (`task_failing_id`),
+  `failing_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `contractor_id` int(11) NOT NULL,
+  PRIMARY KEY (`failing_id`),
+  KEY `task_id` (`task_id`),
   KEY `contractor_id` (`contractor_id`),
-  CONSTRAINT `task_failings_ibfk_1` FOREIGN KEY (`task_failing_id`) REFERENCES `tasks` (`id_task`),
-  CONSTRAINT `task_failings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `task_failings_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
+  CONSTRAINT `task_failings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,13 +161,13 @@ DROP TABLE IF EXISTS `task_files`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_files` (
-  `id_task_file` int(11) NOT NULL AUTO_INCREMENT,
-  `task_id` int(11) unsigned NOT NULL,
-  `file` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`id_task_file`),
-  KEY `fk-task_files-task_id` (`task_id`),
-  CONSTRAINT `fk-task_files-task_id` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `file_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `file_addr` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`file_id`),
+  KEY `task_id` (`task_id`),
+  CONSTRAINT `task_files_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -178,15 +178,15 @@ DROP TABLE IF EXISTS `task_runnings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_runnings` (
-  `id_task_running` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `task_running_id` int(10) unsigned NOT NULL,
-  `contractor_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id_task_running`),
-  KEY `task_running_id` (`task_running_id`),
+  `running_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `contractor_id` int(11) NOT NULL,
+  PRIMARY KEY (`running_id`),
+  KEY `task_id` (`task_id`),
   KEY `contractor_id` (`contractor_id`),
-  CONSTRAINT `task_runnings_ibfk_1` FOREIGN KEY (`task_running_id`) REFERENCES `tasks` (`id_task`),
-  CONSTRAINT `task_runnings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `task_runnings_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
+  CONSTRAINT `task_runnings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,13 +197,13 @@ DROP TABLE IF EXISTS `task_statuses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_statuses` (
-  `id_task_status` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_task_status`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `status_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `const_name` varchar(64) NOT NULL,
+  PRIMARY KEY (`status_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `const_name` (`const_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -214,31 +214,32 @@ DROP TABLE IF EXISTS `tasks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tasks` (
-  `id_task` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `status_id` int(10) unsigned NOT NULL,
-  `category_id` tinyint(3) unsigned NOT NULL,
-  `location_id` int(10) unsigned NOT NULL,
-  `customer_id` int(10) unsigned NOT NULL,
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `task_id` int(11) NOT NULL AUTO_INCREMENT,
+  `status_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `title` varchar(128) NOT NULL,
+  `desc_text` text NOT NULL,
   `price` int(10) unsigned DEFAULT NULL,
-  `address` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `latitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `longitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `full_address` varchar(255) DEFAULT NULL,
+  `address_desc` varchar(255) DEFAULT NULL,
+  `latitude` varchar(255) DEFAULT NULL,
+  `longitude` varchar(255) DEFAULT NULL,
   `add_time` datetime NOT NULL,
   `end_date` datetime DEFAULT NULL,
-  `is_remote` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id_task`),
+  `is_remote` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`task_id`),
   KEY `status_id` (`status_id`),
   KEY `category_id` (`category_id`),
   KEY `location_id` (`location_id`),
   KEY `customer_id` (`customer_id`),
-  FULLTEXT KEY `tasks_name_search` (`name`),
-  CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `task_statuses` (`id_task_status`),
-  CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id_category`),
-  CONSTRAINT `tasks_ibfk_3` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id_location`),
-  CONSTRAINT `tasks_ibfk_4` FOREIGN KEY (`customer_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  FULLTEXT KEY `tasks_full_name_fulltext` (`title`),
+  CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `task_statuses` (`status_id`),
+  CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`),
+  CONSTRAINT `tasks_ibfk_3` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`),
+  CONSTRAINT `tasks_ibfk_4` FOREIGN KEY (`customer_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,16 +250,16 @@ DROP TABLE IF EXISTS `user_favorites`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_favorites` (
-  `id_user_favorite` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `favorite_id` int(10) unsigned NOT NULL,
-  `on_off` tinyint(1) DEFAULT '1',
-  PRIMARY KEY (`id_user_favorite`),
+  `favorite_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `fave_user_id` int(11) NOT NULL,
+  `is_fave` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`favorite_id`),
   KEY `user_id` (`user_id`),
-  KEY `favorite_id` (`favorite_id`),
-  CONSTRAINT `user_favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `user_favorites_ibfk_2` FOREIGN KEY (`favorite_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `fave_user_id` (`fave_user_id`),
+  CONSTRAINT `user_favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_favorites_ibfk_2` FOREIGN KEY (`fave_user_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -269,16 +270,16 @@ DROP TABLE IF EXISTS `user_notification_settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_notification_settings` (
-  `id_user_notification_setting` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `notification_id` int(10) unsigned NOT NULL,
-  `on_off` tinyint(1) DEFAULT '1',
-  PRIMARY KEY (`id_user_notification_setting`),
+  `setting_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `notification_id` int(11) NOT NULL,
+  `is_active` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`setting_id`),
   KEY `user_id` (`user_id`),
   KEY `notification_id` (`notification_id`),
-  CONSTRAINT `user_notification_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `user_notification_settings_ibfk_2` FOREIGN KEY (`notification_id`) REFERENCES `user_notifications` (`id_user_notification`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `user_notification_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_notification_settings_ibfk_2` FOREIGN KEY (`notification_id`) REFERENCES `user_notifications` (`notification_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -289,13 +290,13 @@ DROP TABLE IF EXISTS `user_notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_notifications` (
-  `id_user_notification` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_user_notification`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `notification_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `label` varchar(64) NOT NULL,
+  PRIMARY KEY (`notification_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `label` (`label`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -306,13 +307,13 @@ DROP TABLE IF EXISTS `user_portfolio_images`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_portfolio_images` (
-  `id_user_portfolio_image` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`id_user_portfolio_image`),
+  `image_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `image_addr` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`image_id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `user_portfolio_images_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `user_portfolio_images_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,13 +324,13 @@ DROP TABLE IF EXISTS `user_roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_roles` (
-  `id_user_role` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_user_role`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `role_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `const_name` varchar(64) NOT NULL,
+  PRIMARY KEY (`role_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `const_name` (`const_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -340,15 +341,15 @@ DROP TABLE IF EXISTS `user_specializations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_specializations` (
-  `id_user_specialization` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `category_id` tinyint(3) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id_user_specialization`),
+  `specialization_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`specialization_id`),
   KEY `user_id` (`user_id`),
   KEY `category_id` (`category_id`),
-  CONSTRAINT `user_specializations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `user_specializations_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id_category`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `user_specializations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_specializations_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -359,31 +360,31 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id_user` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `role_id` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `location_id` int(10) unsigned NOT NULL,
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `skype` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `other_contacts` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `about` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `reg_time` datetime NOT NULL,
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` int(11) NOT NULL DEFAULT '1',
+  `location_id` int(11) NOT NULL,
+  `full_name` varchar(64) NOT NULL,
+  `email` varchar(64) NOT NULL,
+  `phone` varchar(11) DEFAULT NULL,
+  `skype` varchar(64) DEFAULT NULL,
+  `messaging_contact` varchar(64) DEFAULT NULL,
+  `full_address` varchar(255) DEFAULT NULL,
+  `avatar_addr` varchar(255) DEFAULT NULL,
+  `desc_text` text,
+  `password_key` varchar(255) NOT NULL,
   `birth_date` date DEFAULT NULL,
+  `reg_time` datetime NOT NULL,
   `activity_time` datetime NOT NULL,
-  `hide_contacts` tinyint(1) DEFAULT '0',
-  `hide_profile` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id_user`),
+  `hide_contacts` tinyint(1) NOT NULL DEFAULT '0',
+  `hide_profile` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`),
   KEY `role_id` (`role_id`),
   KEY `location_id` (`location_id`),
-  FULLTEXT KEY `users_name_search` (`name`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `user_roles` (`id_user_role`),
-  CONSTRAINT `users_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id_location`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  FULLTEXT KEY `users_full_name_fulltext` (`full_name`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `user_roles` (`role_id`),
+  CONSTRAINT `users_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -395,4 +396,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-30 19:04:58
+-- Dump completed on 2020-06-30 20:35:12

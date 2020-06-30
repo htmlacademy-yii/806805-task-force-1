@@ -23,13 +23,13 @@ DROP TABLE IF EXISTS `categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categories` (
-  `id_category` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_category`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `category_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `label` varchar(64) NOT NULL,
+  PRIMARY KEY (`category_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `label` (`label`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'translation','Курьерские услуги'),(2,'clean','Уборка'),(3,'cargo','Переезды'),(4,'neo','Компьютерная помощь'),(5,'flat','Ремонт квартирный'),(6,'repair','Ремонт техники'),(7,'beauty','Красота'),(8,'photo','Фото');
+INSERT INTO `categories` VALUES (1,'Курьерские услуги','translation'),(2,'Уборка','clean'),(3,'Переезды','cargo'),(4,'Компьютерная помощь','neo'),(5,'Ремонт квартирный','flat'),(6,'Ремонт техники','repair'),(7,'Красота','beauty'),(8,'Фото','photo');
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -50,21 +50,21 @@ DROP TABLE IF EXISTS `feedbacks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `feedbacks` (
-  `id_feedback` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `user_rated_id` int(10) unsigned NOT NULL,
-  `task_id` int(10) unsigned NOT NULL,
-  `desk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `point` tinyint(3) unsigned NOT NULL,
+  `feedback_id` int(11) NOT NULL AUTO_INCREMENT,
+  `author_id` int(11) NOT NULL,
+  `recipient_id` int(11) NOT NULL,
+  `task_id` int(11) NOT NULL,
+  `desc_text` text,
+  `point_num` int(11) NOT NULL,
   `add_time` datetime NOT NULL,
-  PRIMARY KEY (`id_feedback`),
-  KEY `user_id` (`user_id`),
-  KEY `user_rated_id` (`user_rated_id`),
+  PRIMARY KEY (`feedback_id`),
+  KEY `author_id` (`author_id`),
+  KEY `recipient_id` (`recipient_id`),
   KEY `task_id` (`task_id`),
-  CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `feedbacks_ibfk_2` FOREIGN KEY (`user_rated_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `feedbacks_ibfk_3` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `feedbacks_ibfk_2` FOREIGN KEY (`recipient_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `feedbacks_ibfk_3` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -85,12 +85,12 @@ DROP TABLE IF EXISTS `locations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `locations` (
-  `id_location` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `city` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `latitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `longitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_location`)
-) ENGINE=InnoDB AUTO_INCREMENT=1109 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `location_id` int(11) NOT NULL AUTO_INCREMENT,
+  `city` varchar(64) NOT NULL,
+  `latitude` varchar(255) NOT NULL,
+  `longitude` varchar(255) NOT NULL,
+  PRIMARY KEY (`location_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1109 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -111,20 +111,20 @@ DROP TABLE IF EXISTS `messages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `messages` (
-  `id_message` int(11) NOT NULL AUTO_INCREMENT,
-  `task_id` int(10) unsigned NOT NULL,
-  `sender_id` int(10) unsigned NOT NULL,
-  `recipient_id` int(10) unsigned NOT NULL,
-  `mess` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `message_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `mess_text` text NOT NULL,
   `add_time` datetime NOT NULL,
-  PRIMARY KEY (`id_message`),
+  PRIMARY KEY (`message_id`),
   KEY `task_id` (`task_id`),
   KEY `sender_id` (`sender_id`),
-  KEY `recipient_id` (`recipient_id`),
-  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`),
-  CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `messages_ibfk_3` FOREIGN KEY (`recipient_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `receiver_id` (`receiver_id`),
+  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
+  CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `messages_ibfk_3` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -145,16 +145,16 @@ DROP TABLE IF EXISTS `offers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `offers` (
-  `id_offer` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `task_id` int(10) unsigned NOT NULL,
-  `contractor_id` int(10) unsigned NOT NULL,
-  `desk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_offer`),
+  `offer_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `contractor_id` int(11) NOT NULL,
+  `desc_text` text NOT NULL,
+  PRIMARY KEY (`offer_id`),
   KEY `task_id` (`task_id`),
   KEY `contractor_id` (`contractor_id`),
-  CONSTRAINT `offers_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`),
-  CONSTRAINT `offers_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `offers_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
+  CONSTRAINT `offers_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -175,13 +175,13 @@ DROP TABLE IF EXISTS `task_actions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_actions` (
-  `id_task_action` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_task_action`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `action_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `const_name` varchar(64) NOT NULL,
+  PRIMARY KEY (`action_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `const_name` (`const_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -190,7 +190,7 @@ CREATE TABLE `task_actions` (
 
 LOCK TABLES `task_actions` WRITE;
 /*!40000 ALTER TABLE `task_actions` DISABLE KEYS */;
-INSERT INTO `task_actions` VALUES (1,'ACTION_ADD_TASK','Добавить задание'),(2,'ACTION_OFFER','Откликнуться'),(3,'ACTION_FAILURE','Отказаться'),(4,'ACTION_CANCEL','Отменить'),(5,'ACTION_SET_CONTRACTOR','Выбрать исполнителя'),(6,'ACTION_COMPLETE','Завершить'),(7,'ACTION_ACCEPT','Принять'),(8,'ACTION_MESS','Написать сообщение');
+INSERT INTO `task_actions` VALUES (1,'Добавить задание','ACTION_ADD_TASK'),(2,'Откликнуться','ACTION_OFFER'),(3,'Отказаться','ACTION_FAILURE'),(4,'Отменить','ACTION_CANCEL'),(5,'Выбрать исполнителя','ACTION_SET_CONTRACTOR'),(6,'Завершить','ACTION_COMPLETE'),(7,'Принять','ACTION_ACCEPT'),(8,'Написать сообщение','ACTION_MESS');
 /*!40000 ALTER TABLE `task_actions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -202,15 +202,15 @@ DROP TABLE IF EXISTS `task_failings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_failings` (
-  `id_task_failing` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `task_failing_id` int(10) unsigned NOT NULL,
-  `contractor_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id_task_failing`),
-  KEY `task_failing_id` (`task_failing_id`),
+  `failing_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `contractor_id` int(11) NOT NULL,
+  PRIMARY KEY (`failing_id`),
+  KEY `task_id` (`task_id`),
   KEY `contractor_id` (`contractor_id`),
-  CONSTRAINT `task_failings_ibfk_1` FOREIGN KEY (`task_failing_id`) REFERENCES `tasks` (`id_task`),
-  CONSTRAINT `task_failings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `task_failings_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
+  CONSTRAINT `task_failings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -231,13 +231,13 @@ DROP TABLE IF EXISTS `task_files`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_files` (
-  `id_task_file` int(11) NOT NULL AUTO_INCREMENT,
-  `task_id` int(11) unsigned NOT NULL,
-  `file` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`id_task_file`),
-  KEY `fk-task_files-task_id` (`task_id`),
-  CONSTRAINT `fk-task_files-task_id` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id_task`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `file_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `file_addr` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`file_id`),
+  KEY `task_id` (`task_id`),
+  CONSTRAINT `task_files_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -258,15 +258,15 @@ DROP TABLE IF EXISTS `task_runnings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_runnings` (
-  `id_task_running` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `task_running_id` int(10) unsigned NOT NULL,
-  `contractor_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id_task_running`),
-  KEY `task_running_id` (`task_running_id`),
+  `running_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `contractor_id` int(11) NOT NULL,
+  PRIMARY KEY (`running_id`),
+  KEY `task_id` (`task_id`),
   KEY `contractor_id` (`contractor_id`),
-  CONSTRAINT `task_runnings_ibfk_1` FOREIGN KEY (`task_running_id`) REFERENCES `tasks` (`id_task`),
-  CONSTRAINT `task_runnings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `task_runnings_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
+  CONSTRAINT `task_runnings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -287,13 +287,13 @@ DROP TABLE IF EXISTS `task_statuses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_statuses` (
-  `id_task_status` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_task_status`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `status_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `const_name` varchar(64) NOT NULL,
+  PRIMARY KEY (`status_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `const_name` (`const_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -302,7 +302,7 @@ CREATE TABLE `task_statuses` (
 
 LOCK TABLES `task_statuses` WRITE;
 /*!40000 ALTER TABLE `task_statuses` DISABLE KEYS */;
-INSERT INTO `task_statuses` VALUES (1,'STATUS_NEW','Новое'),(2,'STATUS_CANCELED','Отменено'),(3,'STATUS_RUNNING','Выполняется'),(4,'STATUS_COMPLETED','Выполнено'),(5,'STATUS_FAILED','Провалено');
+INSERT INTO `task_statuses` VALUES (1,'Новое','STATUS_NEW'),(2,'Отменено','STATUS_CANCELED'),(3,'Выполняется','STATUS_RUNNING'),(4,'Выполнено','STATUS_COMPLETED'),(5,'Провалено','STATUS_FAILED');
 /*!40000 ALTER TABLE `task_statuses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -314,31 +314,32 @@ DROP TABLE IF EXISTS `tasks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tasks` (
-  `id_task` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `status_id` int(10) unsigned NOT NULL,
-  `category_id` tinyint(3) unsigned NOT NULL,
-  `location_id` int(10) unsigned NOT NULL,
-  `customer_id` int(10) unsigned NOT NULL,
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `task_id` int(11) NOT NULL AUTO_INCREMENT,
+  `status_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `title` varchar(128) NOT NULL,
+  `desc_text` text NOT NULL,
   `price` int(10) unsigned DEFAULT NULL,
-  `address` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `latitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `longitude` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `full_address` varchar(255) DEFAULT NULL,
+  `address_desc` varchar(255) DEFAULT NULL,
+  `latitude` varchar(255) DEFAULT NULL,
+  `longitude` varchar(255) DEFAULT NULL,
   `add_time` datetime NOT NULL,
   `end_date` datetime DEFAULT NULL,
-  `is_remote` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id_task`),
+  `is_remote` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`task_id`),
   KEY `status_id` (`status_id`),
   KEY `category_id` (`category_id`),
   KEY `location_id` (`location_id`),
   KEY `customer_id` (`customer_id`),
-  FULLTEXT KEY `tasks_name_search` (`name`),
-  CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `task_statuses` (`id_task_status`),
-  CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id_category`),
-  CONSTRAINT `tasks_ibfk_3` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id_location`),
-  CONSTRAINT `tasks_ibfk_4` FOREIGN KEY (`customer_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  FULLTEXT KEY `tasks_full_name_fulltext` (`title`),
+  CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `task_statuses` (`status_id`),
+  CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`),
+  CONSTRAINT `tasks_ibfk_3` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`),
+  CONSTRAINT `tasks_ibfk_4` FOREIGN KEY (`customer_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -347,7 +348,7 @@ CREATE TABLE `tasks` (
 
 LOCK TABLES `tasks` WRITE;
 /*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (1,3,2,1,1,'enable impactful technologies','Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst.',6587,'1 Eagan Crossing','6.9641667','158.2083333','2020-03-09 00:00:01','2019-11-15 00:00:00',1),(2,1,3,2,2,'exploit revolutionary portals','Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus. Curabitur at ipsum ac tellus semper interdum. Mauris ullamcorper purus sit amet nulla. Quisque arcu libero, rutrum ac, lobortis vel, dapibus at, diam.',2904,'24043 Paget Alley','5.623505','10.2544044','2020-04-24 00:00:01','2019-12-07 00:00:00',1),(3,3,2,3,3,'matrix next-generation e-commerce','Nulla ut erat id mauris vulputate elementum. Nullam varius. Nulla facilisi. Cras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque. Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.',1170,'2867 Dryden Pass','63.593219','53.9068532','2020-04-27 00:00:01','2019-11-23 00:00:00',1),(4,1,1,4,4,'benchmark plug-and-play infomediaries','Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat. Nulla nisl. Nunc nisl.',838,'80 Cambridge Street','20.5800358','-75.2435307','2020-05-20 00:00:01','2019-11-10 00:00:00',1),(5,1,3,5,5,'integrate cross-platform e-business','Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.',7484,'1 Stone Corner Junction','14.9326574','-91.6941845','2020-05-21 00:00:01','2019-12-15 00:00:00',0),(6,3,7,6,6,'enable dot-com niches','Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.',5725,'12 Stephen Terrace','40.163127','116.638868','2020-05-24 00:00:01','2019-11-24 00:00:00',0),(7,2,5,7,7,'transform web-enabled relationships','Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.',4414,'6213 Lake View Drive','44.3794871','20.2638941','2020-05-24 12:00:01','2019-11-19 00:00:00',0),(8,3,8,8,8,'strategize frictionless solutions','Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat. Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.',3454,'994 Corry Park','-7.3251485','108.3607464','2020-05-24 00:00:01','2019-11-14 00:00:00',0),(9,4,4,9,9,'innovate seamless metrics','Cras mi pede, malesuada in, imperdiet et, commodo vulputate, justo. In blandit ultrices enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',3101,'2 Bluestem Park','43','-87.97','2020-05-24 12:00:01','2019-12-12 00:00:00',0),(10,5,4,10,10,'integrate wireless infomediaries','Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien sapien non mi. Integer ac neque.',6562,'1 Dexter Hill','41.3410168','-8.3169303','2020-05-24 15:00:01','2019-12-19 00:00:00',0);
+INSERT INTO `tasks` VALUES (1,3,2,1,1,'enable impactful technologies','Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst.',6587,'1 Eagan Crossing',NULL,'6.9641667','158.2083333','2020-03-09 00:00:01','2019-11-15 00:00:00',1),(2,1,3,2,2,'exploit revolutionary portals','Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus. Curabitur at ipsum ac tellus semper interdum. Mauris ullamcorper purus sit amet nulla. Quisque arcu libero, rutrum ac, lobortis vel, dapibus at, diam.',2904,'24043 Paget Alley',NULL,'5.623505','10.2544044','2020-04-24 00:00:01','2019-12-07 00:00:00',1),(3,3,2,3,3,'matrix next-generation e-commerce','Nulla ut erat id mauris vulputate elementum. Nullam varius. Nulla facilisi. Cras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque. Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.',1170,'2867 Dryden Pass',NULL,'63.593219','53.9068532','2020-04-27 00:00:01','2019-11-23 00:00:00',1),(4,1,1,4,4,'benchmark plug-and-play infomediaries','Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat. Nulla nisl. Nunc nisl.',838,'80 Cambridge Street',NULL,'20.5800358','-75.2435307','2020-05-20 00:00:01','2019-11-10 00:00:00',1),(5,1,3,5,5,'integrate cross-platform e-business','Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.',7484,'1 Stone Corner Junction',NULL,'14.9326574','-91.6941845','2020-05-21 00:00:01','2019-12-15 00:00:00',0),(6,3,7,6,6,'enable dot-com niches','Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.',5725,'12 Stephen Terrace',NULL,'40.163127','116.638868','2020-05-24 00:00:01','2019-11-24 00:00:00',0),(7,2,5,7,7,'transform web-enabled relationships','Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.',4414,'6213 Lake View Drive',NULL,'44.3794871','20.2638941','2020-05-24 12:00:01','2019-11-19 00:00:00',0),(8,3,8,8,8,'strategize frictionless solutions','Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat. Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.',3454,'994 Corry Park',NULL,'-7.3251485','108.3607464','2020-05-24 00:00:01','2019-11-14 00:00:00',0),(9,4,4,9,9,'innovate seamless metrics','Cras mi pede, malesuada in, imperdiet et, commodo vulputate, justo. In blandit ultrices enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',3101,'2 Bluestem Park',NULL,'43','-87.97','2020-05-24 12:00:01','2019-12-12 00:00:00',0),(10,5,4,10,10,'integrate wireless infomediaries','Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien sapien non mi. Integer ac neque.',6562,'1 Dexter Hill',NULL,'41.3410168','-8.3169303','2020-05-24 15:00:01','2019-12-19 00:00:00',0);
 /*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -359,16 +360,16 @@ DROP TABLE IF EXISTS `user_favorites`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_favorites` (
-  `id_user_favorite` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `favorite_id` int(10) unsigned NOT NULL,
-  `on_off` tinyint(1) DEFAULT '1',
-  PRIMARY KEY (`id_user_favorite`),
+  `favorite_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `fave_user_id` int(11) NOT NULL,
+  `is_fave` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`favorite_id`),
   KEY `user_id` (`user_id`),
-  KEY `favorite_id` (`favorite_id`),
-  CONSTRAINT `user_favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `user_favorites_ibfk_2` FOREIGN KEY (`favorite_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `fave_user_id` (`fave_user_id`),
+  CONSTRAINT `user_favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_favorites_ibfk_2` FOREIGN KEY (`fave_user_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -389,16 +390,16 @@ DROP TABLE IF EXISTS `user_notification_settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_notification_settings` (
-  `id_user_notification_setting` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `notification_id` int(10) unsigned NOT NULL,
-  `on_off` tinyint(1) DEFAULT '1',
-  PRIMARY KEY (`id_user_notification_setting`),
+  `setting_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `notification_id` int(11) NOT NULL,
+  `is_active` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`setting_id`),
   KEY `user_id` (`user_id`),
   KEY `notification_id` (`notification_id`),
-  CONSTRAINT `user_notification_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `user_notification_settings_ibfk_2` FOREIGN KEY (`notification_id`) REFERENCES `user_notifications` (`id_user_notification`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `user_notification_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_notification_settings_ibfk_2` FOREIGN KEY (`notification_id`) REFERENCES `user_notifications` (`notification_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -419,13 +420,13 @@ DROP TABLE IF EXISTS `user_notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_notifications` (
-  `id_user_notification` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_user_notification`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `notification_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `label` varchar(64) NOT NULL,
+  PRIMARY KEY (`notification_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `label` (`label`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -434,7 +435,7 @@ CREATE TABLE `user_notifications` (
 
 LOCK TABLES `user_notifications` WRITE;
 /*!40000 ALTER TABLE `user_notifications` DISABLE KEYS */;
-INSERT INTO `user_notifications` VALUES (1,'notice_mess','Новое сообщение'),(2,'notice_action','Действия по заданию'),(3,'notice_feedback','Новый отзыв');
+INSERT INTO `user_notifications` VALUES (1,'Новое сообщение','notice_mess'),(2,'Действия по заданию','notice_action'),(3,'Новый отзыв','notice_feedback');
 /*!40000 ALTER TABLE `user_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -446,13 +447,13 @@ DROP TABLE IF EXISTS `user_portfolio_images`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_portfolio_images` (
-  `id_user_portfolio_image` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`id_user_portfolio_image`),
+  `image_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `image_addr` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`image_id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `user_portfolio_images_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `user_portfolio_images_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -473,13 +474,13 @@ DROP TABLE IF EXISTS `user_roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_roles` (
-  `id_user_role` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `symbol` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id_user_role`),
-  UNIQUE KEY `symbol` (`symbol`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `role_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) NOT NULL,
+  `const_name` varchar(64) NOT NULL,
+  PRIMARY KEY (`role_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `const_name` (`const_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -488,7 +489,7 @@ CREATE TABLE `user_roles` (
 
 LOCK TABLES `user_roles` WRITE;
 /*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
-INSERT INTO `user_roles` VALUES (1,'ROLE_CONTRACTOR','Исполнитель'),(2,'ROLE_CUSTOMER','Заказчик');
+INSERT INTO `user_roles` VALUES (1,'Исполнитель','ROLE_CONTRACTOR'),(2,'Заказчик','ROLE_CUSTOMER');
 /*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -500,15 +501,15 @@ DROP TABLE IF EXISTS `user_specializations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_specializations` (
-  `id_user_specialization` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `category_id` tinyint(3) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id_user_specialization`),
+  `specialization_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`specialization_id`),
   KEY `user_id` (`user_id`),
   KEY `category_id` (`category_id`),
-  CONSTRAINT `user_specializations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `user_specializations_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id_category`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `user_specializations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_specializations_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -529,31 +530,31 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id_user` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `role_id` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `location_id` int(10) unsigned NOT NULL,
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `skype` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `other_contacts` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `about` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `reg_time` datetime NOT NULL,
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` int(11) NOT NULL DEFAULT '1',
+  `location_id` int(11) NOT NULL,
+  `full_name` varchar(64) NOT NULL,
+  `email` varchar(64) NOT NULL,
+  `phone` varchar(11) DEFAULT NULL,
+  `skype` varchar(64) DEFAULT NULL,
+  `messaging_contact` varchar(64) DEFAULT NULL,
+  `full_address` varchar(255) DEFAULT NULL,
+  `avatar_addr` varchar(255) DEFAULT NULL,
+  `desc_text` text,
+  `password_key` varchar(255) NOT NULL,
   `birth_date` date DEFAULT NULL,
+  `reg_time` datetime NOT NULL,
   `activity_time` datetime NOT NULL,
-  `hide_contacts` tinyint(1) DEFAULT '0',
-  `hide_profile` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id_user`),
+  `hide_contacts` tinyint(1) NOT NULL DEFAULT '0',
+  `hide_profile` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`),
   KEY `role_id` (`role_id`),
   KEY `location_id` (`location_id`),
-  FULLTEXT KEY `users_name_search` (`name`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `user_roles` (`id_user_role`),
-  CONSTRAINT `users_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id_location`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  FULLTEXT KEY `users_full_name_fulltext` (`full_name`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `user_roles` (`role_id`),
+  CONSTRAINT `users_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -562,7 +563,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,1,1,'Karrie Buttress',NULL,'kbuttress0@1und1.de','JcfoKBYAB4k','high-level','64574473047',NULL,'38737 Moose Avenue','In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat.','2019-08-10 00:00:00','1989-11-11','2020-05-25 07:50:00',0,0),(2,1,2,'Bob Aymer',NULL,'baymer1@hp.com','ZEE54kg','mobile','75531015353',NULL,'738 Hagan Lane','Pellentesque ultrices mattis odio.','2018-12-21 00:00:00','1989-03-05','2020-05-25 07:50:00',0,0),(3,1,3,'Zilvia Boulding',NULL,'zboulding2@macromedia.com','VJyMV1Zat','Re-engineered','16371407508',NULL,'758 Old Shore Parkway','Morbi a ipsum. Integer a nibh. In quis justo.','2019-07-25 00:00:00','1989-12-30','2020-05-25 07:50:00',0,0),(4,1,4,'Emalee Mollon',NULL,'emollon3@bloglovin.com','XUIeJ693h','Grass-roots','21468788926',NULL,'11 Dovetail Junction','Suspendisse potenti.','2018-11-13 00:00:00','0629-03-03','2020-05-25 07:50:00',0,0),(5,1,5,'Maria Mulberry',NULL,'mmulberry4@cmu.edu','oWspnl','fault-tolerant','62931646367',NULL,'050 Bowman Alley','Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo.','2019-07-20 00:00:00','1989-04-08','2020-05-25 07:50:00',0,0),(6,1,6,'Levey By',NULL,'lby5@mozilla.com','GdtcUU','Team-oriented','63271348718',NULL,'5 Iowa Avenue','Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam.','2019-02-12 00:00:00','1989-04-18','2020-05-25 07:50:00',0,0),(7,1,7,'Baron Eates',NULL,'beates6@last.fm','UQw6VeA','portal','41056175169',NULL,'87119 Northland Hill','Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.','2019-05-03 00:00:00','1989-03-20','2020-05-25 07:50:00',0,0),(8,1,8,'Trip Vink',NULL,'tvink7@fotki.com','49znXd7haFGz','intermediate','72882384431',NULL,'6823 Lillian Point','Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui. Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc.','2019-01-13 00:00:00','1989-12-13','2020-05-25 07:50:00',0,0),(9,1,9,'Boonie Terbeck',NULL,'bterbeck8@about.me','unCjJTF7sjs','local area network','69043821394',NULL,'43 Marquette Plaza','Morbi ut odio.','2019-09-15 00:00:00','1989-01-14','2020-05-25 07:50:00',0,0),(10,1,10,'Alonzo Traviss',NULL,'atraviss9@auda.org.au','dLuVMAg','upward-trending','28396220507',NULL,'5303 Village Green Hill','Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat.','2018-12-19 00:00:00','1989-02-03','2020-05-25 07:50:00',0,0),(11,1,11,'Natassia Wittering',NULL,'nwitteringa@google.com.br','tQlUG4n','grid-enabled','83344513307',NULL,'67399 Reindahl Place','Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.','2019-03-24 00:00:00','1989-05-23','2020-05-25 07:50:00',0,0),(12,1,12,'Felice Brooke',NULL,'fbrookeb@nba.com','s9y9Mcfgy1g','background','64890419671',NULL,'45 Twin Pines Hill','Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl. Aenean lectus. Pellentesque eget nunc.','2019-09-27 00:00:00','1989-07-06','2020-05-25 07:50:00',0,0),(13,1,13,'Carlen Viccary',NULL,'cviccaryc@amazon.co.uk','9qd747vh','challenge','23005580487',NULL,'46 Sheridan Place','Quisque ut erat. Curabitur gravida nisi at nibh. In hac habitasse platea dictumst.','2018-12-06 00:00:00','1903-04-16','2020-05-25 07:50:00',0,0),(14,1,14,'Hendrik Gethings',NULL,'hgethingsd@sogou.com','zzN5c4','coherent','27052074771',NULL,'73 Kedzie Terrace','Pellentesque at nulla. Suspendisse potenti. Cras in purus eu magna vulputate luctus.','2018-11-18 00:00:00','1989-11-07','2020-05-25 07:50:00',0,0),(15,1,15,'Dunc Girodias',NULL,'dgirodiase@stanford.edu','j9QW6GQI','neutral','14800371520',NULL,'85509 Ludington Drive','Cras pellentesque volutpat dui.','2018-10-14 00:00:00','1989-02-13','2020-05-25 07:50:00',0,0),(16,1,16,'Bibbie Tanman',NULL,'btanmanf@smh.com.au','1aukKNEIneq','Programmable','75569924500',NULL,'67 Northwestern Center','Aliquam erat volutpat. In congue.','2019-05-03 00:00:00','1989-07-07','2020-05-25 07:50:00',0,0),(17,1,17,'Barnabas Bartoletti',NULL,'bbartolettig@simplemachines.org','3chTNtqhoo','encompassing','37349256497',NULL,'725 Eagle Crest Hill','Nulla ac enim. In tempor, turpis nec euismod scelerisque, quam turpis adipiscing lorem, vitae mattis nibh ligula nec sem. Duis aliquam convallis nunc.','2018-12-25 00:00:00','1989-09-29','2020-05-25 07:50:00',0,0),(18,1,18,'Nixie Cullip',NULL,'nculliph@fc2.com','2UdKIR2f','knowledge base','12403580562',NULL,'507 Graceland Junction','Suspendisse potenti.','2019-04-07 00:00:00','1989-03-19','2020-05-25 07:50:00',0,0),(19,1,19,'Matilde Pimblott',NULL,'mpimblotti@xing.com','nGZ8disdg','dynamic','40139478003',NULL,'92 Gina Park','Phasellus sit amet erat.','2019-07-18 00:00:00','1989-09-29','2020-05-25 07:50:00',0,0),(20,1,20,'Al Skurray',NULL,'askurrayj@un.org','bL9tAf','solution','76657531985',NULL,'8 Ridgeview Trail','Cras pellentesque volutpat dui.','2018-11-25 00:00:00','1989-12-21','2020-05-25 07:50:00',0,0);
+INSERT INTO `users` VALUES (1,1,1,'Karrie Buttress','kbuttress0@1und1.de','64574473047','high-level',NULL,'38737 Moose Avenue',NULL,'In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat.','JcfoKBYAB4k','1989-11-11','2019-08-10 00:00:00','2020-05-25 07:50:00',0,0),(2,1,2,'Bob Aymer','baymer1@hp.com','75531015353','mobile',NULL,'738 Hagan Lane',NULL,'Pellentesque ultrices mattis odio.','ZEE54kg','1989-03-05','2018-12-21 00:00:00','2020-05-25 07:50:00',0,0),(3,1,3,'Zilvia Boulding','zboulding2@macromedia.com','16371407508','Re-engineered',NULL,'758 Old Shore Parkway',NULL,'Morbi a ipsum. Integer a nibh. In quis justo.','VJyMV1Zat','1989-12-30','2019-07-25 00:00:00','2020-05-25 07:50:00',0,0),(4,1,4,'Emalee Mollon','emollon3@bloglovin.com','21468788926','Grass-roots',NULL,'11 Dovetail Junction',NULL,'Suspendisse potenti.','XUIeJ693h','0629-03-03','2018-11-13 00:00:00','2020-05-25 07:50:00',0,0),(5,1,5,'Maria Mulberry','mmulberry4@cmu.edu','62931646367','fault-tolerant',NULL,'050 Bowman Alley',NULL,'Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo.','oWspnl','1989-04-08','2019-07-20 00:00:00','2020-05-25 07:50:00',0,0),(6,1,6,'Levey By','lby5@mozilla.com','63271348718','Team-oriented',NULL,'5 Iowa Avenue',NULL,'Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam.','GdtcUU','1989-04-18','2019-02-12 00:00:00','2020-05-25 07:50:00',0,0),(7,1,7,'Baron Eates','beates6@last.fm','41056175169','portal',NULL,'87119 Northland Hill',NULL,'Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.','UQw6VeA','1989-03-20','2019-05-03 00:00:00','2020-05-25 07:50:00',0,0),(8,1,8,'Trip Vink','tvink7@fotki.com','72882384431','intermediate',NULL,'6823 Lillian Point',NULL,'Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui. Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc.','49znXd7haFGz','1989-12-13','2019-01-13 00:00:00','2020-05-25 07:50:00',0,0),(9,1,9,'Boonie Terbeck','bterbeck8@about.me','69043821394','local area network',NULL,'43 Marquette Plaza',NULL,'Morbi ut odio.','unCjJTF7sjs','1989-01-14','2019-09-15 00:00:00','2020-05-25 07:50:00',0,0),(10,1,10,'Alonzo Traviss','atraviss9@auda.org.au','28396220507','upward-trending',NULL,'5303 Village Green Hill',NULL,'Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat.','dLuVMAg','1989-02-03','2018-12-19 00:00:00','2020-05-25 07:50:00',0,0),(11,1,11,'Natassia Wittering','nwitteringa@google.com.br','83344513307','grid-enabled',NULL,'67399 Reindahl Place',NULL,'Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.','tQlUG4n','1989-05-23','2019-03-24 00:00:00','2020-05-25 07:50:00',0,0),(12,1,12,'Felice Brooke','fbrookeb@nba.com','64890419671','background',NULL,'45 Twin Pines Hill',NULL,'Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl. Aenean lectus. Pellentesque eget nunc.','s9y9Mcfgy1g','1989-07-06','2019-09-27 00:00:00','2020-05-25 07:50:00',0,0),(13,1,13,'Carlen Viccary','cviccaryc@amazon.co.uk','23005580487','challenge',NULL,'46 Sheridan Place',NULL,'Quisque ut erat. Curabitur gravida nisi at nibh. In hac habitasse platea dictumst.','9qd747vh','1903-04-16','2018-12-06 00:00:00','2020-05-25 07:50:00',0,0),(14,1,14,'Hendrik Gethings','hgethingsd@sogou.com','27052074771','coherent',NULL,'73 Kedzie Terrace',NULL,'Pellentesque at nulla. Suspendisse potenti. Cras in purus eu magna vulputate luctus.','zzN5c4','1989-11-07','2018-11-18 00:00:00','2020-05-25 07:50:00',0,0),(15,1,15,'Dunc Girodias','dgirodiase@stanford.edu','14800371520','neutral',NULL,'85509 Ludington Drive',NULL,'Cras pellentesque volutpat dui.','j9QW6GQI','1989-02-13','2018-10-14 00:00:00','2020-05-25 07:50:00',0,0),(16,1,16,'Bibbie Tanman','btanmanf@smh.com.au','75569924500','Programmable',NULL,'67 Northwestern Center',NULL,'Aliquam erat volutpat. In congue.','1aukKNEIneq','1989-07-07','2019-05-03 00:00:00','2020-05-25 07:50:00',0,0),(17,1,17,'Barnabas Bartoletti','bbartolettig@simplemachines.org','37349256497','encompassing',NULL,'725 Eagle Crest Hill',NULL,'Nulla ac enim. In tempor, turpis nec euismod scelerisque, quam turpis adipiscing lorem, vitae mattis nibh ligula nec sem. Duis aliquam convallis nunc.','3chTNtqhoo','1989-09-29','2018-12-25 00:00:00','2020-05-25 07:50:00',0,0),(18,1,18,'Nixie Cullip','nculliph@fc2.com','12403580562','knowledge base',NULL,'507 Graceland Junction',NULL,'Suspendisse potenti.','2UdKIR2f','1989-03-19','2019-04-07 00:00:00','2020-05-25 07:50:00',0,0),(19,1,19,'Matilde Pimblott','mpimblotti@xing.com','40139478003','dynamic',NULL,'92 Gina Park',NULL,'Phasellus sit amet erat.','nGZ8disdg','1989-09-29','2019-07-18 00:00:00','2020-05-25 07:50:00',0,0),(20,1,20,'Al Skurray','askurrayj@un.org','76657531985','solution',NULL,'8 Ridgeview Trail',NULL,'Cras pellentesque volutpat dui.','bL9tAf','1989-12-21','2018-11-25 00:00:00','2020-05-25 07:50:00',0,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -575,4 +576,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-30 19:01:41
+-- Dump completed on 2020-06-30 20:33:30
