@@ -1,15 +1,15 @@
-CREATE DATABASE IF NOT EXISTS task_force_test 
+CREATE DATABASE IF NOT EXISTS task_force 
     DEFAULT CHARACTER SET utf8
     DEFAULT COLLATE utf8_general_ci;
 
 
-USE task_force_test;
+USE task_force;
 
 
 CREATE TABLE IF NOT EXISTS locations (
     PRIMARY KEY (location_id),               -- id_location -> location_id
     location_id INT AUTO_INCREMENT NOT NULL, -- id_location -> location_id
-    city        VARCHAR(64)       NOT NULL, 
+    city        VARCHAR(64)        NOT NULL, 
     latitude    VARCHAR(255)       NOT NULL,
     longitude   VARCHAR(255)       NOT NULL
 );
@@ -74,8 +74,9 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS user_portfolio_images (
     PRIMARY KEY (image_id),
-    image_id INT AUTO_INCREMENT NOT NULL, -- id_user_portfolio_image -> image_id
-    user_id  INT                NOT NULL,
+    image_id   INT AUTO_INCREMENT NOT NULL, -- id_user_portfolio_image -> image_id
+    user_id    INT                NOT NULL,
+    image_addr VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
