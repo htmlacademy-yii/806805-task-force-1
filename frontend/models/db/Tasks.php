@@ -56,10 +56,34 @@ class Tasks extends \yii\db\ActiveRecord
             [['add_time', 'end_date'], 'safe'],
             [['title'], 'string', 'max' => 128],
             [['full_address', 'address_desc', 'latitude', 'longitude'], 'string', 'max' => 255],
-            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => TaskStatuses::className(), 'targetAttribute' => ['status_id' => 'status_id']],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::className(), 'targetAttribute' => ['category_id' => 'category_id']],
-            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::className(), 'targetAttribute' => ['location_id' => 'location_id']],
-            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['customer_id' => 'user_id']],
+            [
+                ['status_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => TaskStatuses::className(), 
+                'targetAttribute' => ['status_id' => 'status_id']
+            ],
+            [
+                ['category_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Categories::className(), 
+                'targetAttribute' => ['category_id' => 'category_id']
+            ],
+            [
+                ['location_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Locations::className(), 
+                'targetAttribute' => ['location_id' => 'location_id']
+            ],
+            [
+                ['customer_id'], 
+                'exist', 
+                'skipOnError' => true, 
+                'targetClass' => Users::className(), 
+                'targetAttribute' => ['customer_id' => 'user_id']
+            ],
         ];
     }
 

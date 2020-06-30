@@ -37,9 +37,11 @@ use Yii;
  * @property UserFavorites[] $userFavorites0
  * @property UserNotificationSettings[] $userNotificationSettings
  * @property UserPortfolioImages[] $userPortfolioImages
- * @property UserSpecializations[] $userSpecializations
  * @property UserRoles $role
  * @property Locations $location
+ *
+ * Связь много-много
+ * @property UserSpecializations[] $userSpecializations
  */
 class Users extends \yii\db\ActiveRecord
 {
@@ -65,8 +67,20 @@ class Users extends \yii\db\ActiveRecord
             [['phone'], 'string', 'max' => 11],
             [['full_address', 'avatar_addr', 'password_key'], 'string', 'max' => 255],
             [['email'], 'unique'],
-            [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRoles::className(), 'targetAttribute' => ['role_id' => 'role_id']],
-            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::className(), 'targetAttribute' => ['location_id' => 'location_id']],
+            [
+                ['role_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => UserRoles::className(),
+                'targetAttribute' => ['role_id' => 'role_id'],
+            ],
+            [
+                ['location_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => Locations::className(),
+                'targetAttribute' => ['location_id' => 'location_id']
+            ],
         ];
     }
 
@@ -195,14 +209,6 @@ class Users extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUserSpecializations()
-    {
-        return $this->hasMany(UserSpecializations::className(), ['user_id' => 'user_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getRole()
     {
         return $this->hasOne(UserRoles::className(), ['role_id' => 'role_id']);
@@ -214,5 +220,17 @@ class Users extends \yii\db\ActiveRecord
     public function getLocation()
     {
         return $this->hasOne(Locations::className(), ['location_id' => 'location_id']);
+    }
+
+    // Связи много-много
+
+    /**
+     * Специализация (категории пользователя)
+     * @return \yii\db\ActiveQuery
+     */
+    public function userSpecializations()
+    {
+        return $this->hasMany(Categories::className(), ['category_id' => 'category_id'])
+            ->viaTable('user_specializations', ['user_id' => 'id_user']);
     }
 }
