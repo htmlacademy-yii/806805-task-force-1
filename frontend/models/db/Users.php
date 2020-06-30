@@ -7,27 +7,26 @@ use Yii;
 /**
  * This is the model class for table "users".
  *
- * @property int $id_user
+ * @property int $user_id
  * @property int $role_id
  * @property int $location_id
- * @property string $name
- * @property string|null $avatar
+ * @property string $full_name
  * @property string $email
- * @property string $password
- * @property string|null $skype
  * @property string|null $phone
- * @property string|null $other_contacts
- * @property string|null $address
- * @property string|null $about
- * @property string $reg_time
+ * @property string|null $skype
+ * @property string|null $messaging_contact
+ * @property string|null $full_address
+ * @property string|null $avatar_addr
+ * @property string|null $desc_text
+ * @property string $password_key
  * @property string|null $birth_date
+ * @property string $reg_time
  * @property string $activity_time
- * @property int|null $hide_contacts
- * @property int|null $hide_profile
+ * @property int $hide_contacts
+ * @property int $hide_profile
  *
  * @property Feedbacks[] $feedbacks
- * Отзывы пользователей
- * @property Feedbacks[] $ratedFeedbacks
+ * @property Feedbacks[] $feedbacks0
  * @property Messages[] $messages
  * @property Messages[] $messages0
  * @property Offers[] $offers
@@ -39,8 +38,6 @@ use Yii;
  * @property UserNotificationSettings[] $userNotificationSettings
  * @property UserPortfolioImages[] $userPortfolioImages
  * @property UserSpecializations[] $userSpecializations
- * Категории пользователя. Связь много-много
- * @property Categories[] $userCategories
  * @property UserRoles $role
  * @property Locations $location
  */
@@ -61,27 +58,15 @@ class Users extends \yii\db\ActiveRecord
     {
         return [
             [['role_id', 'location_id', 'hide_contacts', 'hide_profile'], 'integer'],
-            [['location_id', 'name', 'email', 'password', 'reg_time', 'activity_time'], 'required'],
-            [['about'], 'string'],
-            [['reg_time', 'birth_date', 'activity_time'], 'safe'],
-            [['name', 'email', 'skype'], 'string', 'max' => 128],
-            [['avatar', 'password', 'other_contacts', 'address'], 'string', 'max' => 255],
+            [['location_id', 'full_name', 'email', 'password_key', 'reg_time', 'activity_time'], 'required'],
+            [['desc_text'], 'string'],
+            [['birth_date', 'reg_time', 'activity_time'], 'safe'],
+            [['full_name', 'email', 'skype', 'messaging_contact'], 'string', 'max' => 64],
             [['phone'], 'string', 'max' => 11],
+            [['full_address', 'avatar_addr', 'password_key'], 'string', 'max' => 255],
             [['email'], 'unique'],
-            [
-                ['role_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => UserRoles::className(), 
-                'targetAttribute' => ['role_id' => 'id_user_role']
-            ],
-            [
-                ['location_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Locations::className(), 
-                'targetAttribute' => ['location_id' => 'id_location']
-            ],
+            [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserRoles::className(), 'targetAttribute' => ['role_id' => 'role_id']],
+            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Locations::className(), 'targetAttribute' => ['location_id' => 'location_id']],
         ];
     }
 
@@ -91,20 +76,20 @@ class Users extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_user' => 'Id User',
+            'user_id' => 'User ID',
             'role_id' => 'Role ID',
             'location_id' => 'Location ID',
-            'name' => 'Name',
-            'avatar' => 'Avatar',
+            'full_name' => 'Full Name',
             'email' => 'Email',
-            'password' => 'Password',
-            'skype' => 'Skype',
             'phone' => 'Phone',
-            'other_contacts' => 'Other Contacts',
-            'address' => 'Address',
-            'about' => 'About',
-            'reg_time' => 'Reg Time',
+            'skype' => 'Skype',
+            'messaging_contact' => 'Messaging Contact',
+            'full_address' => 'Full Address',
+            'avatar_addr' => 'Avatar Addr',
+            'desc_text' => 'Desc Text',
+            'password_key' => 'Password Key',
             'birth_date' => 'Birth Date',
+            'reg_time' => 'Reg Time',
             'activity_time' => 'Activity Time',
             'hide_contacts' => 'Hide Contacts',
             'hide_profile' => 'Hide Profile',
@@ -116,15 +101,15 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getFeedbacks()
     {
-        return $this->hasMany(Feedbacks::className(), ['user_id' => 'id_user']);
+        return $this->hasMany(Feedbacks::className(), ['author_id' => 'user_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRatedFeedbacks()
+    public function getFeedbacks0()
     {
-        return $this->hasMany(Feedbacks::className(), ['user_rated_id' => 'id_user']);
+        return $this->hasMany(Feedbacks::className(), ['recipient_id' => 'user_id']);
     }
 
     /**
@@ -132,7 +117,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getMessages()
     {
-        return $this->hasMany(Messages::className(), ['sender_id' => 'id_user']);
+        return $this->hasMany(Messages::className(), ['sender_id' => 'user_id']);
     }
 
     /**
@@ -140,7 +125,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getMessages0()
     {
-        return $this->hasMany(Messages::className(), ['recipient_id' => 'id_user']);
+        return $this->hasMany(Messages::className(), ['receiver_id' => 'user_id']);
     }
 
     /**
@@ -148,7 +133,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getOffers()
     {
-        return $this->hasMany(Offers::className(), ['contractor_id' => 'id_user']);
+        return $this->hasMany(Offers::className(), ['contractor_id' => 'user_id']);
     }
 
     /**
@@ -156,7 +141,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getTaskFailings()
     {
-        return $this->hasMany(TaskFailings::className(), ['contractor_id' => 'id_user']);
+        return $this->hasMany(TaskFailings::className(), ['contractor_id' => 'user_id']);
     }
 
     /**
@@ -164,7 +149,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getTaskRunnings()
     {
-        return $this->hasMany(TaskRunnings::className(), ['contractor_id' => 'id_user']);
+        return $this->hasMany(TaskRunnings::className(), ['contractor_id' => 'user_id']);
     }
 
     /**
@@ -172,7 +157,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Tasks::className(), ['customer_id' => 'id_user']);
+        return $this->hasMany(Tasks::className(), ['customer_id' => 'user_id']);
     }
 
     /**
@@ -180,7 +165,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserFavorites()
     {
-        return $this->hasMany(UserFavorites::className(), ['user_id' => 'id_user']);
+        return $this->hasMany(UserFavorites::className(), ['user_id' => 'user_id']);
     }
 
     /**
@@ -188,7 +173,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserFavorites0()
     {
-        return $this->hasMany(UserFavorites::className(), ['favorite_id' => 'id_user']);
+        return $this->hasMany(UserFavorites::className(), ['fave_user_id' => 'user_id']);
     }
 
     /**
@@ -196,7 +181,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserNotificationSettings()
     {
-        return $this->hasMany(UserNotificationSettings::className(), ['user_id' => 'id_user']);
+        return $this->hasMany(UserNotificationSettings::className(), ['user_id' => 'user_id']);
     }
 
     /**
@@ -204,7 +189,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserPortfolioImages()
     {
-        return $this->hasMany(UserPortfolioImages::className(), ['user_id' => 'id_user']);
+        return $this->hasMany(UserPortfolioImages::className(), ['user_id' => 'user_id']);
     }
 
     /**
@@ -212,26 +197,15 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getUserSpecializations()
     {
-        return $this->hasMany(UserSpecializations::className(), ['user_id' => 'id_user']);
+        return $this->hasMany(UserSpecializations::className(), ['user_id' => 'user_id']);
     }
-
-    /**
-     * Категории пользователя. Связь много-много 
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUserCategories()
-    {
-        return $this->hasMany(Categories::className(), ['id_category' => 'category_id'])
-        ->viaTable('user_specializations', ['user_id' => 'id_user']);
-    }
-
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getRole()
     {
-        return $this->hasOne(UserRoles::className(), ['id_user_role' => 'role_id']);
+        return $this->hasOne(UserRoles::className(), ['role_id' => 'role_id']);
     }
 
     /**
@@ -239,6 +213,6 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getLocation()
     {
-        return $this->hasOne(Locations::className(), ['id_location' => 'location_id']);
+        return $this->hasOne(Locations::className(), ['location_id' => 'location_id']);
     }
 }

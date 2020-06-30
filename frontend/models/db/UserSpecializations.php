@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "user_specializations".
  *
- * @property int $id_user_specialization
+ * @property int $specialization_id
  * @property int $user_id
  * @property int|null $category_id
  *
@@ -32,20 +32,8 @@ class UserSpecializations extends \yii\db\ActiveRecord
         return [
             [['user_id'], 'required'],
             [['user_id', 'category_id'], 'integer'],
-            [
-                ['user_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Users::className(), 
-                'targetAttribute' => ['user_id' => 'id_user']
-            ],
-            [
-                ['category_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Categories::className(), 
-                'targetAttribute' => ['category_id' => 'id_category']
-            ],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'user_id']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::className(), 'targetAttribute' => ['category_id' => 'category_id']],
         ];
     }
 
@@ -55,7 +43,7 @@ class UserSpecializations extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_user_specialization' => 'Id User Specialization',
+            'specialization_id' => 'Specialization ID',
             'user_id' => 'User ID',
             'category_id' => 'Category ID',
         ];
@@ -66,7 +54,7 @@ class UserSpecializations extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id_user' => 'user_id']);
+        return $this->hasOne(Users::className(), ['user_id' => 'user_id']);
     }
 
     /**
@@ -74,6 +62,6 @@ class UserSpecializations extends \yii\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Categories::className(), ['id_category' => 'category_id']);
+        return $this->hasOne(Categories::className(), ['category_id' => 'category_id']);
     }
 }

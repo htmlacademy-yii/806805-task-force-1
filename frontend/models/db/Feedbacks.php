@@ -7,17 +7,17 @@ use Yii;
 /**
  * This is the model class for table "feedbacks".
  *
- * @property int $id_feedback
- * @property int $user_id
- * @property int $user_rated_id
+ * @property int $feedback_id
+ * @property int $author_id
+ * @property int $recipient_id
  * @property int $task_id
- * @property string|null $desk
- * @property int $point
+ * @property string|null $desc_text
+ * @property int $point_num
  * @property string $add_time
  *
- * @property Users $user
- * @property Users $userRated
- * @property Tasks $task
+ * @property User $author
+ * @property User $recipient
+ * @property Task $task
  */
 class Feedbacks extends \yii\db\ActiveRecord
 {
@@ -35,34 +35,13 @@ class Feedbacks extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [
-                ['user_id', 'user_rated_id', 'task_id', 'point', 'add_time'], 
-                'required'
-            ],
-            [['user_id', 'user_rated_id', 'task_id', 'point'], 'integer'],
-            [['desk'], 'string'],
+            [['author_id', 'recipient_id', 'task_id', 'point_num', 'add_time'], 'required'],
+            [['author_id', 'recipient_id', 'task_id', 'point_num'], 'integer'],
+            [['desc_text'], 'string'],
             [['add_time'], 'safe'],
-            [
-                ['user_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Users::className(), 
-                'targetAttribute' => ['user_id' => 'id_user']
-            ],
-            [
-                ['user_rated_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Users::className(), 
-                'targetAttribute' => ['user_rated_id' => 'id_user']
-            ],
-            [
-                ['task_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Tasks::className(), 
-                'targetAttribute' => ['task_id' => 'id_task']
-            ],
+            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['author_id' => 'user_id']],
+            [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['recipient_id' => 'user_id']],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::className(), 'targetAttribute' => ['task_id' => 'task_id']],
         ];
     }
 
@@ -72,12 +51,12 @@ class Feedbacks extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_feedback' => 'Id Feedback',
-            'user_id' => 'User ID',
-            'user_rated_id' => 'User Rated ID',
+            'feedback_id' => 'Feedback ID',
+            'author_id' => 'Author ID',
+            'recipient_id' => 'Recipient ID',
             'task_id' => 'Task ID',
-            'desk' => 'Desk',
-            'point' => 'Point',
+            'desc_text' => 'Desc Text',
+            'point_num' => 'Point Num',
             'add_time' => 'Add Time',
         ];
     }
@@ -85,17 +64,17 @@ class Feedbacks extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
+    public function getAuthor()
     {
-        return $this->hasOne(Users::className(), ['id_user' => 'user_id']);
+        return $this->hasOne(User::className(), ['user_id' => 'author_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUserRated()
+    public function getRecipient()
     {
-        return $this->hasOne(Users::className(), ['id_user' => 'user_rated_id']);
+        return $this->hasOne(User::className(), ['user_id' => 'recipient_id']);
     }
 
     /**
@@ -103,6 +82,6 @@ class Feedbacks extends \yii\db\ActiveRecord
      */
     public function getTask()
     {
-        return $this->hasOne(Tasks::className(), ['id_task' => 'task_id']);
+        return $this->hasOne(Task::className(), ['task_id' => 'task_id']);
     }
 }

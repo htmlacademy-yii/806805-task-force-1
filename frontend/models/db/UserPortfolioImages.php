@@ -7,9 +7,9 @@ use Yii;
 /**
  * This is the model class for table "user_portfolio_images".
  *
- * @property int $id_user_portfolio_image
+ * @property int $image_id
  * @property int $user_id
- * @property string|null $image
+ * @property string|null $image_addr
  *
  * @property Users $user
  */
@@ -31,14 +31,8 @@ class UserPortfolioImages extends \yii\db\ActiveRecord
         return [
             [['user_id'], 'required'],
             [['user_id'], 'integer'],
-            [['image'], 'string', 'max' => 255],
-            [
-                ['user_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Users::className(), 
-                'targetAttribute' => ['user_id' => 'id_user']
-            ],
+            [['image_addr'], 'string', 'max' => 255],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'user_id']],
         ];
     }
 
@@ -48,9 +42,9 @@ class UserPortfolioImages extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_user_portfolio_image' => 'Id User Portfolio Image',
+            'image_id' => 'Image ID',
             'user_id' => 'User ID',
-            'image' => 'Image',
+            'image_addr' => 'Image Addr',
         ];
     }
 
@@ -59,6 +53,6 @@ class UserPortfolioImages extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id_user' => 'user_id']);
+        return $this->hasOne(Users::className(), ['user_id' => 'user_id']);
     }
 }
