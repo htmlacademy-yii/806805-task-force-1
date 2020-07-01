@@ -38,21 +38,20 @@ class TasksForm extends Model
         ];
     }
 
-    /* Элементы для полей формы согласно имени атрибута */
+    /* Списки для полей формы согласно имени атрибута */
     public static function getAttributeItems(string $attributeName): array
     {
-        /* Фильтр Категории - список чекбоксов id_category - name */
         $categories = (new \yii\db\Query())
             ->from('categories')
-            ->select(['name', 'id_category'])
-            ->indexBy('id_category')
-            ->orderBy('id_category')
+            ->select(['title', 'category_id'])
+            ->indexBy('category_id')
+            ->orderBy('category_id')
             ->column();
 
         $items = [
-            /* Фильтр Период времени - выпадающий список */
+            /* выпадающий список период времени*/
             'dateInterval' => [
-                // 'all' => 'За все время',  // !!! "За все время", отображается как 1ая опция (задается activeField promt), значение пусто
+                // 'all' => 'За все время',  // !!! "За все время", задается activeField option promt
                 'day' => 'За день',
                 'week' => 'За неделю',
                 'month' => 'За месяц',
