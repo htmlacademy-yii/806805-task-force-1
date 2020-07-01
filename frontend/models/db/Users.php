@@ -25,8 +25,8 @@ use Yii;
  * @property int $hide_contacts
  * @property int $hide_profile
  *
+ * @property Feedbacks[] $yoursFeedbacks
  * @property Feedbacks[] $feedbacks
- * @property Feedbacks[] $feedbacks0
  * @property Messages[] $messages
  * @property Messages[] $messages0
  * @property Offers[] $offers
@@ -113,7 +113,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFeedbacks()
+    public function getYoursFeedbacks()
     {
         return $this->hasMany(Feedbacks::className(), ['author_id' => 'user_id']);
     }
@@ -121,7 +121,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFeedbacks0()
+    public function getFeedbacks()
     {
         return $this->hasMany(Feedbacks::className(), ['recipient_id' => 'user_id']);
     }
@@ -228,9 +228,9 @@ class Users extends \yii\db\ActiveRecord
      * Специализация (категории пользователя)
      * @return \yii\db\ActiveQuery
      */
-    public function userSpecializations()
+    public function getUserSpecializations()
     {
         return $this->hasMany(Categories::className(), ['category_id' => 'category_id'])
-            ->viaTable('user_specializations', ['user_id' => 'id_user']);
+            ->viaTable('user_specializations', ['user_id' => 'user_id']);
     }
 }

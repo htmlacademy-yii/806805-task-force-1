@@ -19,9 +19,9 @@ class UsersFilters
     {
         // Запрос данных всех пользователей-исполнителей с подзапросом id всех исполнителей
         $this->users = Users::find()
-            ->where(['IN', 'id_user', $userIds])
+            ->where(['IN', 'user_id', $userIds])
             ->orderBy(['reg_time' => SORT_DESC])
-            ->indexBy('id_user')
+            ->indexBy('user_id')
             ->all();
 
         return $this->users;
@@ -37,19 +37,19 @@ class UsersFilters
         $customers = new Query();
         $customers
             ->select(['customer_id'])
-            ->from('tasks')
+            ->from('tasks t')
             ->distinct()
-            ->where(['status_id' => '1'])
-            ->orWhere(['status_id' => '3']);
+            ->where(['t.status_id' => '1'])
+            ->orWhere(['t.status_id' => '3']);
 
         // Запрос id все Исполнители при первой загрузке без фильтров.
         // С использованием подзапроса удаляем id действующих заказчиков из исполнителей
         $contractors = new Query();
         $contractors
-            ->select(['user_id'])
+            ->select(['us.user_id'])
             ->distinct()
-            ->from('user_specializations')
-            ->where(['NOT IN', 'user_id', $customers]);
+            ->from('user_specializations us')
+            ->where(['NOT IN', 'us.user_id', $customers]);
 
         // если форма не отправлена
         if ($usersForm === null) {
@@ -62,7 +62,7 @@ class UsersFilters
         // Специальные символы для полнотекстового поиска удаляются из строки поиска
         // Словам добавляется в конце специальный символ * для полнотекстового поиска
         // Полнотексовый поиск выполняется правильно только в соответствии с первыми буквами слова
-        // Согласно ТЗ, поиск сбрасывает другие фильтры -
+        // Согласно ТЗ, поиск сбрасывает другие фильтры
         if ($search = $usersForm->search) {
             $symbol = ['+', '-', '*', '<', '>', '~', '@', '(', ')', '"', '"'];
             $saveSearch = trim(str_replace($symbol, ' ', $search));
@@ -72,47 +72,47 @@ class UsersFilters
 
             $contractorsBySearch = new Query();
             $contractorsBySearch
-                ->select(['id_user'])
+                ->select(['u.user_id'])
                 ->distinct()
-                ->from('users')
-                ->where(['IN', 'id_user', $contractors])
-                ->andWhere("MATCH(users.name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
+                ->from('users u')
+                ->where(['IN', 'u.user_id', $contractors])
+                ->andWhere("MATCH(u.full_name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
 
             return $this->getUsers($contractorsBySearch);
         }
 
         /* Фильтр Категории. Добавление условия в запрос. Атрибут пуст или из формы или по умолчанию */
-        $contractors->andFilterWhere(['IN', 'category_id', $usersForm->categories]);
+        $contractors->andFilterWhere(['IN', 'us.category_id', $usersForm->categories]);
 
         /* Фильтр Сейчас свободен. true = сейчас свободен */
         // В таблице task_runnings есть задания которым были назначены исполнители, связь один к одному от задания к исполнителю
         // Запрос id исполнителей из tasks_runnings, если задания выполняются status_id = 3 из tasks
         // Добавление условия в запрос - исключаем пользователи с заданиями в статусе исполняются
         if ($usersForm->isAvailable) {
-            $filters = (new Query())->select('contractor_id')->from('tasks t')
-                ->join('INNER JOIN', 'task_runnings tr', 'tr.task_running_id = t.id_task')
+            $filters = (new Query())->select('tr.contractor_id')->from('tasks t')
+                ->join('INNER JOIN', 'task_runnings tr', 'tr.task_id = t.task_id')
                 ->where(['status_id' => '3']);
-            $contractors->andWhere(['NOT IN', 'user_id', $filters]);
+            $contractors->andWhere(['NOT IN', 'us.user_id', $filters]);
         }
 
         /* Фильтр Сейчас онлайн. true = свободен */
         if ($usersForm->isOnLine) {
-            $datePoint = Yii::$app->formatter->asDatetime('-30 minutes', 'php:Y-m-d H:i:s'); // формат БД
-            $filters = (new Query())->select('id_user')->from('users')
-                ->where(['>', 'activity_time', $datePoint]);
-            $contractors->andWhere(['IN', 'user_id', $filters]);
+            $datePoint = Yii::$app->formatter->asDatetime('-30 minutes', 'php:Y-m-d H:i:s');
+            $filters = (new Query())->select('u.user_id')->from('users u')
+                ->where(['>', 'u.activity_time', $datePoint]);
+            $contractors->andWhere(['IN', 'us.user_id', $filters]);
         }
 
         /* Фильтр. Есть отзывы. true = есть */
         if ($usersForm->isFeedbacks) {
-            $filters = (new Query())->select(['user_rated_id'])->distinct()->from('feedbacks');
-            $contractors->andWhere(['IN', 'user_id', $filters]);
+            $filters = (new Query())->select(['f.recipient_id'])->distinct()->from('feedbacks f');
+            $contractors->andWhere(['IN', 'us.user_id', $filters]);
         }
 
         /* Фильтр. В избранном */
         if ($usersForm->isFavorite) {
             $currentUser = 1; // !!!Пример
-            $filters = (new Query)->select('favorite_id')->from('user_favorites')
+            $filters = (new Query)->select('uf.fave_user_id')->from('user_favorites uf')
                 ->where(['user_id' => $currentUser]);
             $contractors->andWhere(['IN', 'user_id', $filters]);
         }
@@ -128,16 +128,16 @@ class UsersFilters
 
         $this->rating = (new Query())
             ->select([
-                'user_rated_id',
-                'count(user_rated_id) as num_feedbacks',
-                'sum(point) as sum_point',
-                'sum(point)/count(user_rated_id) as avg_point',
+                'recipient_id',
+                'count(recipient_id) as num_feedbacks',
+                'sum(point_num) as sum_point',
+                'sum(point_num)/count(recipient_id) as avg_point',
             ])
             ->from('feedbacks')
-            ->where(['IN', 'user_rated_id', $userIds])
-            ->groupBy('user_rated_id')
+            ->where(['IN', 'recipient_id', $userIds])
+            ->groupBy('recipient_id')
             ->orderBy(['avg_point' => SORT_DESC])
-            ->indexBy('user_rated_id')
+            ->indexBy('recipient_id')
             ->all();
 
         return $this->rating;
