@@ -20,6 +20,7 @@ class ComposerStaticInit594d97d59380b58481e0716afc2ddc3b
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
         '180092cfc969a12e06f2132a203a3184' => __DIR__ . '/..' . '/codeception/verify/src/Codeception/function.php',
+        '04cd52114b65b4a5e65f2348e6a6cb1d' => __DIR__ . '/../..' . '/common/functions-basic/transform.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -33,13 +34,13 @@ class ComposerStaticInit594d97d59380b58481e0716afc2ddc3b
             'yii\\bootstrap\\' => 14,
             'yii\\' => 4,
         ),
+        't' => 
+        array (
+            'taskForce\\' => 10,
+        ),
         'p' => 
         array (
             'phpDocumentor\\Reflection\\' => 25,
-        ),
-        'd' => 
-        array (
-            'dirSite\\' => 8,
         ),
         'c' => 
         array (
@@ -133,15 +134,15 @@ class ComposerStaticInit594d97d59380b58481e0716afc2ddc3b
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2',
         ),
+        'taskForce\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/',
+        ),
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
-        ),
-        'dirSite\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/',
         ),
         'cebe\\markdown\\' => 
         array (
