@@ -3,6 +3,7 @@
 namespace frontend\models\forms;
 
 use frontend\models\db\Tasks;
+use function common\functions\basic\transform\prepareLogicSearch;
 use yii;
 use yii\base\Model;
 use yii\db\Query;
@@ -13,7 +14,7 @@ class TasksFilters
     {
         $tasks = Tasks::find()
             ->where(['tasks.status_id' => 1])
-            ->joinWith('category')  // Жадная загрузка категорий
+            ->joinWith('category') // Жадная загрузка категорий
             ->orderBy(['add_time' => SORT_DESC]);
 
         // если форма не отправлена
@@ -43,13 +44,11 @@ class TasksFilters
 
         /* Фильтр поиск по названию задания */
         // Специальные символы логического поиска удаляются.
-        // Словам в строке добавляется символ * 
+        // Словам в строке добавляется символ *
         if ($search = $tasksForm->search) {
-            $symbol = ['+', '-', '*', '<', '>', '~', '@', '(', ')', '"', '"'];
-            $saveSearch = trim(str_replace($symbol, ' ', $search));
-            $words = array_filter(explode(' ', $saveSearch));
-            $logicWords = array_map(function ($value) {return $value . '*';}, $words);
-            $logicSearch = implode(' ', $logicWords);
+
+            $logicSearch = prepareLogicSearch($search);
+
             $tasks->andWhere("MATCH(tasks.title) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
         }
 

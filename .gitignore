@@ -48,3 +48,6 @@ backend/web/robots.txt
 
 # XDebug
 .vscode/launch.json
+
+# vendor files
+vendor

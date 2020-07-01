@@ -3,6 +3,7 @@
 namespace frontend\models\forms;
 
 use frontend\models\db\Users;
+use function common\functions\basic\transform\prepareLogicSearch;
 use yii;
 use yii\base\Model;
 use yii\db\Query;
@@ -64,11 +65,8 @@ class UsersFilters
         // Полнотексовый поиск выполняется правильно только в соответствии с первыми буквами слова
         // Согласно ТЗ, поиск сбрасывает другие фильтры
         if ($search = $usersForm->search) {
-            $symbol = ['+', '-', '*', '<', '>', '~', '@', '(', ')', '"', '"'];
-            $saveSearch = trim(str_replace($symbol, ' ', $search));
-            $words = array_filter(explode(' ', $saveSearch));
-            $logicWords = array_map(function ($value) {return $value . '*';}, $words);
-            $logicSearch = implode(' ', $logicWords);
+
+            $logicSearch = prepareLogicSearch($search);
 
             $contractorsBySearch = new Query();
             $contractorsBySearch
