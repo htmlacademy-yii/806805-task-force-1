@@ -34,15 +34,8 @@ class UsersForm extends Model
     {
         return [
             [
-                [
-                    'categories',
-                    'isAvailable',
-                    'isOnLine',
-                    'isFeedbacks',
-                    'isFavorite',
-                    'search',
-                ],
-                'safe',
+                ['categories', 'isAvailable', 'isOnLine', 'isFeedbacks', 'isFavorite', 'search'],
+                'safe'
             ],
         ];
     }
