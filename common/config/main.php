@@ -7,7 +7,7 @@ return [
         '@npm'   => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
-    'defaultRoute' => 'start', 
+    'defaultRoute' => 'start/index', 
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -15,17 +15,17 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'enableStrictParsing' => false,
+            'enableStrictParsing' => true,
+            'normalizer' => [
+                'class' => 'yii\web\UrlNormalizer',
+                'action' => yii\web\UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
+            ],
             'rules' => [
-                '//' => '/',
-                'users' => 'users/index',
-                'users/<sorting>' => 'users/index',
-                'tasks' => 'tasks/index',
                 [
-                    'pattern' => 'users/<sorting>',
-                    'route' => 'users/index',
-                    'defaults' => ['sorting' => ''],                
+                    'pattern' => '<controller:(task|user)>/view/<id>',
+                    'route' => '<controller>s/view',
                 ],
+                '<controller:(tasks|users)>' => '<controller>/index',
             ],
         ],
     ],

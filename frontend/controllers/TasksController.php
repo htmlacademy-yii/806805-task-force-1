@@ -23,4 +23,11 @@ class TasksController extends Controller
 
         return $this->render('index', ['tasks' => $tasks, 'tasksForm' => $tasksForm]);
     }
+
+    public function actionView(int $id = null)
+    {
+
+        
+        return $this->render('view', []);
+    }
 }

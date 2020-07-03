@@ -35,4 +35,10 @@ class UsersController extends Controller
 
         return $this->render('index', ['users' => $users, 'rating' => $rating, 'usersForm' => $usersForm]);
     }
+    
+    public function actionView(int $id = null)
+    {
+        
+        return $this->render('view', []);
+    }
 }
