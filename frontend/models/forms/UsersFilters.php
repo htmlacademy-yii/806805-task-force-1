@@ -16,7 +16,7 @@ class UsersFilters
 
     /* Данные выбранных пользователей и Сортировка по умолчанию (время регистрации) */
     // $userIds - либо тип массив или тип объект (запрос класса Query)
-    public function getUsers($userIds): array
+    public function getUsers(array $userIds): array
     {
         // Запрос данных всех пользователей-исполнителей с подзапросом id всех исполнителей
         $this->users = Users::find()
@@ -54,7 +54,7 @@ class UsersFilters
 
         // если форма не отправлена
         if ($usersForm === null) {
-            return $this->getUsers($contractors);
+            return $this->getUsers($contractors->all());
         }
 
         /* Фильтры, если форма отправлена */
@@ -76,7 +76,7 @@ class UsersFilters
                 ->where(['IN', 'u.user_id', $contractors])
                 ->andWhere("MATCH(u.full_name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
 
-            return $this->getUsers($contractorsBySearch);
+            return $this->getUsers($contractorsBySearch->all());
         }
 
         /* Фильтр Категории. Добавление условия в запрос. Атрибут пуст или из формы или по умолчанию */
@@ -115,16 +115,21 @@ class UsersFilters
             $contractors->andWhere(['IN', 'user_id', $filters]);
         }
 
-        return $this->getUsers($contractors);
+        return $this->getUsers($contractors->all());
     }
 
     /* Рейтинг выбранных пользователей */
     // Запрос данные о рейтинге из таблицы (значит есть рейтинг) пользователей
     public function getRating(array $userIds = null): array
     {
-        ($userIds !== null) ?: $userIds = array_keys($this->users);
+        $userIds ?: $userIds = array_keys($this->users);
 
-        $this->rating = (new Query())
+        return $this->rating = self::getRatingGeneric($userIds);
+    }
+
+    public static function getRatingGeneric($userIds): ?array
+    {
+        $query = (new Query())
             ->select([
                 'recipient_id',
                 'count(recipient_id) as num_feedbacks',
@@ -135,16 +140,33 @@ class UsersFilters
             ->where(['IN', 'recipient_id', $userIds])
             ->groupBy('recipient_id')
             ->orderBy(['avg_point' => SORT_DESC])
-            ->indexBy('recipient_id')
-            ->all();
+            ->indexBy('recipient_id');
 
-        return $this->rating;
+        $rating = (int) $query->count() === 1 ? $query->one() : $query->all(); 
+            // !!! $query->count() возвращает строку '1'. (int) требуется явное преобразование типа
+
+        return $rating ?: null;
+    }
+
+    public static function getContractorTasks(int $contractorId): ?array
+    {
+        $runningTasks = (new Query())
+            ->select(['task_id'])
+            ->from('task_runnings')
+            ->where(['contractor_id' => $contractorId]);
+
+        $failingTasks = (new Query())
+            ->select(['task_id'])
+            ->from('task_failings')
+            ->where(['contractor_id' => $contractorId]);
+
+        return $runningTasks->union($failingTasks)->all() ?: null;
     }
 
     /* Количество сделок выбранных пользователей */
     public function getDeals(array $userIds = null): array
     {
-        ($userIds !== null) ?: $userIds = array_keys($this->users);
+        $userIds ?: $userIds = array_keys($this->users);
 
         $this->deals = (new Query())
             ->select([
@@ -167,10 +189,10 @@ class UsersFilters
     {
         switch ($type) {
             case 'rating':
-                ($this->rating !== null) ?: $this->getRating();
+                $this->rating ?: $this->getRating();
                 return array_replace($this->rating, $this->users);
             case 'deals':
-                ($this->deals !== null) ?: $this->getDeals();
+                $this->deals ?: $this->getDeals();
                 return array_replace($this->deals, $this->users);
             case 'popularity':
                 // тело конструкции
