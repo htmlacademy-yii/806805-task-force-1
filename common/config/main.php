@@ -29,4 +29,7 @@ return [
             ],
         ],
     ],
+    'params' => [
+        'defaultAvatarAddr' => 'img/man-glasses.jpg',
+    ]
 ];

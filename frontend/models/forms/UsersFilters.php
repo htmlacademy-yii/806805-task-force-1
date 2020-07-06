@@ -127,7 +127,7 @@ class UsersFilters
         return $this->rating = self::getRatingGeneric($userIds);
     }
 
-    public static function getRatingGeneric($userIds): ?array
+    public static function getRatingGeneric($userIds, $typeResult = 'all'): ?array
     {
         $query = (new Query())
             ->select([
@@ -142,8 +142,7 @@ class UsersFilters
             ->orderBy(['avg_point' => SORT_DESC])
             ->indexBy('recipient_id');
 
-        $rating = (int) $query->count() === 1 ? $query->one() : $query->all(); 
-            // !!! $query->count() возвращает строку '1'. (int) требуется явное преобразование типа
+        $rating = $typeResult === 'one' ? $query->one() : $query->all(); 
 
         return $rating ?: null;
     }
