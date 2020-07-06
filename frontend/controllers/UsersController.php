@@ -4,6 +4,8 @@ namespace frontend\controllers;
 
 use frontend\models\forms\UsersFilters;
 use frontend\models\forms\UsersForm;
+use frontend\models\db\Users;
+
 use yii;
 use yii\web\Controller;
 
@@ -38,6 +40,7 @@ class UsersController extends Controller
     
     public function actionView(int $id = null)
     {
+        $user = Users::find($id)->joinWith('');
         
         return $this->render('view', []);
     }
