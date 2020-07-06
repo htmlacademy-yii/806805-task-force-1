@@ -32,7 +32,7 @@ use Yii;
  * @property Offers[] $offers
  * @property TaskFailings[] $taskFailings
  * @property TaskRunnings[] $taskRunnings
- * @property Tasks[] $tasks
+ * @property Tasks[] $customerTasks
  * @property UserFavorites[] $userFavorites
  * @property UserFavorites[] $userFavorites0
  * @property UserNotificationSettings[] $userNotificationSettings
@@ -169,7 +169,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTasks()
+    public function getCustomerTasks()
     {
         return $this->hasMany(Tasks::className(), ['customer_id' => 'user_id']);
     }

@@ -156,7 +156,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getTaskRunnings()
     {
-        return $this->hasMany(TaskRunnings::className(), ['task_id' => 'task_id']);
+        return $this->hasOne(TaskRunnings::className(), ['task_id' => 'task_id']);
     }
 
     /**
