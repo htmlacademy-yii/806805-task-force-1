@@ -148,6 +148,7 @@ CREATE TABLE `offers` (
   `offer_id` int(11) NOT NULL AUTO_INCREMENT,
   `task_id` int(11) NOT NULL,
   `contractor_id` int(11) NOT NULL,
+  `price` int(10) unsigned DEFAULT NULL,
   `desc_text` text NOT NULL,
   PRIMARY KEY (`offer_id`),
   KEY `task_id` (`task_id`),
@@ -163,7 +164,7 @@ CREATE TABLE `offers` (
 
 LOCK TABLES `offers` WRITE;
 /*!40000 ALTER TABLE `offers` DISABLE KEYS */;
-INSERT INTO `offers` VALUES (2,2,12,'We will do everything without noise and dust'),(5,5,15,' gkeik lvllep nale lnlks lne'),(7,7,17,'We will do everything without noise and dust'),(8,8,18,'I am grut'),(9,9,19,'Can do it one month'),(10,10,20,' gkeik lvllep nale lnlks lne'),(12,2,12,'We will do everything without noise and dust'),(15,5,15,' gkeik lvllep nale lnlks lne'),(17,2,17,'We will do everything without noise and dust'),(20,5,20,' gkeik lvllep nale lnlks lne'),(21,1,11,'I best piano mover'),(22,1,11,'I best piano mover'),(23,1,16,'I best piano mover');
+INSERT INTO `offers` VALUES (2,2,12,2000,'We will do everything without noise and dust'),(5,5,15,5000,' gkeik lvllep nale lnlks lne'),(7,7,17,7000,'We will do everything without noise and dust'),(8,8,18,8000,'I am grut'),(9,9,19,9000,'Can do it one month'),(10,10,20,10000,' gkeik lvllep nale lnlks lne'),(12,2,12,2000,'We will do everything without noise and dust'),(15,5,15,5000,' gkeik lvllep nale lnlks lne'),(17,2,17,2000,'We will do everything without noise and dust'),(20,5,20,5000,' gkeik lvllep nale lnlks lne'),(21,1,11,1000,'I best piano mover'),(22,1,11,1000,'I best piano mover'),(23,1,16,1000,'I best piano mover');
 /*!40000 ALTER TABLE `offers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -576,4 +577,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-30 20:33:30
+-- Dump completed on 2020-07-04 11:10:18

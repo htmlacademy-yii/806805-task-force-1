@@ -108,6 +108,7 @@ CREATE TABLE `offers` (
   `offer_id` int(11) NOT NULL AUTO_INCREMENT,
   `task_id` int(11) NOT NULL,
   `contractor_id` int(11) NOT NULL,
+  `price` int(10) unsigned DEFAULT NULL,
   `desc_text` text NOT NULL,
   PRIMARY KEY (`offer_id`),
   KEY `task_id` (`task_id`),
@@ -396,4 +397,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-30 20:35:12
+-- Dump completed on 2020-07-04 11:13:07

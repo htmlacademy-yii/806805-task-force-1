@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     customer_id  INT                NOT NULL,
     title        VARCHAR(128)       NOT NULL,
     desc_text    TEXT               NOT NULL,          
-    price        INT UNSIGNED,
+    price        INT                UNSIGNED,
     full_address VARCHAR(255),
     address_desc VARCHAR(255),      
     latitude     VARCHAR(255),
@@ -184,6 +184,7 @@ CREATE TABLE IF NOT EXISTS offers (
     offer_id      INT AUTO_INCREMENT NOT NULL,    
     task_id       INT                NOT NULL,
     contractor_id INT                NOT NULL,
+    price         INT                UNSIGNED,
     desc_text     TEXT               NOT NULL,        
     FOREIGN KEY (task_id)       REFERENCES tasks(task_id),
     FOREIGN KEY (contractor_id) REFERENCES users(user_id)

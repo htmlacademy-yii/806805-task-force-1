@@ -10,8 +10,9 @@ use Yii;
  * @property int $offer_id
  * @property int $task_id
  * @property int $contractor_id
+ * @property string $price
  * @property string $desc_text
- *
+ * 
  * @property Tasks $task
  * @property Users $contractor
  */
@@ -32,7 +33,7 @@ class Offers extends \yii\db\ActiveRecord
     {
         return [
             [['task_id', 'contractor_id', 'desc_text'], 'required'],
-            [['task_id', 'contractor_id'], 'integer'],
+            [['task_id', 'contractor_id', 'price'], 'integer'],
             [['desc_text'], 'string'],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'task_id']],
             [['contractor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['contractor_id' => 'user_id']],
@@ -48,6 +49,7 @@ class Offers extends \yii\db\ActiveRecord
             'offer_id' => 'Offer ID',
             'task_id' => 'Task ID',
             'contractor_id' => 'Contractor ID',
+            'price' => 'Price',
             'desc_text' => 'Desc Text',
         ];
     }
