@@ -11,6 +11,13 @@ use yii\web\NotFoundHttpException;
 class StartController extends Controller
 {
     public $layout = 'start'; 
+    
+    public function actions()
+    {
+        return [
+            'error' => ['class' => 'yii\web\ErrorAction'],
+        ];
+    }
 
     public function actionIndex() 
     {

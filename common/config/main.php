@@ -12,10 +12,13 @@ return [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'errorHandler' => [
+            'errorAction' => 'start/error',
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'enableStrictParsing' => true,
+            'enableStrictParsing' => false, // true - явно разрешенные URL в rules, напрмер '/' => '/' должен быть явно разрешен
             'normalizer' => [
                 'class' => 'yii\web\UrlNormalizer',
                 'action' => yii\web\UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
