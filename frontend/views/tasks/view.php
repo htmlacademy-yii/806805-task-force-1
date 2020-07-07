@@ -15,7 +15,7 @@ $this->title = 'Просмотр задания (view.html)';
             <div class="content-view__header">
                 <div class="content-view__headline">
                     <h1><?=$task->title?></h1>
-                    <span>Размещено в категории
+                    <span><?='Статус: ' . $task->status['title']?>. Размещено в категории
                         <a href="#" class="link-regular"><?=$task->category['title']?></a>
                         25 минут назад</span>
                 </div>
@@ -127,7 +127,7 @@ $this->title = 'Просмотр задания (view.html)';
         <?php if ($contractor === null OR USER_ID !== $task['customer_id']): ?>
         <!-- мини профиль заказчика -->
         <div class="profile-mini__wrapper">
-            <h3>Заказчик (<?="id{$task['customer_id']}"?>)</h3>
+            <h3>Заказчик (<?='id'. $task['customer_id'] ?>)</h3>
             <div class="profile-mini__top">
                 <img src="/<?=$customer['avatar_addr'] ?: \Yii::$app->params['defaultAvatarAddr']?>" width="62" height="62" alt="Аватар заказчика">
                 <div class="profile-mini__name five-stars__rate">
@@ -172,7 +172,7 @@ $this->title = 'Просмотр задания (view.html)';
     </div>
 
     <!-- Чат -->
-    <?php if ($contractor === null && (USER_ID === $contractor['user_id'] || USER_ID === $task['customer_id'])): ?>
+    <?php if ($contractor !== null && (USER_ID === $contractor['user_id'] || USER_ID === $task['customer_id'])): ?>
     <div class="connect-desk__chat">
         <h3>Переписка</h3>
         <div class="chat__overflow">
