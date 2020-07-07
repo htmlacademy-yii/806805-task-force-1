@@ -15,10 +15,8 @@ class UsersFilters
     public $deals;
 
     /* Данные выбранных пользователей и Сортировка по умолчанию (время регистрации) */
-    // $userIds - либо тип массив или тип объект (запрос класса Query)
     public function getUsers(array $userIds): array
     {
-        // Запрос данных всех пользователей-исполнителей с подзапросом id всех исполнителей
         $this->users = Users::find()
             ->where(['IN', 'user_id', $userIds])
             ->orderBy(['reg_time' => SORT_DESC])
@@ -30,7 +28,6 @@ class UsersFilters
 
     /* Выборка исполнителей (contractors) и Фильтры формы */
     // По заданию Пользователь является исполнитель, у которого есть специализация user_specializations, те выбираем уникальные user_id
-    // Нужно удалить тех пользователей, если пользователь стал Заказчиком, даже если у него есть специализация
     // те проверяем что пользователь не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
     public function getContractors(Model $usersForm = null): array
     {
@@ -83,13 +80,11 @@ class UsersFilters
         $contractors->andFilterWhere(['IN', 'us.category_id', $usersForm->categories]);
 
         /* Фильтр Сейчас свободен. true = сейчас свободен */
-        // В таблице task_runnings есть задания которым были назначены исполнители, связь один к одному от задания к исполнителю
-        // Запрос id исполнителей из tasks_runnings, если задания выполняются status_id = 3 из tasks
-        // Добавление условия в запрос - исключаем пользователи с заданиями в статусе исполняются
+        // Исключаем занятых исполнителей. Связь (один к одному) user_id из tasks_runnings, если задания выполняются status_id = 3 из tasks
         if ($usersForm->isAvailable) {
             $filters = (new Query())->select('tr.contractor_id')->from('tasks t')
                 ->join('INNER JOIN', 'task_runnings tr', 'tr.task_id = t.task_id')
-                ->where(['status_id' => '3']);
+                ->where(['t.status_id' => '3']);
             $contractors->andWhere(['NOT IN', 'us.user_id', $filters]);
         }
 
@@ -118,8 +113,7 @@ class UsersFilters
         return $this->getUsers($contractors->all());
     }
 
-    /* Рейтинг выбранных пользователей */
-    // Запрос данные о рейтинге из таблицы (значит есть рейтинг) пользователей
+    /* Рейтинг выбранных пользователей (значит есть рейтинг)*/
     public function getRating(array $userIds = null): array
     {
         $userIds ?: $userIds = array_keys($this->users);
@@ -127,7 +121,7 @@ class UsersFilters
         return $this->rating = self::getRatingGeneric($userIds);
     }
 
-    public static function getRatingGeneric($userIds, $typeResult = 'all'): ?array
+    public static function getRatingGeneric(array $userIds, $typeResult = 'all'): ?array
     {
         $query = (new Query())
             ->select([
@@ -147,17 +141,17 @@ class UsersFilters
         return $rating ?: null;
     }
 
-    public static function getContractorTasks(int $contractorId): ?array
+    public static function getContractorTasks(array $contractorIds): ?array
     {
         $runningTasks = (new Query())
             ->select(['task_id'])
             ->from('task_runnings')
-            ->where(['contractor_id' => $contractorId]);
+            ->where(['IN', 'contractor_id', $contractorIds]);
 
         $failingTasks = (new Query())
             ->select(['task_id'])
             ->from('task_failings')
-            ->where(['contractor_id' => $contractorId]);
+            ->where(['IN', 'contractor_id', $contractorIds]);
 
         return $runningTasks->union($failingTasks)->all() ?: null;
     }

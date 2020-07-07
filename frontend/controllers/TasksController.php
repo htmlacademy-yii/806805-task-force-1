@@ -30,7 +30,7 @@ class TasksController extends Controller
         ]);
     }
 
-    public function actionView(int $id = null)
+    public function actionView(int $id)
     {
         $taskQuery = Tasks::find()
             ->joinWith([
@@ -47,12 +47,11 @@ class TasksController extends Controller
         if (!$task) {
             throw new NotFoundHttpException('Такого задания не существует');
         }
-        try {
-            define('USER_ID', 11); // условно текущий пользователь, влияет на показ мини-пользователь и чат
+            define('USER_ID', 3); // условно текущий пользователь, в условии показа блоков мини-панели и чата
 
             $customer = $task->customer->attributes;
             $customerRating = UsersFilters::getRatingGeneric(
-                $task->customer_id, 'one');
+                [$task->customer_id], 'one');
             $customerRating === null ?: $customer = array_merge($customer, $customerRating);
             $customer['tasks'] = $task->customer->customerTasks;
             // var_dump($customer);
@@ -61,10 +60,10 @@ class TasksController extends Controller
             if ($taskQuery->andWhere(['tasks.status_id' => 3])->exists()) {
                 $contractor = $task->taskRunnings->contractor->attributes;
                 $contractorRating = UsersFilters::getRatingGeneric(
-                    $contractor['user_id'], 'one');
+                    [$contractor['user_id']], 'one');
                 $contractorRating === null ?: $contractor = array_merge($contractor, $contractorRating);
                 $contractor['tasks'] = UsersFilters::getContractorTasks(
-                    $contractor['user_id']
+                    [$contractor['user_id']]
                 );
             }
             // var_dump($contractor);
@@ -81,9 +80,6 @@ class TasksController extends Controller
                         $offerContractor, $contractorRaiting);
                 }
             }
-        } catch (NotFoundHttpException $mess) {
-            echo "!!!ИСКЛЮЧЕНИЕ!!! " . $mess->getMessage() . "<hr>";
-        }
 
         return $this->render('view', [
             'task' => $task,
