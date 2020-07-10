@@ -12,6 +12,10 @@ return [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'formatter' => [
+            'dateFormat' => 'dd.MM.yyyy',
+            'decimalSeparator' => '.',
+        ],
         'errorHandler' => [
             'errorAction' => 'start/error',
         ],
