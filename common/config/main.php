@@ -1,13 +1,13 @@
 <?php
 return [
-    'language' => 'ru-RU', 
-    'timeZone' => 'Europe/Moscow', 
+    'language' => 'ru-RU',
+    'timeZone' => 'Europe/Moscow',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
-    'defaultRoute' => 'start/index', 
+    'defaultRoute' => 'start/index',
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -32,11 +32,15 @@ return [
                     'pattern' => '<controller:(task|user)>/view/<id>',
                     'route' => '<controller>s/view',
                 ],
-                '<controller:(tasks|users)>' => '<controller>/index',
+                [
+                    'pattern' => '<controller:(tasks|users)>/<sorting>',
+                    'route' => '<controller>/index',
+                    // 'defaults' => ['sorting' => null],
+                ],
             ],
         ],
     ],
     'params' => [
         'defaultAvatarAddr' => 'img/man-glasses.jpg',
-    ]
+    ],
 ];
