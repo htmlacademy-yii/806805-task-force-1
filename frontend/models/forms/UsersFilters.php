@@ -2,128 +2,233 @@
 
 namespace frontend\models\forms;
 
-use frontend\models\db\Users;
+use frontend\models\db\UsersMain;
 use function common\functions\basic\transform\prepareLogicSearch;
 use yii;
-use yii\base\Model;
 use yii\db\Query;
+use yii\web\NotFoundHttpException;
 
+/**
+ * @property string $sortingLabel по умолчанию getSortingDefault()
+ * @property object $usersForm - при отправке
+ * @property array $users
+ * @property array $userIDs
+ * @property array $rating
+ * @property array $deals
+ *
+ */
 class UsersFilters
 {
+    // sorting labels
+    const SORTBY_DATE = 'by_reg';
+    const SORTBY_RAITING = 'by_rating';
+    const SORTBY_DEALS = 'by_deals';
+    const SORTBY_POP = 'by_pop';
+
+    public $sortingLabel; 
+    public $usersForm;
     public $users;
+    public $userIDs;
     public $rating;
     public $deals;
 
-    /* Данные выбранных пользователей и Сортировка по умолчанию (время регистрации) */
-    public function getUsers(array $userIds): array
+    public function __construct(?string $sorting)
     {
-        $this->users = Users::find()
-            ->where(['IN', 'user_id', $userIds])
-            ->orderBy(['reg_time' => SORT_DESC])
-            ->indexBy('user_id')
-            ->all();
+        $this->sortingLabel = $sorting;
+        // echo 'Тест сортировка: ' . ($sorting ?: 'null') . '<br>';
 
-        return $this->users;
+        if (!in_array($sorting, $this->getSortingLabels()) && $sorting) {
+            throw new NotFoundHttpException('Такой сортировки не существует');
+        }
     }
 
-    /* Выборка исполнителей (contractors) и Фильтры формы */
-    // По заданию Пользователь является исполнитель, у которого есть специализация user_specializations, те выбираем уникальные user_id
-    // те проверяем что пользователь не являются заказчиками в текущий момент, те когда Task_status=new и Task_status=running
-    public function getContractors(Model $usersForm = null): array
+    /**
+     * Сортировка - все лейблы-константы
+     */
+    public function getSortingLabels(): array
     {
-        // Запрос id действующие Заказчики
-        $customers = new Query();
-        $customers
-            ->select(['customer_id'])
-            ->from('tasks t')
-            ->distinct()
-            ->where(['t.status_id' => '1'])
-            ->orWhere(['t.status_id' => '3']);
+        return array_keys($this->getSortings());
+    }
 
-        // Запрос id все Исполнители при первой загрузке без фильтров.
-        // С использованием подзапроса удаляем id действующих заказчиков из исполнителей
-        $contractors = new Query();
-        $contractors
-            ->select(['us.user_id'])
-            ->distinct()
-            ->from('user_specializations us')
-            ->where(['NOT IN', 'us.user_id', $customers]);
+    /**
+     * Сортировка - значение по умолчанию лейб-константа
+     */
+    public function getSortingDefault(): string
+    {
+        return self::SORTBY_DATE;
+    }
+    
+    /**
+     * Сортировка для пользователей
+     */
+    public function getSortings(): array
+    {
+        return [
+            self::SORTBY_DATE => [
+                'index' => 1,
+                'label' => self::SORTBY_DATE, 
+                'title' => 'Дате регистрации',
+            ],
+            self::SORTBY_RAITING => [
+                'index' => 2,
+                'label' => self::SORTBY_RAITING, 
+                'title' => 'Рейтингу',
+            ],
+            self::SORTBY_DEALS => [
+                'index' => 3,
+                'label' => self::SORTBY_DEALS, 
+                'title' => 'Числу заказов',
+            ],
+            self::SORTBY_POP => [
+                'index' => 4,
+                'label' => self::SORTBY_POP, 
+                'title' => 'Популярности',
+            ],
+        ];
+    }
 
-        // если форма не отправлена
-        if ($usersForm === null) {
-            return $this->getUsers($contractors->all());
+    /**
+     * Сортировка - название колонки, значение колонки по умолчанию
+     */
+    public function getSortingColumn(?string $sortingLabel): string
+    {
+        $indexDefault = $this->getSortings()[$this->getSortingDefault()]['index']; // время регистрации (по умолчанию)
+        $sortingIndex = $this->getSortings()[$sortingLabel]['index'] ?? $indexDefault;
+        
+        return UsersMain::getSortingColumns()[$sortingIndex];
+    }
+
+    /**
+     * IDs исполнителей
+     */
+    public function getUserIDs(array $users = null): ?array
+    {
+        $users = $users ?: $this->users;
+// ТЕСТ
+// var_dump($this->users); die;
+
+        return $this->userIDs = array_column($users, 'user_id');
+    }
+    
+    /**
+     * Исполнители с информацией и связями для жадной загрузки.
+     */
+    public function getContractors(
+        string $selectColumns = '*',
+        array $params = []
+    ): array
+    {
+// Тесты
+// echo 'Исполнители точка входа: ';
+// var_dump($params);
+// var_dump($this->getUserIDs()); die;
+
+        $defaultParams = ['asQuery']; // значения по умолчанию (всегда включено)
+        $paramsIDs = array_unique(array_merge($defaultParams, $params));
+        
+        $contractors = UsersMain::getContractorsMain($selectColumns, $paramsIDs);
+
+        // Фильтры - дополнения запроса
+        if ($this->usersForm) {
+            $contractors = $this->getfilterContractors($contractors, $this->usersForm);
         }
+// Тесты
+// echo 'Исполнители точка входа: ';
+// var_dump($contractors); die;
 
-        /* Фильтры, если форма отправлена */
+        // Общее дополнение запроса
+        $contractors
+            ->joinWith([
+                'taskRunnings tr1',
+                'feedbacks f1',
+                'userSpecializations usc1',
+            ])
+            // Сортировка
+            ->orderBy([$this->getSortingColumn($this->sortingLabel) => SORT_DESC])
+            ->indexBy('user_id'); // Ключ массива (атрибут объекта, не поле)
 
-        /* Фильтр поиск по полю название задания. нужен Fulltext index в БД */
-        // Специальные символы для полнотекстового поиска удаляются из строки поиска
-        // Словам добавляется в конце специальный символ * для полнотекстового поиска
-        // Полнотексовый поиск выполняется правильно только в соответствии с первыми буквами слова
-        // Согласно ТЗ, поиск сбрасывает другие фильтры
+        return $this->users = $contractors->all();
+    }
+
+    /**
+     * Фильтры формы для исполнителей
+     */
+    public function getfilterContractors(object $contractors, object $usersForm): object
+    {
+        // Фильтр поиск по имени. Тип Fulltext логический, поиск сбрасывает другие фильтры
         if ($search = $usersForm->search) {
-
+            // удаление символов логического поиска
             $logicSearch = prepareLogicSearch($search);
-
-            $contractorsBySearch = new Query();
-            $contractorsBySearch
-                ->select(['u.user_id'])
-                ->distinct()
-                ->from('users u')
-                ->where(['IN', 'u.user_id', $contractors])
+            $contractors
                 ->andWhere("MATCH(u.full_name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
 
-            return $this->getUsers($contractorsBySearch->all());
+            return $contractors;
         }
 
-        /* Фильтр Категории. Добавление условия в запрос. Атрибут пуст или из формы или по умолчанию */
+        /* Фильтр Категории. (по умолчанию пусто) */
+        $contractors->join(
+            'LEFT JOIN', 
+            'user_specializations us', 
+            'us.user_id = u.user_id'
+        );
         $contractors->andFilterWhere(['IN', 'us.category_id', $usersForm->categories]);
+        // echo 'Фильтр Категории: '; var_dump($contractors->all());
 
-        /* Фильтр Сейчас свободен. true = сейчас свободен */
-        // Исключаем занятых исполнителей. Связь (один к одному) user_id из tasks_runnings, если задания выполняются status_id = 3 из tasks
+        /* Фильтр Сейчас свободен. true = свободен */
         if ($usersForm->isAvailable) {
-            $filters = (new Query())->select('tr.contractor_id')->from('tasks t')
-                ->join('INNER JOIN', 'task_runnings tr', 'tr.task_id = t.task_id')
+            $filter = (new Query())
+                ->select('tr.contractor_id')
+                ->from('task_runnings tr')
+                ->distinct()
+                ->join('LEFT JOIN', 'tasks t', 't.task_id = tr.task_id')
                 ->where(['t.status_id' => '3']);
-            $contractors->andWhere(['NOT IN', 'us.user_id', $filters]);
+            $contractors->andWhere(['NOT IN', 'u.user_id', $filter]);
         }
 
-        /* Фильтр Сейчас онлайн. true = свободен */
+        /* Фильтр Сейчас онлайн. Атрибут true = онлайн */
         if ($usersForm->isOnLine) {
             $datePoint = Yii::$app->formatter->asDatetime('-30 minutes', 'php:Y-m-d H:i:s');
-            $filters = (new Query())->select('u.user_id')->from('users u')
-                ->where(['>', 'u.activity_time', $datePoint]);
-            $contractors->andWhere(['IN', 'us.user_id', $filters]);
+            $contractors->andWhere(['>', 'u.activity_time', $datePoint]);
         }
 
-        /* Фильтр. Есть отзывы. true = есть */
+        /* Фильтр. Есть отзывы. Атрибут true = есть отзывы */
         if ($usersForm->isFeedbacks) {
-            $filters = (new Query())->select(['f.recipient_id'])->distinct()->from('feedbacks f');
-            $contractors->andWhere(['IN', 'us.user_id', $filters]);
+            $filter = (new Query())
+                ->select(['f.recipient_id'])
+                ->distinct()->from('feedbacks f');
+            $contractors->andWhere(['IN', 'u.user_id', $filter]);
         }
 
-        /* Фильтр. В избранном */
+        /* Фильтр. В избранном. Атрибут true = в избранном */
         if ($usersForm->isFavorite) {
             $currentUser = 1; // !!!Пример
-            $filters = (new Query)->select('uf.fave_user_id')->from('user_favorites uf')
+            $filter = (new Query)
+                ->select('uf.fave_user_id')
+                ->from('user_favorites uf')
                 ->where(['user_id' => $currentUser]);
-            $contractors->andWhere(['IN', 'user_id', $filters]);
+            $contractors->andWhere(['IN', 'u.user_id', $filter]);
         }
 
-        return $this->getUsers($contractors->all());
+        // echo 'Тест Фильтры финиш: ';
+        // var_dump($params);
+        // var_dump($contractors->column()); die;
+        
+        return $contractors;
     }
 
-    /* Рейтинг выбранных пользователей (значит есть рейтинг)*/
-    public function getRating(array $userIds = null): array
+    /**
+     * Рейтинг пользователей
+     */
+    public function getRating(array $userIDs = []): array
     {
-        $userIds ?: $userIds = array_keys($this->users);
+        $userIDs ?: $userIDs = array_column($this->users, 'user_id');
 
-        return $this->rating = self::getRatingGeneric($userIds);
+        return $this->rating = self::getRatingMain($userIDs);
     }
 
-    public static function getRatingGeneric(array $userIds, $typeResult = 'all'): ?array
+    public static function getRatingMain(array $userIDs = []): array
     {
-        $query = (new Query())
+        $rating = (new Query())
             ->select([
                 'recipient_id',
                 'count(recipient_id) as num_feedbacks',
@@ -131,68 +236,21 @@ class UsersFilters
                 'sum(point_num)/count(recipient_id) as avg_point',
             ])
             ->from('feedbacks')
-            ->where(['IN', 'recipient_id', $userIds])
+            ->andFilterWhere(['IN', 'recipient_id', $userIDs])
             ->groupBy('recipient_id')
             ->orderBy(['avg_point' => SORT_DESC])
-            ->indexBy('recipient_id');
+            ->indexBy('recipient_id')
+            ->all();
 
-        $rating = $typeResult === 'one' ? $query->one() : $query->all(); 
-
-        return $rating ?: null;
-    }
-
-    public static function getContractorTasks(array $contractorIds): ?array
-    {
-        $runningTasks = (new Query())
-            ->select(['task_id'])
-            ->from('task_runnings')
-            ->where(['IN', 'contractor_id', $contractorIds]);
-
-        $failingTasks = (new Query())
-            ->select(['task_id'])
-            ->from('task_failings')
-            ->where(['IN', 'contractor_id', $contractorIds]);
-
-        return $runningTasks->union($failingTasks)->all() ?: null;
+        return $rating;
     }
 
     /* Количество сделок выбранных пользователей */
-    public function getDeals(array $userIds = null): array
+    public function getContractorTasks(array $userIDs = null): array
     {
-        $userIds ?: $userIds = array_keys($this->users);
-
-        $this->deals = (new Query())
-            ->select([
-                'contractor_id',
-                'count(contractor_id) AS num_tasks',
-            ])
-            ->from('task_runnings')
-            ->where(['IN', 'contractor_id', $userIds])
-            ->groupBy('contractor_id')
-            ->orderBy(['num_tasks' => SORT_DESC])
-            ->indexBy('contractor_id')
-            ->all();
-
-        return $this->deals;
-    }
-
-    /* Сортировка согласно строки запроса $sorting или параметра действия контроллера (при использовании ЧПУ) */
-    // По умолчанию сортировка задана в методе getUsers
-    public function getSortedUsers(?string $type): array
-    {
-        switch ($type) {
-            case 'rating':
-                $this->rating ?: $this->getRating();
-                return array_replace($this->rating, $this->users);
-            case 'deals':
-                $this->deals ?: $this->getDeals();
-                return array_replace($this->deals, $this->users);
-            case 'popularity':
-                // тело конструкции
-                return $this->users;
-            default:
-                // Если тип сортировки не передан ($type пуст) или не соответствует, то сортировка по умолчанию
-                return $this->users;
-        }
+        $userIDs = $userIDs ?: $this->getUserIDs();
+// ТЕСТ
+// var_dump($userIDs);
+        return $this->deals = UsersMain::getContractorTasks($userIDs);
     }
 }

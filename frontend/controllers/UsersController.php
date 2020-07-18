@@ -4,41 +4,38 @@ namespace frontend\controllers;
 
 use frontend\models\forms\UsersFilters;
 use frontend\models\forms\UsersForm;
+use frontend\models\db\Users;
+
 use yii;
 use yii\web\Controller;
 
 class UsersController extends Controller
 {
-    public function actionIndex()
+    public function actionIndex(string $sorting = null)
     {
         $usersForm = new UsersForm();
-        $usersFilters = new UsersFilters();
+        $usersFilters = new UsersFilters($sorting);
 
-        $users = [];
-        if ($usersForm->load(Yii::$app->request->post()) === false) {
-            $users = $usersFilters->getContractors();
-        } elseif ($search = $usersForm->search) {
-            unset($usersForm);
-            $usersForm = new UsersForm();
+        if ($search = Yii::$app->request->post($usersForm->formName())['search']) {
             $usersForm->search = $search;
-
-            $users = $usersFilters->getContractors($usersForm);
-        } else {
-            $users = $usersFilters->getContractors($usersForm);
+            $usersFilters->usersForm = $usersForm;
+        } elseif ($usersForm->load(Yii::$app->request->post()) === true) {
+            $usersFilters->usersForm = $usersForm;
         }
+        $users = $usersFilters->getContractors('tasks_count', ['addRating']);
 
-        $rating = $usersFilters->getRating();
-
-        if ($type = Yii::$app->request->get('sorting')) {
-            $users = $usersFilters->getSortedUsers($type);
-        }
-
-        return $this->render('index', ['users' => $users, 'rating' => $rating, 'usersForm' => $usersForm]);
+        return $this->render('index', ['users' => $users, 'usersForm' => $usersForm]);
     }
     
-    public function actionView(int $id = null)
+    public function actionView(int $id)
     {
+        $user = Users::find()
+            ->joinWith(['userPortfolioImages upi', 'userSpecializations us'])
+            ->where(['users.user_id' => $id])
+            ->one();
+
+        $userRating = UsersFilters::getRatingMain([$id], 'one');
         
-        return $this->render('view', []);
+    return $this->render('view', ['user' => $user, 'userRating' => $userRating]);
     }
 }

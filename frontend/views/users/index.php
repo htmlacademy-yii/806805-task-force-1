@@ -32,14 +32,14 @@ $this->title = 'Исполнители (верстка Users.html)';
         <div class="feedback-card__top">
             <div class="user__search-icon">
                 <a href="#"><img src="./img/man-glasses.jpg" width="65" height="65"></a>
-                <span><?=count($user->taskRunnings)?> заданий</span>
-                <span><?=count($user->feedbacks)?> отзывов</span>
+                <span><?=$user->tasks_count?> заданий</span>
+                <span><?=$user->feedbacks_count?> отзывов</span>
             </div>
             <div class="feedback-card__top--name user__search-card">
-                <p class="link-name"><a href="#" class="link-regular"><?=$user->full_name?></a></p>
+                <p class="link-name"><a href="#" class="link-regular"><?=$user->full_name?> (ID: <?=$user->user_id?>)</a></p>
 
                 <!-- Рейтинг -->
-                <?php $avg_point = $rating[$user->user_id]['avg_point'] ?? 0;?>
+                <?php $avg_point = $user->avg_point ?? 0;?>
 
                 <!-- итерация желтой звездочки -->
                 <?php for ($i = 1; $i <= $avg_point; $i++): ?>
