@@ -9,11 +9,11 @@ use yii\db\Query;
 use yii\web\NotFoundHttpException;
 
 /**
- * @property string $sortingLabel по умолчанию getSortingDefault()
+ * @property string $sorting по умолчанию getSortingDefault()
  * @property object $usersForm - при отправке
  * @property array $users
  * @property array $userIDs
- * @property array $rating
+ * @property array $ratings
  * @property array $deals
  *
  */
@@ -21,25 +21,54 @@ class UsersFilters
 {
     // sorting labels
     const SORTBY_DATE = 'by_reg';
-    const SORTBY_RAITING = 'by_rating';
+    const SORTBY_RAITINGS = 'by_rating';
     const SORTBY_DEALS = 'by_deals';
-    const SORTBY_POP = 'by_pop';
+    const SORTBY_POPS = 'by_pop';
 
-    public $sortingLabel; 
+    public $sorting; 
     public $usersForm;
     public $users;
     public $userIDs;
-    public $rating;
+    public $ratings;
     public $deals;
 
-    public function __construct(?string $sorting)
+    public function __construct(?string $sorting, object $usersForm)
     {
-        $this->sortingLabel = $sorting;
-        // echo 'Тест сортировка: ' . ($sorting ?: 'null') . '<br>';
+        $this->sorting = $sorting;
+        $this->usersForm = $usersForm;
 
         if (!in_array($sorting, $this->getSortingLabels()) && $sorting) {
             throw new NotFoundHttpException('Такой сортировки не существует');
         }
+    }
+
+    /**
+     * Сортировка для пользователей
+     */
+    public static function getSortings(): array
+    {
+        return [
+            self::SORTBY_DATE => [
+                'index' => 1,
+                'label' => self::SORTBY_DATE, 
+                'title' => 'Дате регистрации',
+            ],
+            self::SORTBY_RAITINGS => [
+                'index' => 2,
+                'label' => self::SORTBY_RAITINGS, 
+                'title' => 'Рейтингу',
+            ],
+            self::SORTBY_DEALS => [
+                'index' => 3,
+                'label' => self::SORTBY_DEALS, 
+                'title' => 'Числу заказов',
+            ],
+            self::SORTBY_POPS => [
+                'index' => 4,
+                'label' => self::SORTBY_POPS, 
+                'title' => 'Популярности',
+            ],
+        ];
     }
 
     /**
@@ -59,35 +88,6 @@ class UsersFilters
     }
     
     /**
-     * Сортировка для пользователей
-     */
-    public function getSortings(): array
-    {
-        return [
-            self::SORTBY_DATE => [
-                'index' => 1,
-                'label' => self::SORTBY_DATE, 
-                'title' => 'Дате регистрации',
-            ],
-            self::SORTBY_RAITING => [
-                'index' => 2,
-                'label' => self::SORTBY_RAITING, 
-                'title' => 'Рейтингу',
-            ],
-            self::SORTBY_DEALS => [
-                'index' => 3,
-                'label' => self::SORTBY_DEALS, 
-                'title' => 'Числу заказов',
-            ],
-            self::SORTBY_POP => [
-                'index' => 4,
-                'label' => self::SORTBY_POP, 
-                'title' => 'Популярности',
-            ],
-        ];
-    }
-
-    /**
      * Сортировка - название колонки, значение колонки по умолчанию
      */
     public function getSortingColumn(?string $sortingLabel): string
@@ -99,42 +99,31 @@ class UsersFilters
     }
 
     /**
+     * Сортировка для пользователей
+     */
+    public static function getSortingTags(): array
+    {
+        $sortings = self::getSortings();
+        array_shift($sortings);
+
+        return $sortings;
+    }
+
+    /**
      * IDs исполнителей
      */
-    public function getUserIDs(array $users = null): ?array
+    public function getUserIDs(): ?array
     {
-        $users = $users ?: $this->users;
-// ТЕСТ
-// var_dump($this->users); die;
-
-        return $this->userIDs = array_column($users, 'user_id');
+        return $this->userIDs = array_column($this->users, 'user_id');
     }
     
     /**
-     * Исполнители с информацией и связями для жадной загрузки.
+     * Исполнители главный запрос с информацией и связями жадной загрузки.
      */
-    public function getContractors(
-        string $selectColumns = '*',
-        array $params = []
-    ): array
+    public function getContractorsMain(array $addons = []): object
     {
-// Тесты
-// echo 'Исполнители точка входа: ';
-// var_dump($params);
-// var_dump($this->getUserIDs()); die;
-
-        $defaultParams = ['asQuery']; // значения по умолчанию (всегда включено)
-        $paramsIDs = array_unique(array_merge($defaultParams, $params));
-        
-        $contractors = UsersMain::getContractorsMain($selectColumns, $paramsIDs);
-
-        // Фильтры - дополнения запроса
-        if ($this->usersForm) {
-            $contractors = $this->getfilterContractors($contractors, $this->usersForm);
-        }
-// Тесты
-// echo 'Исполнители точка входа: ';
-// var_dump($contractors); die;
+        $defaultSettings = ['asQuery']; // значения по умолчанию (всегда включено)
+        $contractors = UsersMain::getContractorsMain('*', $defaultSettings);
 
         // Общее дополнение запроса
         $contractors
@@ -143,26 +132,43 @@ class UsersFilters
                 'feedbacks f1',
                 'userSpecializations usc1',
             ])
-            // Сортировка
-            ->orderBy([$this->getSortingColumn($this->sortingLabel) => SORT_DESC])
+            ->orderBy([$this->getSortingColumn($this->sorting) => SORT_DESC]) // Сортировка
             ->indexBy('user_id'); // Ключ массива (атрибут объекта, не поле)
 
-        return $this->users = $contractors->all();
+        // Дополнение запроса или дополнительные данные (addon)
+        $defaultAddons = ['addRatings', 'addDeals']; // значения по умолчанию (всегда включено)
+        $addons = array_merge($defaultAddons, $addons);
+
+        if ($addons) {
+            $contractors = UsersMain::addContractorAddons($contractors, $addons);
+        }
+
+        return $contractors;
     }
 
     /**
-     * Фильтры формы для исполнителей
+     * Исполнители с информацией и связями для жадной загрузки.
      */
-    public function getfilterContractors(object $contractors, object $usersForm): object
+    public function getContractors(array $addons = []): array
     {
+        return $this->users = $this->getContractorsMain($addons)->all();
+    }
+
+    /**
+     * Исполнители с фильтрами, с информацией и связями для жадной загрузки.
+     */
+    public function getFilterContractors(array $addons = []): array
+    {
+        $contractors = $this->getContractorsMain($addons);
+
         // Фильтр поиск по имени. Тип Fulltext логический, поиск сбрасывает другие фильтры
-        if ($search = $usersForm->search) {
+        if ($search = $this->usersForm->search) {
             // удаление символов логического поиска
             $logicSearch = prepareLogicSearch($search);
             $contractors
                 ->andWhere("MATCH(u.full_name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
 
-            return $contractors;
+            return $this->users = $contractors->all();
         }
 
         /* Фильтр Категории. (по умолчанию пусто) */
@@ -171,11 +177,10 @@ class UsersFilters
             'user_specializations us', 
             'us.user_id = u.user_id'
         );
-        $contractors->andFilterWhere(['IN', 'us.category_id', $usersForm->categories]);
-        // echo 'Фильтр Категории: '; var_dump($contractors->all());
+        $contractors->andFilterWhere(['IN', 'us.category_id', $this->usersForm->categories]);
 
         /* Фильтр Сейчас свободен. true = свободен */
-        if ($usersForm->isAvailable) {
+        if ($this->usersForm->isAvailable) {
             $filter = (new Query())
                 ->select('tr.contractor_id')
                 ->from('task_runnings tr')
@@ -186,13 +191,13 @@ class UsersFilters
         }
 
         /* Фильтр Сейчас онлайн. Атрибут true = онлайн */
-        if ($usersForm->isOnLine) {
+        if ($this->usersForm->isOnLine) {
             $datePoint = Yii::$app->formatter->asDatetime('-30 minutes', 'php:Y-m-d H:i:s');
             $contractors->andWhere(['>', 'u.activity_time', $datePoint]);
         }
 
         /* Фильтр. Есть отзывы. Атрибут true = есть отзывы */
-        if ($usersForm->isFeedbacks) {
+        if ($this->usersForm->isFeedbacks) {
             $filter = (new Query())
                 ->select(['f.recipient_id'])
                 ->distinct()->from('feedbacks f');
@@ -200,7 +205,7 @@ class UsersFilters
         }
 
         /* Фильтр. В избранном. Атрибут true = в избранном */
-        if ($usersForm->isFavorite) {
+        if ($this->usersForm->isFavorite) {
             $currentUser = 1; // !!!Пример
             $filter = (new Query)
                 ->select('uf.fave_user_id')
@@ -209,48 +214,55 @@ class UsersFilters
             $contractors->andWhere(['IN', 'u.user_id', $filter]);
         }
 
-        // echo 'Тест Фильтры финиш: ';
-        // var_dump($params);
-        // var_dump($contractors->column()); die;
-        
-        return $contractors;
+        return $this->users = $contractors->all();
     }
 
     /**
-     * Рейтинг пользователей
+     * Колонки с рейтингом исполнителей
      */
-    public function getRating(array $userIDs = []): array
+    public function getContractorRatings(): array
     {
-        $userIDs ?: $userIDs = array_column($this->users, 'user_id');
-
-        return $this->rating = self::getRatingMain($userIDs);
+        return $this->ratings = UsersMain::getContractorRatings($this->getUserIDs());
     }
 
-    public static function getRatingMain(array $userIDs = []): array
+    /**
+     * Добавление колонок рейтингов к объектам исполнитель
+     */
+    public function addContractorRatings(): array
     {
-        $rating = (new Query())
-            ->select([
-                'recipient_id',
-                'count(recipient_id) as num_feedbacks',
-                'sum(point_num) as sum_point',
-                'sum(point_num)/count(recipient_id) as avg_point',
-            ])
-            ->from('feedbacks')
-            ->andFilterWhere(['IN', 'recipient_id', $userIDs])
-            ->groupBy('recipient_id')
-            ->orderBy(['avg_point' => SORT_DESC])
-            ->indexBy('recipient_id')
-            ->all();
+        $ratings = $this->getContractorRatings();
+        $users = &$this->users;
 
-        return $rating;
+        foreach ($ratings as $id => $rating) {
+            $users[$id]->attributes = $rating;
+        }
+
+        return $this->users;
+    }
+    
+    /**
+     * Колонка количество сделок исполнителей
+     */
+    public function getContractorDeals(): array
+    {
+        return $this->deals = UsersMain::getContractorDeals($this->getUserIDs());
     }
 
-    /* Количество сделок выбранных пользователей */
-    public function getContractorTasks(array $userIDs = null): array
+    /**
+     * Добавление колонки количество сделок к объектам исполнитель
+     */
+    public function addContractorDeals(): array
     {
-        $userIDs = $userIDs ?: $this->getUserIDs();
-// ТЕСТ
-// var_dump($userIDs);
-        return $this->deals = UsersMain::getContractorTasks($userIDs);
+        $deals = $this->getContractorDeals();
+        $users = &$this->users;
+
+
+        foreach ($deals as $id => $deal) {
+            $users[$id]->attributes = $deal;
+        }
+
+        var_dump($users); die;            
+
+        return $this->users;
     }
 }

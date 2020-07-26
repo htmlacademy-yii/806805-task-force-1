@@ -12,24 +12,28 @@ use yii\db\Query;
  * @property int $feedbacks_count
  * @property int $sum_point
  * @property int $avg_point
- * @property int $specializations_count
+ * @property int $specialties_count
  * @property int $tasks_count
  */
 class UsersMain extends Users
 {
-    const SORTBY_DATE_COL = 'reg_time';
-    const SORTBY_RAITING_COL = 'avg_point';
-    const SORTBY_DEALS_COL = 'tasks_count';
-    const SORTBY_POP_COL = 'pop_count';
-    const SUB_SPECIALTIES = 'specializations_count';
-    const ADDON_RATING = 'addRating';
     const SETTING_QUERY = 'asQuery';
     const SETTING_ARRAY = 'asArray';
+
+    const SORTBY_DATE_COL = 'reg_time';
+    const SORTBY_RAITINGS_COL = 'avg_point';
+    const SORTBY_DEALS_COL = 'tasks_count';
+    const SORTBY_POPS_COL = 'pop_count';
+
+    const ADDON_SPECIALTIES = 'addSpecialties';
+    const ADDON_RATINGS = 'addRatings';
+    const ADDON_DEALS = 'addDeals';
+    const ADDON_POPS = 'addPops';
 
     public $feedbacks_count;
     public $sum_point;
     public $avg_point;
-    public $specializations_count;
+    public $specialties_count;
     public $tasks_count;
 
     /**
@@ -39,306 +43,210 @@ class UsersMain extends Users
     {
         return [
             [[
-                'feedbacks_count', 
-                'sum_point', 
-                'avg_point', 
-                'specializations_count', 
-                'tasks_count'
+                'feedbacks_count',
+                'sum_point',
+                'avg_point',
+                'specialties_count',
+                'tasks_count',
             ], 'safe'],
         ];
     }
 
     /**
-     * Названия колонок для сортировки 
+     * Названия колонок для сортировки
      */
     public static function getSortingColumns(): array
     {
         $sortingColumns = [
             1 => self::SORTBY_DATE_COL,
-            2 => self::SORTBY_RAITING_COL,
+            2 => self::SORTBY_RAITINGS_COL,
             3 => self::SORTBY_DEALS_COL,
-            4 => self::SORTBY_POP_COL,
+            4 => self::SORTBY_POPS_COL,
         ];
 
         return $sortingColumns;
-    } 
+    }
 
     /**
-     * Настройки для getContractorsMain()
+     * Настройки ретурна для getContractorsMain()
      */
     public static function getContractorSettings()
     {
         return [
             self::SETTING_QUERY, // set вернуть как объект
-            self::SETTING_ARRAY, // set объекта
+            self::SETTING_ARRAY, // set ввиде массива
         ];
-    }
-
-    /**
-     * Обработчик $selectColumns. Отделяет новые атрибуты от стандартных
-     */
-    public static function getColumnGroups(string $selectColumns = '*'): array
-    {
-        $attributes = (new Users)->attributes();
-        $basicColumns = ['u.*'];
-        $newColumns = [];
-
-        if ($selectColumns !== '*') {
-            $basicColumns = array_intersect(explode(', ', $selectColumns), $attributes);
-            $basicColumns = $basicColumns === [] ? ['u.*'] : (array_map(function ($val) {
-                return 'u.' . $val;
-            }, $basicColumns));
-            $newColumns = array_diff(explode(', ', $selectColumns), $attributes);
-        }
-
-        foreach ($newColumns AS $key => $newColumn) {
-            if (in_array($newColumn, self::getSubqueryLabels()) === false) {
-                throw new NotSupportedException('Не найдено колонки и соответствующего подзапроса');
-                unset($newColumns[$key]);
-            }
-        }
-
-        return [$basicColumns, $newColumns];
-    }
-
-    /**
-     * Обработчик параметров исполнителя $paramsIDs, отделяет массив IDs от дополнений и настроек.
-     */
-    public static function separateParamsIDs(array $paramsIDs = []): array
-    {
-        $settingLabels = self::getContractorSettings();
-        $addonLabels = self::getContractorAddonLabels();
-
-        $settings = [];
-        $addons = [];
-        $userIDs = [];
-
-        $paramsIDs = array_values(array_filter($paramsIDs));
-        $maxNum = count($settingLabels) + count($addonLabels) + 1; // параметры + 1 массив IDs
-        if (count($paramsIDs)) {
-            for ($i = 0; $i < count($paramsIDs) && $i < $maxNum; $i++) {
-                switch ($param = $paramsIDs[$i]) {
-                    case self::SETTING_QUERY:$settings[] = self::SETTING_QUERY; 
-                        break;
-                    case self::SETTING_ARRAY:$settings[] = self::SETTING_ARRAY; 
-                        break;
-                    case $addonLabels[1]:$addons[] = $addonLabels[1]; 
-                        break;
-                    default: 
-                        if (is_array($param) && $param) {
-                            $userIDs = $param; 
-                        }
-                }
-            }
-
-            if ($settings === [] && $addons === [] && $userIDs === []) {
-                $userIDs = $paramsIDs;
-            }
-        }
-
-        foreach ($settings AS $key => $setting) {
-            if (in_array($setting, $settingLabels) === false) {
-                throw new NotSupportedException('Не найдено названия настройки запроса');
-                unset($setting[$key]);
-            }
-        }
-
-        foreach ($addons AS $key => $addon) {
-            if (in_array($addon, $addonLabels) === false) {
-                throw new NotSupportedException('Не найдено названия аддона для запроса');
-                unset($addon[$key]);
-            }
-        }
-        
-        return [$settings, $addons, $userIDs];
-    }
-
-    /**
-     * Исполнители - пользователи со специализациями 3 и более, не являются заказчиками
-     *
-     * @param string $selectColumns стандартные колонки таблицы и новые колонки.
-     * По умолчанию * (выбрать все). Новые колонки согласно $newAttributeValues[]
-     * Пример. 'user_id' - если одно поле user_id, то вернет простой массив
-     * Пример. 'user_id, specialization_count' - массив с двумя колонками
-     * @param array $paramsIDs массив IDs, настройки (asQuery), дополнения (addRating).
-     * Например  [1,2,3] | ['asQuery'] | ['asQuery', 'addRating', [1,2,3]]
-     *
-     * @return mixed query, array
-     */
-    public static function getContractorsMain(string $selectColumns, array $paramsIDs)
-    {
-        /* АТРИБУТЫ $selectColumns */
-        list(
-            $basicColumns, // массив
-            $newColumns // массив
-        ) = self::getColumnGroups($selectColumns);
-
-        /* ПАРАМЕТРЫ И IDs $paramsIDs */
-        list(
-            $settings, // массив
-            $addons, // массив
-            $userIDs 
-        ) = self::separateParamsIDs($paramsIDs);
-
-// Тесты переменных
-echo 'paramsIDs';
-var_dump($paramsIDs);
-echo 'basicColumns';
-var_dump($basicColumns);
-echo 'newColumns';
-var_dump($newColumns);
-echo 'settings ';
-var_dump($settings);
-echo 'addons ';
-var_dump($addons);
-echo 'IDs';
-var_dump($userIDs);
-// die;
-
-        /* ГЛАВНАЯ ЧАСТЬ - основной запрос исполнители */
-        $customers = self::getActiveCustomers('user_id');
-
-        // Исполнители без заказчиков
-        $specializationCount = self::getSubqueries()[self::SUB_SPECIALTIES]; // Основной подзапрос
-
-        $contractors = self::find()
-            ->select($basicColumns)
-            ->from('users u')
-            ->where(['NOT IN', 'u.user_id', $customers]) // основное условие, не заказчики, постоянное
-            ->andWhere(['>=', $specializationCount, '1']); // основное условие, категорий>=3, постоянное
-
-        $contractors->andFilterWhere(['IN', 'u.user_id', $userIDs]); // если есть выборка по ID
-        
-        if (in_array(self::SETTING_ARRAY, $settings)) {
-            $contractors = $contractors->asArray();
-        }
-
-// Тесты главной части
-// echo 'Result стандартный';
-// var_dump($contractors->asArray()->all());
-// echo '----------------------- <br><br>'; die;
-
-        // Стандартный ретурн как массив
-        if ($newColumns === [] && $addons === [] && $settings === []) {
-            return $selectColumns === 'user_id' ? $contractors->column() : $contractors->all();
-        }
-        // Стандартный ретурн как запрос Query
-        elseif ($newColumns === [] && $addons === [] && in_array(self::SETTING_QUERY, $settings)) {
-            return $contractors;
-        }
-
-        /* ЧАЧТЬ 2 - дополнение для главного запроса */
-        if ($addons) {
-            $contractors = self::getContractorAddons($contractors, $addons);
-        }
-
-        /* ЧАСТЬ 3 - Подзапросы, дополнительные поля для исполнителей */
-        if ($newColumns) {
-            $subqueries = self::getSubqueries($newColumns);
-            foreach ($newColumns as $newColumn) {
-                $newSubquery = $subqueries[$newColumn] ?? null;
-                $contractors = $contractors->addSelect([$newColumn => $newSubquery]);
-            }
-        }
-        
-// Тесты общие
-// echo 'Result дополненные поля';
-// var_dump($contractors->all());
-// echo '----------------------- <br><br>'; die;
-
-        return in_array(self::SETTING_QUERY, $settings) ? $contractors : $contractors->all();
     }
 
     /**
      * Дополнения (имена) для запроса getContractorsMain()
      */
-    public static function getContractorAddonLabels()
+    public static function getContractorAddons()
     {
         return [
-            1 => self::ADDON_RATING // addon добавляет поля рейтинга
+            self::ADDON_SPECIALTIES, // addon добавляет колонку количество специализаций
+            self::ADDON_RATINGS, // addon добавляет колонки рейтинга
+            self::ADDON_DEALS, // addon добавляет колонку количество сделок
+            self::ADDON_POPS, // addon добавляет колонку количество просмотров страницы
         ];
     }
-    
+
     /**
-     * Дополнения (объекты) для запроса getContractorsMain()
+     * Обработчик $selectColumns.
      */
-    public static function getContractorAddons(object $contractors, array $addons = null): object
+    public static function getSelectFormat(string $selectColumns = '*'): array
     {
-        $addonLabels = self::getContractorAddonLabels();
-        $addons ?: $addons = $addonLabels;
+        $formatedColumns = $selectColumns ? explode(', ', $selectColumns) : ['*'];
+        $attributes = (new Users)->attributes();
 
-        // рейтинг исполнителей
-        if (in_array($addonLabels[1], $addons)) {
+        if ($formatedColumns !== ['*']) {
+            $formatedColumns = array_intersect($formatedColumns, $attributes);
 
+            foreach ($formatedColumns as $column) {
+                if (in_array($column, $attributes) === false) {
+                    throw new NotSupportedException('Такого атрибута исполнителей не существует');
+                }
+            }
+        }
+
+        $formatedColumns = (array_map(function ($val) {
+            return 'u.' . $val;
+        }, $formatedColumns));
+
+        return $formatedColumns;
+    }
+
+    /**
+     * Исполнители - пользователи со специализациями 3 и более, не являются заказчиками
+     *
+     * @param string $selectColumns стандартные колонки таблицы. По умолчанию * (выбрать все).
+     * Например. 'user_id' - вернет только IDs. 'user_id, full_name' - вернет массив объектов
+     * @param array $settings настройки return.
+     * Например.  ['asQuery', 'asArray']
+     *
+     * @return mixed query, array
+     */
+    public static function getContractorsMain(string $selectColumns, array $settings = [], array $userIDs = [])
+    {
+        // атрибуты таблицы
+        $formatedColumns = self::getSelectFormat($selectColumns);
+
+        // настройки ретурн
+        foreach ($settings as $setting) {
+            if (!in_array($setting, self::getContractorSettings())) {
+                throw new NotSupportedException('Настройка для исполнителей не существует');
+            }
+        }
+
+        // Подзапрос активные заказчики
+        $customers = self::getActiveCustomers('user_id');
+
+        // Подзапрос количество специализаций
+        $specialtiesCount = (new Query())
+            ->select('count(us.user_id)')
+            ->from('user_specializations us')
+            ->where('us.user_id = u.user_id'); // !!! работает только в строковом формате для подзапроса в where
+
+        // Исполнители - главный запрос
+        $contractors = self::find()
+            ->select($formatedColumns)
+            ->from('users u')
+            ->where(['NOT IN', 'u.user_id', $customers]) // основное условие, не заказчики, постоянное
+            ->andWhere(['>=', $specialtiesCount, '1']) // основное условие, категорий>=3 (=1 тест), постоянное
+            ->groupBy('u.user_id'); // Группировка всех данных!!!
+
+        $contractors->andFilterWhere(['IN', 'u.user_id', $userIDs]);
+
+        if (in_array(self::SETTING_ARRAY, $settings)) {
+            $contractors = $contractors->asArray();
+        }
+
+        if (in_array(self::SETTING_QUERY, $settings)) {
+            return $contractors;
+        }
+
+        return $selectColumns === 'user_id' ? $contractors->column() : $contractors->all();
+    }
+
+    /**
+     * Addons, дополнения для запроса
+     */
+    public static function addContractorAddons(object $contractors, array $addons): object
+    {
+        $availableAddons = self::getContractorAddons();
+        $addons = array_unique($addons);
+
+        foreach ($addons as $addon) {
+            if (!in_array($addon, $availableAddons)) {
+                throw new NotSupportedException('Аддон для исполнителей не существует');
+            }
+        }
+
+        // количество специализаций
+        if (in_array(self::ADDON_SPECIALTIES, $addons)) {
+            $contractors
+                ->addSelect(['count(us.user_id) AS specialties_count'])
+                ->join('LEFT JOIN', 'user_specializations us', 'us.user_id = u.user_id');
+        }
+
+        // рейтинги исполнителей
+        if (in_array(self::ADDON_RATINGS, $addons)) {
             $contractors
                 ->addSelect([
                     'count(f2.recipient_id) AS feedbacks_count',
                     'sum(f2.point_num) AS sum_point',
-                    'sum(f2.point_num)/count(f2.recipient_id) AS ' . self::SORTBY_RAITING_COL,
+                    'sum(f2.point_num)/count(f2.recipient_id) AS ' . self::SORTBY_RAITINGS_COL,
                 ])
-                ->joinWith('feedbacks f2')
-                ->groupBy('u.user_id');
+                ->joinWith('feedbacks f2');
+        }
+
+        // количество заданий (сделок) исполнителя
+        if (in_array(self::ADDON_DEALS, $addons)) {
+            $subquery = (new Query())
+                ->select([self::SORTBY_DEALS_COL => 'count(contractor_id)'])
+                ->from(
+                    (new Query())
+                        ->from(['task_runnings tr'])
+                        ->where('tr.contractor_id = u.user_id')
+                        ->union((new Query())
+                                ->from(['task_failings tf'])
+                                ->where('tf.contractor_id = u.user_id')
+                            , true)
+                );
+
+            $contractors
+                ->addSelect([self::SORTBY_DEALS_COL => $subquery]);
         }
 
         return $contractors;
     }
 
     /**
-     * Подзапросы (имена) для новых колонок
+     * Колонки с рейтингом исполнителей
      */
-    public static function getSubqueryLabels()
+    public static function getContractorRatings(array $userIDs = []): array
     {
-        return [
-            self::SUB_SPECIALTIES,
-            self::SORTBY_DEALS_COL,
-        ];
-    }
-    
-    /**
-     * Подзапросы (объекты) для новых колонок
-     */
-    public static function getSubqueries(array $labels = null): array
-    {
-        $subqueryLabels = self::getSubqueryLabels();
-        $labels = $labels ?: $subqueryLabels;
-        $subqueries = [];
-        
-// Тесты
-// echo 'Подзапросы';
-// var_dump($labels);
-// die;
+        $ratings = (new Query())
+            ->select([
+                'recipient_id',
+                'count(recipient_id) AS num_feedbacks',
+                'sum(point_num) AS sum_point',
+                'sum(point_num)/count(recipient_id) AS avg_point',
+            ])
+            ->from('feedbacks')
+            ->andFilterWhere(['IN', 'recipient_id', $userIDs])
+            ->groupBy('recipient_id')
+            ->orderBy(['avg_point' => SORT_DESC])
+            ->indexBy('recipient_id')
+            ->all();
 
-        // расчет количества специализаций SPECIALIZATIONS_COUNT
-        if (in_array(self::SUB_SPECIALTIES, $labels)) {
-            $subqueries[self::SUB_SPECIALTIES] = (new Query())
-                ->select('count(us.user_id)')
-                ->from('user_specializations us')
-                ->where('us.user_id = u.user_id'); // !!! работает только в строковом формате для подзапроса в where
-        }
-
-        if (in_array(self::SORTBY_DEALS_COL, $labels)) {
-            $subqueries[self::SORTBY_DEALS_COL] = (new Query())
-            ->select(['count(contractor_id)'])
-            ->from(
-                (new Query())
-                    ->from(['task_runnings tr'])
-                    ->where('tr.contractor_id = u.user_id')
-                ->union((new Query())
-                    ->from(['task_failings tf'])
-                    ->where('tf.contractor_id = u.user_id')
-                , true)
-            )
-            // ->where('contractor_id = u.user_id')
-            ->groupBy(['u.user_id']);
-        }
-
-        return $subqueries;
+        return $ratings;
     }
 
     /**
-     * Количество задач исполнителей
+     * Количество заданий исполнителей
      */
-    public static function getContractorTasks(array $contractorIDs = null): array
+    public static function getContractorDeals(array $contractorIDs = []): array
     {
         $runnings_count = (new Query())
             ->from(['task_runnings tr'])
@@ -352,30 +260,34 @@ var_dump($userIDs);
         $contractor_tasks = $runnings_count->union($failings_count, true);
 
         $tasks_count = (new Query())
-            ->select(['u.user_id', 'count(contractor_id) AS ' . self::SORTBY_DEALS_COL])
+            ->select(['u.user_id', self::SORTBY_DEALS_COL => 'count(contractor_id)'])
             ->from(['users u'])
             ->join('LEFT JOIN', [$contractor_tasks], 'contractor_id = u.user_id') // LEFT JOIN позволяет получить 0 при отсутствии записи вместо пусто
-            ->filterWhere(['IN', 'u.user_id', $contractorIDs]) 
-            ->groupBy(['u.user_id']);
+            ->filterWhere(['IN', 'u.user_id', $contractorIDs])
+            ->groupBy(['u.user_id'])
+            ->indexBy('user_id')
+            ->all();
 
-        return $tasks_count->all();
+        return $tasks_count;
     }
-    
+
     /**
      * Заказчики с активными задачами - все данные или ID
      */
     public static function getActiveCustomers(string $selectColumns = '*'): array
     {
+        $formatedColumns = self::getSelectFormat($selectColumns);
+
         $customers = self::find()
-            ->select($selectColumns)
+            ->select($formatedColumns)
+            ->from('users u')
             ->joinWith([
                 'customerTasks ct',
             ])
             ->where(['ct.status_id' => '1'])
-            ->orWhere(['ct.status_id' => '3'])
-            ->all();
+            ->orWhere(['ct.status_id' => '3']);
 
-        return $selectColumns === 'user_id' ? array_column($customers, 'user_id') : $customers;
+        return $selectColumns === 'user_id' ? $customers->column() : $customers->all();
     }
 
 }

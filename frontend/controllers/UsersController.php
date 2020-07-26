@@ -14,27 +14,32 @@ class UsersController extends Controller
     public function actionIndex(string $sorting = null)
     {
         $usersForm = new UsersForm();
-        $usersFilters = new UsersFilters($sorting);
+        $usersFilters = new UsersFilters($sorting, $usersForm);
+        $users = [];
 
-        if ($search = Yii::$app->request->post($usersForm->formName())['search']) {
-            $usersForm->search = $search;
-            $usersFilters->usersForm = $usersForm;
-        } elseif ($usersForm->load(Yii::$app->request->post()) === true) {
-            $usersFilters->usersForm = $usersForm;
+        if ($usersForm->load(Yii::$app->request->post()) === true) {
+            $users = $usersFilters->getFilterContractors();
+        } else {
+            $users = $usersFilters->getContractors();
         }
-        $users = $usersFilters->getContractors('tasks_count', ['addRating']);
 
-        return $this->render('index', ['users' => $users, 'usersForm' => $usersForm]);
+        $sortings = UsersFilters::getSortingTags();
+        
+        return $this->render('index', [
+            'users' => $users, 
+            'sortings' => $sortings, 
+            'usersForm' => $usersForm
+        ]);
     }
-    
-    public function actionView(int $id)
+
+    public function actionView(int $id = null)
     {
         $user = Users::find()
             ->joinWith(['userPortfolioImages upi', 'userSpecializations us'])
             ->where(['users.user_id' => $id])
             ->one();
 
-        $userRating = UsersFilters::getRatingMain([$id], 'one');
+        // $userRating = UsersFilters::getRatingMain([$id], 'one');
         
     return $this->render('view', ['user' => $user, 'userRating' => $userRating]);
     }
