@@ -87,7 +87,7 @@ class UsersMain extends Users
             self::ADDON_SPECIALTIES, // addon добавляет колонку количество специализаций
             self::ADDON_RATINGS, // addon добавляет колонки рейтинга
             self::ADDON_DEALS, // addon добавляет колонку количество сделок
-            self::ADDON_POPS, // addon добавляет колонку количество просмотров страницы
+            self::ADDON_POPS, // addon добавляет колонку количество просмотров страницы (пока не требуется)
         ];
     }
 
