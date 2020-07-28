@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\models\forms;
+namespace frontend\models;
 
 use frontend\models\db\UsersMain;
 use function common\functions\basic\transform\prepareLogicSearch;
@@ -9,8 +9,8 @@ use yii\db\Query;
 use yii\web\NotFoundHttpException;
 
 /**
- * @property string $sorting по умолчанию getSortingDefault()
- * @property object $usersForm - при отправке
+ * @property string $sorting 
+ * @property object $usersForm 
  * @property array $users
  * @property array $userIDs
  * @property array $ratings
@@ -99,7 +99,7 @@ class UsersFilters
     }
 
     /**
-     * Сортировка для пользователей
+     * Сортировка для страницы пользователей
      */
     public static function getSortingTags(): array
     {
@@ -131,6 +131,7 @@ class UsersFilters
                 'taskRunnings tr1',
                 'feedbacks f1',
                 'userSpecializations usc1',
+                'userPortfolioImages upi1',
             ])
             ->orderBy([$this->getSortingColumn($this->sorting) => SORT_DESC]) // Сортировка
             ->indexBy('user_id'); // Ключ массива (атрибут объекта, не поле)

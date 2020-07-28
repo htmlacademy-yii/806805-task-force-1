@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\models\forms;
+namespace frontend\models;
 
 use frontend\models\db\Tasks;
 use function common\functions\basic\transform\prepareLogicSearch;
