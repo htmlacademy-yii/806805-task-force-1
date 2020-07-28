@@ -29,7 +29,7 @@ return [
             ],
             'rules' => [
                 [
-                    'pattern' => '<controller:(task|user)>/view/<id>',
+                    'pattern' => '<controller:(task|user)>/view/<ID>',
                     'route' => '<controller>s/view',
                 ],
                 [
