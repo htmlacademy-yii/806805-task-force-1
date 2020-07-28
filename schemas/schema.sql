@@ -76,7 +76,8 @@ CREATE TABLE IF NOT EXISTS user_portfolio_images (
     PRIMARY KEY (image_id),
     image_id   INT AUTO_INCREMENT NOT NULL, 
     user_id    INT                NOT NULL,
-    image_addr VARCHAR(255),
+    title      VARCHAR(255)       NOT NULL,
+    image_addr VARCHAR(255)       NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 

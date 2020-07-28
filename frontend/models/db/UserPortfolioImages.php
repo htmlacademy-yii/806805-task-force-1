@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $image_id
  * @property int $user_id
+ * @property string $title
  * @property string|null $image_addr
  *
  * @property Users $user
@@ -29,9 +30,9 @@ class UserPortfolioImages extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id'], 'required'],
+            [['user_id', 'title'], 'required'],
             [['user_id'], 'integer'],
-            [['image_addr'], 'string', 'max' => 255],
+            [['title', 'image_addr'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'user_id']],
         ];
     }
@@ -44,6 +45,7 @@ class UserPortfolioImages extends \yii\db\ActiveRecord
         return [
             'image_id' => 'Image ID',
             'user_id' => 'User ID',
+            'title' => 'Title',
             'image_addr' => 'Image Addr',
         ];
     }
