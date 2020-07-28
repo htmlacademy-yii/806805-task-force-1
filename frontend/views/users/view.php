@@ -1,6 +1,5 @@
 <?php
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\helpers\Url;
 // use yii\widgets\ActiveField; // Не используем
 
 $this->title = 'Просмотр задания (view.html)';
@@ -9,90 +8,96 @@ $this->title = 'Просмотр задания (view.html)';
 <!-- контент view.html основная секция -->
 
 <section class="content-view">
+    <!-- карточка пользователя -->
     <div class="user__card-wrapper">
         <div class="user__card">
-            <img src="./img/man-hat.png" width="120" height="120" alt="Аватар пользователя">
+            <img src="/<?=$user->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="120" height="120" alt="Аватар пользователя">
                 <div class="content-view__headline">
-                <h1>Мамедов Кумар</h1>
-                    <p>Россия, Санкт-Петербург, 30 лет</p>
+                <h1><?=$user->full_name?></h1>
+                    <p>Россия, Санкт-Петербург, <?=strstr(Yii::$app->formatter->asRelativeTime(strtotime($user->birth_date)), ' назад', true)?></p>
                 <div class="profile-mini__name five-stars__rate">
-                    <span></span><span></span><span></span><span></span><span class="star-disabled"></span>
-                    <b>4.25</b>
+                    <!-- Рейтинг -->
+                    <?php $avg_point = $user->avg_point ?? 0;?>
+
+                    <!-- итерация желтой звездочки -->
+                    <?php for ($i = 1; $i <= $avg_point; $i++): ?>
+                        <span></span>
+                    <?php endfor;?>
+
+                    <!-- итерация белой звездочки -->
+                    <?php for ($i = $avg_point; $i < 5; $i++): ?>
+                        <span class="star-disabled"></span>
+                    <?php endfor;?>
+
+                    <!-- Средний балл рейтинг -->
+                    <b><?=Yii::$app->formatter->asDecimal($avg_point, 2)?></b>
+                    <!-- /Рейтинг -->
                 </div>
-                <b class="done-task">Выполнил 5 заказов</b><b class="done-review">Получил 6 отзывов</b>
+                <b class="done-task">Выполнил <?= $user->tasks_count ?> заказ</b><b class="done-review">Получил <?= $user->feedbacks_count ?> отзыв</b>
                 </div>
             <div class="content-view__headline user__card-bookmark user__card-bookmark--current">
-                <span>Был на сайте 25 минут назад</span>
+                <span>Был на сайте <?=Yii::$app->formatter->asRelativeTime(strtotime($user->activity_time))?></span>
                     <a href="#"><b></b></a>
             </div>
         </div>
         <div class="content-view__description">
-            <p>Внезапно, ключевые особенности структуры проекта неоднозначны и будут подвергнуты целой серии
-            независимых исследований. Следует отметить, что высококачественный прототип будущего проекта, в
-            своём классическом представлении, допускает внедрение своевременного выполнения сверхзадачи.
-            Кстати, некоторые особенности внутренней политики будут функционально разнесены на
-            независимые элементы.</p>
+            <p><?= $user->desc_text?></p>
         </div>
         <div class="user__card-general-information">
             <div class="user__card-info">
                 <h3 class="content-view__h3">Специализации</h3>
+                
                 <div class="link-specialization">
-                    <a href="#" class="link-regular">Ремонт</a>
-                    <a href="#" class="link-regular">Курьер</a>
-                    <a href="#" class="link-regular">Оператор ПК</a>
+                    <!-- итерация категории пользователя по связи -->
+                    <?php foreach ($user->userSpecializations as $category): ?>
+                    <a href="#" class="link-regular"><?=$category->title?></a>
+                    <?php endforeach;?>
                 </div>
                 <h3 class="content-view__h3">Контакты</h3>
                 <div class="user__card-link">
-                    <a class="user__card-link--tel link-regular" href="#">8 (555) 172 83 69</a>
-                    <a class="user__card-link--email link-regular" href="#">Kumarm@mail.ru</a>
-                    <a class="user__card-link--skype link-regular" href="#">Kumarm</a>
+                    <a class="user__card-link--tel link-regular" href="#"><?= $user->phone?></a>
+                    <a class="user__card-link--email link-regular" href="#"><?= $user->email?></a>
+                    <a class="user__card-link--skype link-regular" href="#"><?= $user->skype?></a>
                 </div>
                 </div>
             <div class="user__card-photo">
                 <h3 class="content-view__h3">Фото работ</h3>
-                <a href="#"><img src="./img/rome-photo.jpg" width="85" height="86" alt="Фото работы"></a>
-                <a href="#"><img src="./img/smartphone-photo.png" width="85" height="86" alt="Фото работы"></a>
-                <a href="#"><img src="./img/dotonbori-photo.png" width="85" height="86" alt="Фото работы"></a>
-                </div>
+                <!-- итерация фотографий портфолио по связи -->
+                <?php foreach ($user->userPortfolioImages as $image): ?>
+                    <a href="/img/portfolios/<?=$image->image_addr?>"><img src="<?=$image->image_addr?>" width="85" height="86" alt="<?=$image->title?>"></a>
+                <?php endforeach;?>
+            </div>
         </div>
     </div>
+    <!-- /карточка пользователя -->
+    <!-- Блок отзывы -->
+    <?php if ($feedbacks_count = $user->feedbacks_count):?>
     <div class="content-view__feedback">
-        <h2>Отзывы<span>(2)</span></h2>
+        <h2>Отзывы <span>(<?= $feedbacks_count ?>)</span></h2>
         <div class="content-view__feedback-wrapper reviews-wrapper">
+            <!-- отзывы итерация -->
+            <?php foreach ($user->feedbacks as $feedback):?>
             <div class="feedback-card__reviews">
-                <p class="link-task link">Задание <a href="#" class="link-regular">«Выгулять моего боевого петуха»</a></p>
+                <p class="link-task link">Задание <a href="<?=Url::to(['tasks/view', 'ID' => $feedback->task_id])?>" class="link-regular">«<?= $feedback->task->title?>»</a></p>
                 <div class="card__review">
-                    <a href="#"><img src="./img/man-glasses.jpg" width="55" height="54"></a>
+                    <a href="#"><img src="/<?=$feedback->author->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="55" height="54"></a>
                     <div class="feedback-card__reviews-content">
-                        <p class="link-name link"><a href="#" class="link-regular">Астахов Павел</a></p>
+                        <p class="link-name link"><a href="<?=Url::to(['users/view', 'ID' => $feedback->author_id])?>" class="link-regular"><?= $feedback->author->full_name?></a></p>
                         <p class="review-text">
-                            Кумар сделал всё в лучшем виде.  Буду обращаться к нему в будущем, если
-                            возникнет такая необходимость!
+                            <?= $feedback->desc_text?>
                         </p>
                     </div>
                     <div class="card__review-rate">
-                        <p class="five-rate big-rate">5<span></span></p>
+                        <p class="five-rate big-rate"><?= ceil($user->avg_point) . '<span></span>' ?? '';?></p>
                     </div>
                 </div>
             </div>
-                <div class="feedback-card__reviews">
-                    <p class="link-task link">Задание <a href="#" class="link-regular">«Повесить полочку»</a></p>
-                    <div class="card__review">
-                        <a href="#"><img src="./img/woman-glasses.jpg" width="55" height="54"></a>
-                        <div class="feedback-card__reviews-content">
-                            <p class="link-name link"><a href="#" class="link-regular">Морозова Евгения</a></p>
-                            <p class="review-text">
-                                Кумар приехал позже, чем общал и не привез с собой всех
-                                инстументов. В итоге пришлось еще ходить в строительный магазин.
-                            </p>
-                        </div>
-                        <div class="card__review-rate">
-                            <p class="three-rate big-rate">3<span></span></p>
-                        </div>
-                    </div>
-                </div>
+            <?php endforeach; ?>
+            <!-- /отзывы итерация -->
         </div>
     </div>
+    <?php endif; ?>
+    <!-- Блок отзывы -->
 </section>
 
 <!-- /контент view.html основная секция -->
