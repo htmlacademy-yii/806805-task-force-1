@@ -15,9 +15,9 @@ use Yii;
  * @property int $point_num
  * @property string $add_time
  *
- * @property User $author
- * @property User $recipient
- * @property Task $task
+ * @property Users $author
+ * @property Users $recipient
+ * @property Tasks $task
  */
 class Feedbacks extends \yii\db\ActiveRecord
 {
@@ -39,9 +39,9 @@ class Feedbacks extends \yii\db\ActiveRecord
             [['author_id', 'recipient_id', 'task_id', 'point_num'], 'integer'],
             [['desc_text'], 'string'],
             [['add_time'], 'safe'],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['author_id' => 'user_id']],
-            [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['recipient_id' => 'user_id']],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::className(), 'targetAttribute' => ['task_id' => 'task_id']],
+            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['author_id' => 'user_id']],
+            [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['recipient_id' => 'user_id']],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'task_id']],
         ];
     }
 
@@ -66,7 +66,7 @@ class Feedbacks extends \yii\db\ActiveRecord
      */
     public function getAuthor()
     {
-        return $this->hasOne(User::className(), ['user_id' => 'author_id']);
+        return $this->hasOne(Users::className(), ['user_id' => 'author_id']);
     }
 
     /**
@@ -74,7 +74,7 @@ class Feedbacks extends \yii\db\ActiveRecord
      */
     public function getRecipient()
     {
-        return $this->hasOne(User::className(), ['user_id' => 'recipient_id']);
+        return $this->hasOne(Users::className(), ['user_id' => 'recipient_id']);
     }
 
     /**
@@ -82,6 +82,6 @@ class Feedbacks extends \yii\db\ActiveRecord
      */
     public function getTask()
     {
-        return $this->hasOne(Task::className(), ['task_id' => 'task_id']);
+        return $this->hasOne(Tasks::className(), ['task_id' => 'task_id']);
     }
 }
