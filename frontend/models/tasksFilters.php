@@ -5,53 +5,83 @@ namespace frontend\models;
 use frontend\models\db\Tasks;
 use function common\functions\basic\transform\prepareLogicSearch;
 use yii;
-use yii\base\Model;
 use yii\db\Query;
 
+/**
+ * @property object $tasksForm
+ * @property array $tasks
+ * @property array $taskIDs
+ *
+ */
 class TasksFilters
 {
-    public function getNewTasks(Model $tasksForm = null): array
+    public $tasksForm;
+    public $tasks;
+    public $taskIDs;
+
+    public function __construct(object $tasksForm)
+    {
+        $this->tasksForm = $tasksForm;
+    }
+
+    public function getNewTasksMain(array $userIDs = []): object
     {
         $tasks = Tasks::find()
-            ->where(['tasks.status_id' => 1])
-            ->joinWith('category') // Жадная загрузка категорий
+            ->from('tasks t1')
+            ->where(['t1.status_id' => 1])
+            ->joinWith([
+                'status s1',
+                'category c1',
+                'taskFiles tf1',
+                'location l1',
+                'offers o1',
+            ])
+            ->filterWhere(['IN', 't1.task_id', $userIDs])
             ->orderBy(['add_time' => SORT_DESC]);
 
-        // если форма не отправлена
-        if ($tasksForm === null) {
-            return $tasks->all();
+        return $tasks;
+    }
+
+    public function getNewTasks(): array
+    {
+        return $this->tasks = $this->getNewTasksMain()->all();
+    }
+
+    public function getFilterNewTasks(): array
+    {
+        $tasks = $this->getNewTasksMain();
+
+        // Фильтр поиск по названию задания. Тип Fulltext логический, поиск сбрасывает другие фильтры
+        if ($search = $this->tasksForm->search) {
+            $logicSearch = prepareLogicSearch($search);
+            $tasks->andWhere("MATCH(t1.title) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
+
+            return $this->tasks = $tasks->all();
         }
 
-        /* Фильтры, если форма отправлена */
-
         // Фильтр Категории
-        $tasks->andFilterWhere(['IN', 'tasks.category_id', $tasksForm->categories]);
+        $tasks->andFilterWhere(['IN', 't1.category_id', $this->tasksForm->categories]);
 
         // Фильтр без откликов (предложения offers). true = без откликов
-        if ($tasksForm->isOffers) {
+        if ($this->tasksForm->isOffers) {
             $taskWithOffers = (new Query())
-                ->select('offers.task_id')
+                ->select('o2.task_id')
                 ->distinct()
-                ->from('offers');
-            $tasks->andWhere(['NOT IN', 'tasks.task_id', $taskWithOffers]);
+                ->from('offers o2');
+            $tasks->andWhere(['NOT IN', 't1.task_id', $taskWithOffers]);
         }
 
         // Фильтр Период. по умолчанию пусто = "За все время"
-        if ($tasksForm->dateInterval) {
-            $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $tasksForm->dateInterval, 'php:Y-m-d H:i:s');
-            $tasks->andWhere(['>', 'tasks.add_time', $datePoint]);
+        if ($this->tasksForm->dateInterval) {
+            $datePoint = Yii::$app->formatter->asDatetime('-1 ' . $this->tasksForm->dateInterval, 'php:Y-m-d H:i:s');
+            $tasks->andWhere(['>', 't1.add_time', $datePoint]);
         }
 
-        /* Фильтр поиск по названию задания */
-        // Специальные символы логического поиска удаляются.
-        // Словам в строке добавляется символ *
-        if ($search = $tasksForm->search) {
+        return $this->tasks = $tasks->all();
+    }
 
-            $logicSearch = prepareLogicSearch($search);
-
-            $tasks->andWhere("MATCH(tasks.title) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
-        }
-
-        return $tasks->all();
+    public function getTaskIDs()
+    {
+        return $this->taskIDs = array_column($this->tasks, 'task_id');
     }
 }
