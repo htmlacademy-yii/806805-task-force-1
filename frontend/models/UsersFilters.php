@@ -257,12 +257,9 @@ class UsersFilters
         $deals = $this->getContractorDeals();
         $users = &$this->users;
 
-
         foreach ($deals as $id => $deal) {
             $users[$id]->attributes = $deal;
         }
-
-        var_dump($users); die;            
 
         return $this->users;
     }
