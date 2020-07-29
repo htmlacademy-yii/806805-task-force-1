@@ -186,7 +186,8 @@ CREATE TABLE IF NOT EXISTS offers (
     task_id       INT                NOT NULL,
     contractor_id INT                NOT NULL,
     price         INT                UNSIGNED,
-    desc_text     TEXT               NOT NULL,        
+    desc_text     TEXT               NOT NULL,
+    add_time      DATETIME           NOT NULL,
     FOREIGN KEY (task_id)       REFERENCES tasks(task_id),
     FOREIGN KEY (contractor_id) REFERENCES users(user_id)
 );

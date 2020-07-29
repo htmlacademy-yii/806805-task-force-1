@@ -12,6 +12,7 @@ use Yii;
  * @property int $contractor_id
  * @property string $price
  * @property string $desc_text
+ * @property string $add_time
  * 
  * @property Tasks $task
  * @property Users $contractor

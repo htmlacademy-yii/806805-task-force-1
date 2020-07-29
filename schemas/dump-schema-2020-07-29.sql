@@ -110,6 +110,7 @@ CREATE TABLE `offers` (
   `contractor_id` int(11) NOT NULL,
   `price` int(10) unsigned DEFAULT NULL,
   `desc_text` text NOT NULL,
+  `add_time` datetime NOT NULL,
   PRIMARY KEY (`offer_id`),
   KEY `task_id` (`task_id`),
   KEY `contractor_id` (`contractor_id`),
@@ -151,7 +152,7 @@ CREATE TABLE `task_failings` (
   KEY `contractor_id` (`contractor_id`),
   CONSTRAINT `task_failings_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
   CONSTRAINT `task_failings_ibfk_2` FOREIGN KEY (`contractor_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -310,6 +311,7 @@ DROP TABLE IF EXISTS `user_portfolio_images`;
 CREATE TABLE `user_portfolio_images` (
   `image_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
   `image_addr` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`image_id`),
   KEY `user_id` (`user_id`),
@@ -397,4 +399,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-07-04 11:13:07
+-- Dump completed on 2020-07-29 15:52:09
