@@ -2,26 +2,28 @@
 
 namespace frontend\controllers;
 
-use frontend\models\db\Tasks;
-use frontend\models\TasksFilters;
 use frontend\models\forms\TasksForm;
-use frontend\models\UsersFilters;
+use frontend\models\TasksFilters;
+use frontend\models\TaskView;
 use yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 class TasksController extends Controller
 {
-    public function actionIndex()
+    public function actionIndex(int $category = null)
     {
         $tasksForm = new TasksForm();
-        $tasksFilters = new TasksFilters();
+        $tasksFilters = new TasksFilters($tasksForm);
 
         $tasks = [];
-        if ($tasksForm->load(Yii::$app->request->post()) === false) {
-            $tasks = $tasksFilters->getNewTasks();
+        if ($category !== null) {
+            $tasksForm->categories = [$category];
+            $tasks = $tasksFilters->getFilterNewTasks();
+        } elseif ($tasksForm->load(Yii::$app->request->post()) === true) {
+            $tasks = $tasksFilters->getFilterNewTasks();
         } else {
-            $tasks = $tasksFilters->getNewTasks($tasksForm);
+            $tasks = $tasksFilters->getNewTasks();
         }
 
         return $this->render('index', [
@@ -32,60 +34,28 @@ class TasksController extends Controller
 
     public function actionView(int $ID)
     {
-        $taskQuery = Tasks::find()
-            ->joinWith([
-                'status',
-                'category',
-                'taskFiles',
-                'location',
-                'offers.contractor oc',
-            ])
-            ->where(['tasks.task_id' => $ID])
-            ->limit(1);
-        $task = $taskQuery->one();
+        $taskView = new TaskView($ID);
+        $task = $taskView->getTask();
 
         if (!$task) {
             throw new NotFoundHttpException('Такого задания не существует');
         }
-            define('USER_ID', 3); // условно текущий пользователь, в условии показа блоков мини-панели и чата
 
-            $customer = $task->customer->attributes;
-            $customerRating = UsersFilters::getRatingMain(
-                [$task->customer_id], 'one');
-            $customerRating === null ?: $customer = array_merge($customer, $customerRating);
-            $customer['tasks'] = $task->customer->customerTasks;
-            // var_dump($customer);
+        define('USER_ID', 5); // условно текущий пользователь, в условии показа блоков мини-панели и чата
 
-            $contractor = null;
-            if ($taskQuery->andWhere(['tasks.status_id' => 3])->exists()) {
-                $contractor = $task->taskRunnings->contractor->attributes;
-                $contractorRating = UsersFilters::getRatingMain(
-                    [$contractor['user_id']], 'one');
-                $contractorRating === null ?: $contractor = array_merge($contractor, $contractorRating);
-                $contractor['tasks'] = UsersFilters::getContractorTasks(
-                    [$contractor['user_id']]
-                );
-            }
-            // var_dump($contractor);
+        $customer = $taskView->getCustomer();
 
-            $offerContractors = null;
-            if ($task->offers) {
-                $contractorRaitings = UsersFilters::getRatingMain(
-                    array_column($task->offers, 'contractor_id'));
-                    
-                foreach ($task->offers as $offer) {
-                    $offerContractor = $offer->contractor->attributes;
-                    $contractorRaiting = $contractorRaitings[$offerContractor['user_id']] ?? [];
-                    $offerContractors[$offer['offer_id']] = array_merge(
-                        $offerContractor, $contractorRaiting);
-                }
-            }
+        // Действующий исполнитель
+        $currentContractor = $taskView->getCurrentContractor();
+
+        // Исполнители с их предложениями
+        $candidatesAndOffers = $taskView->getCandidatesAndOffers();
 
         return $this->render('view', [
             'task' => $task,
             'customer' => $customer,
-            'contractor' => $contractor,
-            'offerContractors' => $offerContractors,
+            'currentContractor' => $currentContractor,
+            'candidatesAndOffers' => $candidatesAndOffers,
         ]);
     }
 }
