@@ -3,36 +3,23 @@
 namespace frontend\models;
 
 use frontend\models\db\UsersMain;
-use function common\functions\basic\transform\prepareLogicSearch;
 use yii;
 use yii\db\Query;
 use yii\web\NotFoundHttpException;
 
 /**
- * @property array $users
- * @property array $userIDs
- * @property array $ratings
- * @property array $deals
+ * @property array $userID
+ * @property array $user
  *
  */
 class UserView
 {
-    public $users;
-    public $userIDs;
-    public $ratings;
-    public $deals;
+    public $userID;
+    public $user;
 
     public function __construct(int $userID)
     {
-        $this->userIDs = [$userID];
-    }
-
-    /**
-     * ID исполнителя
-     */
-    public function getUserID(): ?int
-    {
-        return array_shift($this->userIDs);
+        $this->userID = $userID;
     }
 
     /**
@@ -41,7 +28,8 @@ class UserView
     public function getContractor(array $addons = []): ?object
     {
         $defaultSettings = ['asQuery']; // значения по умолчанию (всегда включено)
-        $contractor = UsersMain::getcontractorsMain('*', $defaultSettings, $this->userIDs);
+        $userIDs[] = $this->userID;
+        $contractor = UsersMain::getcontractorsMain('*', $defaultSettings, $userIDs);
 
         // Общее дополнение запроса
         $contractor
@@ -61,6 +49,6 @@ class UserView
             $contractor = UsersMain::addContractorAddons($contractor, $addons);
         }
 
-        return $contractor->one();
+        return $this->user = $contractor->one();
     }
 }
