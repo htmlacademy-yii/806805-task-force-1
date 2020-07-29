@@ -123,6 +123,7 @@ class UsersMain extends Users
      * Например. 'user_id' - вернет только IDs. 'user_id, full_name' - вернет массив объектов
      * @param array $settings настройки return.
      * Например.  ['asQuery', 'asArray']
+     * @param array $userIDs простой массив с ID исполнителя(ей).
      *
      * @return mixed query, array
      */
@@ -290,4 +291,47 @@ class UsersMain extends Users
         return $selectColumns === 'user_id' ? $customers->column() : $customers->all();
     }
 
+    /**
+     * Заказчики - не являются исполнителями
+     *
+     * @param string $selectColumns стандартные колонки таблицы. По умолчанию * (выбрать все).
+     * Например. 'user_id' - вернет только простой массив IDs. 'user_id, full_name' - вернет массив объектов
+     * @param array $settings настройки return.
+     * Например.  ['asQuery', 'asArray']
+     * @param array $userIDs простой массив с ID исполнителя(ей).
+     *
+     * @return mixed query, array
+     */
+
+    public static function getCustomersMain(string $selectColumns, array $settings = [], array $userIDs = [])
+    {
+        $formatedColumns = self::getSelectFormat($selectColumns);
+
+        // настройки ретурн
+        foreach ($settings as $setting) {
+            if (!in_array($setting, self::getContractorSettings())) {
+                throw new NotSupportedException('Настройка для заказчика не существует');
+            }
+        }
+        // Подзапрос - не исполнители (массив IDs)
+        $contractors = self::getContractorsMain('user_id');
+        
+        // Заказчики - главный запрос
+        $customers = self::find()
+            ->select($formatedColumns)
+            ->from('users u')
+            ->where(['NOT IN', 'u.user_id', $contractors]);
+
+        $customers->andFilterWhere(['IN', 'u.user_id', $userIDs]);
+
+        if (in_array(self::SETTING_ARRAY, $settings)) {
+            $customers = $customers->asArray();
+        }
+
+        if (in_array(self::SETTING_QUERY, $settings)) {
+            return $customers;
+        }
+
+        return $selectColumns === 'user_id' ? $customers->column() : $customers->all();
+    }
 }
