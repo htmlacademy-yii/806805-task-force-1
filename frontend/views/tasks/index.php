@@ -1,5 +1,7 @@
 <?php
+
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 // use yii\widgets\ActiveField; // Не используем
 
@@ -17,8 +19,8 @@ $this->title = 'Задания (Верстка browse.html)';
         <?php foreach ($tasks as $task): ?>
         <div class="new-task__card">
             <div class="new-task__title">
-                <a href="#" class="link-regular"><h2><?=ucfirst($task->title)?></h2></a>
-                <a class="new-task__type link-regular" href="#"><p><?=$task->category->title?></p></a>
+                <a href="<?=Url::to(['tasks/view', 'ID' => $task->task_id])?>" class="link-regular"><h2><?=ucfirst($task->title)?></h2></a>
+                <a class="new-task__type link-regular" href="<?=Url::to(['tasks/index', 'category' => $task->category_id])?>"><p><?=$task->category->title?></p></a>
             </div>
             <div class="new-task__icon new-task__icon--<?=$task->category->label?>"></div>
                 <p class="new-task_description">
@@ -26,7 +28,7 @@ $this->title = 'Задания (Верстка browse.html)';
                 </p>
                 <b class="new-task__price new-task__price--<?=$task->category->label?>"><?=$task->price?><b> ₽</b></b>
                 <p class="new-task__place"><?=$task['full_address']?></p>
-                <span class="new-task__time"><?=date('d.m.y', strtotime($task['add_time']))?></span>
+                <span class="new-task__time"><?=Yii::$app->formatter->asRelativeTime(strtotime($task->add_time))?></span>
         </div>
         <?php endforeach;?>
         <!-- end single task -->
@@ -56,6 +58,7 @@ $this->title = 'Задания (Верстка browse.html)';
         <?php
         $form = ActiveForm::begin([
             'id' => 'id-tasks-form',
+            'action' => '/tasks',
             'options' => [
                 'name' => 'test', // Имя формы не используется в ActiveForm, получение тела запроса производится по имени таблицы в модели в зависимости от модели в полях, которые автоматически назначаются при указании модели
                 'class' => 'search-task__form',

@@ -1,4 +1,7 @@
 <?php
+
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 // use yii\widgets\ActiveField; // Не используем
 
@@ -15,12 +18,12 @@ $this->title = 'Просмотр задания (view.html)';
             <div class="content-view__header">
                 <div class="content-view__headline">
                     <h1><?=$task->title?></h1>
-                    <span><?='Статус: ' . $task->status['title']?>. Размещено в категории
-                        <a href="#" class="link-regular"><?=$task->category['title']?></a>
+                    <span><?='Статус: ' . $task->status->title?>. Размещено в категории
+                        <a href="<?=Url::to(['tasks/index', 'category' => $task->category_id])?>" class="link-regular"><?=$task->category->title?></a>
                         25 минут назад</span>
                 </div>
                 <b class="new-task__price new-task__price--clean content-view-price"><?=$task->price?><b> ₽</b></b>
-                <div class="new-task__icon new-task__icon--<?=$task->category['label']?> content-view-icon"></div>
+                <div class="new-task__icon new-task__icon--<?=$task->category->label?> content-view-icon"></div>
             </div>
             <div class="content-view__description">
                 <h3 class="content-view__h3">Общее описание</h3>
@@ -32,7 +35,7 @@ $this->title = 'Просмотр задания (view.html)';
                 <!-- файлы итерация-->
                 <h3 class="content-view__h3">Вложения</h3>
                 <?php foreach ($task->taskFiles as $file): ?>
-                <a href="<?=$file->file_addr?>"><?=$file->file_addr?></a>
+                <a href="/img/tasks/<?=$file->file_addr?>"><?=$file->file_addr?></a>
                 <?php endforeach;?>
                 <!-- /файлы итерация-->
             </div>
@@ -45,7 +48,7 @@ $this->title = 'Просмотр задания (view.html)';
                                             alt="Москва, Новый арбат, 23 к. 1"></a>
                     </div>
                     <div class="content-view__address">
-                        <span class="address__town"><?=$task->location['city']?></span><br>
+                        <span class="address__town"><?=$task->location->city?></span><br>
                         <span><?=$task->full_address?></span>
                         <p><?=$task->address_desc?></p>
                     </div>
@@ -65,21 +68,23 @@ $this->title = 'Просмотр задания (view.html)';
         </div>
 
     </div>
+    <?php if (count($candidatesAndOffers)): ?>
     <div class="content-view__feedback">
-        <h2>Отклики <span><?=count($task->offers)?></span></h2>
+        <h2>Отклики <span><?=count($candidatesAndOffers)?></span></h2>
         <div class="content-view__feedback-wrapper">
 
             <!-- Отклики (предложения) итерация -->
-            <?php foreach ($task->offers as $offer): 
-                $offerContractor = $offerContractors[$offer->offer_id];
-            ?>
+            <?php foreach ($candidatesAndOffers as $candidateAndOffer): ?>
+            <?php list($candidate, $offer) = $candidateAndOffer; ?>
             <div class="content-view__feedback-card">
                 <div class="feedback-card__top">
-                    <a href="#"><img src="/<?=$offerContractor['avatar_addr'] ?: \Yii::$app->params['defaultAvatarAddr']?>" width="55" height="55"></a>
+                    <a href="<?=Url::to(['users/view', 'ID' => $candidate->user_id])?>">
+                        <img src="/<?=$candidate->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="55" height="55">
+                    </a>
                     <div class="feedback-card__top--name">
-                        <p><a href="#" class="link-regular"><?=$offerContractor['full_name']?></a></p>
+                        <p><a href="<?=Url::to(['users/view', 'ID' => $candidate->user_id])?>" class="link-regular"><?=$candidate->full_name?></a></p>
                         <!-- Рейтинг -->
-                        <?php $avg_point = $offerContractor['avg_point'] ?? 0;?>
+                        <?php $avg_point = $candidate->avg_point ?? 0;?>
                         
                         <!-- итерация желтой звездочки -->
                         <?php for ($i = 1; $i <= $avg_point; $i++): ?>
@@ -90,12 +95,12 @@ $this->title = 'Просмотр задания (view.html)';
                         <?php for ($i = $avg_point; $i < 5; $i++): ?>
                             <span class="star-disabled"></span>
                         <?php endfor;?>
-                        
-                        <!-- Средний балл -->
-                        <b><?=substr($avg_point, 0, 4)?></b>
+
+                        <!-- Средний балл рейтинг -->
+                        <b><?=Yii::$app->formatter->asDecimal($avg_point, 2)?></b>
                         <!-- /Рейтинг -->
                     </div>
-                    <span class="new-task__time">25 минут назад</span>
+                    <span class="new-task__time"><?=Yii::$app->formatter->asRelativeTime(strtotime($offer->add_time))?></span>
                 </div>
                 <div class="feedback-card__content">
                     <p>
@@ -106,48 +111,48 @@ $this->title = 'Просмотр задания (view.html)';
                 <div class="feedback-card__actions">
                     <a class="button__small-color request-button button"
                             type="button">Подтвердить</a>
-                    <a class="button__small-color refusal-button button"
-                            type="button">Отказать</a>
+                    <a class="button__small-color refusal-button button" type="button">Отказать</a>
                 </div>
             </div>
             <?php endforeach;?>
             <!-- /Отклики (предложения) итерация -->
-
         </div>
     </div>
+    <?php endif; ?>
 </section>
-
 <!-- /контент view.html основная секция -->
 
-
 <!-- контент view.html правая секция -->
-
 <section class="connect-desk">
     <div class="connect-desk__profile-mini">
-        <?php if ($contractor === null OR USER_ID !== $task['customer_id']): ?>
+        <?php if (USER_ID !== $task->customer_id OR $currentContractor === null): // переписки нет?>
         <!-- мини профиль заказчика -->
         <div class="profile-mini__wrapper">
-            <h3>Заказчик (<?='id'. $task['customer_id'] ?>)</h3>
+            <h3>Заказчик (<?='id'. $customer->user_id ?>)</h3>
             <div class="profile-mini__top">
-                <img src="/<?=$customer['avatar_addr'] ?: \Yii::$app->params['defaultAvatarAddr']?>" width="62" height="62" alt="Аватар заказчика">
+                <img src="/<?=$customer->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="62" height="62" alt="Аватар заказчика">
                 <div class="profile-mini__name five-stars__rate">
-                    <p><?=$customer['full_name']?></p>
+                    <p><?=$customer->full_name?></p>
                 </div>
             </div>
-            <p class="info-customer"><span><?=count($customer['tasks'])?> заданий</span><span class="last-">2 года на сайте</span></p>
+            <p class="info-customer"><span><?=count($customer->customerTasks)?> заданий</span><span class="last-">
+                <?=strstr(
+                    Yii::$app->formatter->asRelativeTime(strtotime($customer->reg_time))
+                    , ' назад', true
+                )?> на сайте</span></p>
             <a href="#" class="link-regular">Смотреть профиль</a>
         </div>
         <!-- /мини профиль заказчика -->
         <?php else: ?>
         <!-- мини профиль исполнителя -->
         <div class="profile-mini__wrapper">
-            <h3>Исполнитель (<?="id{$contractor['user_id']}"?>)</h3>
+            <h3>Исполнитель (<?="id-" . $currentContractor->user_id?>)</h3>
             <div class="profile-mini__top">
-                <img src="/<?=$contractor['avatar_addr'] ?: \Yii::$app->params['defaultAvatarAddr']?>" width="62" height="62" alt="Аватар заказчика">
+                <img src="/<?=$currentContractor->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="62" height="62" alt="Аватар заказчика">
                 <div class="profile-mini__name five-stars__rate">
-                    <p><?=$contractor['full_name']?></p>
+                    <p><?=$currentContractor->full_name?></p>
                     <!-- Рейтинг -->
-                    <?php $avg_point = $contractor['avg_point'] ?? 0;?>
+                    <?php $avg_point = $currentContractor->avg_point ?? 0;?>
                     
                     <!-- итерация желтой звездочки -->
                     <?php for ($i = 1; $i <= $avg_point; $i++): ?>
@@ -158,13 +163,17 @@ $this->title = 'Просмотр задания (view.html)';
                     <?php for ($i = $avg_point; $i < 5; $i++): ?>
                         <span class="star-disabled"></span>
                     <?php endfor;?>
-                    
-                    <!-- Средний балл -->
-                    <b><?=substr($avg_point, 0, 4)?></b>
+
+                    <!-- Средний балл рейтинг -->
+                    <b><?=Yii::$app->formatter->asDecimal($avg_point, 2)?></b>
                     <!-- /Рейтинг -->
                 </div>
             </div>
-            <p class="info-customer"><span><?=count($contractor['tasks'])?> заданий</span><span class="last-">2 года на сайте</span></p>
+            <p class="info-customer"><span><?=$currentContractor->tasks_count?> заданий</span><span class="last-">
+                <?=strstr(
+                    Yii::$app->formatter->asRelativeTime(strtotime($customer->reg_time))
+                    , ' назад', true
+                )?> на сайте</span></p>
             <a href="#" class="link-regular">Смотреть профиль</a>
         </div>
         <!-- /мини профиль исполнителя -->
@@ -172,7 +181,7 @@ $this->title = 'Просмотр задания (view.html)';
     </div>
 
     <!-- Чат -->
-    <?php if ($contractor !== null && (USER_ID === $contractor['user_id'] || USER_ID === $task['customer_id'])): ?>
+    <?php if ($currentContractor !== null && (USER_ID === $currentContractor['user_id'] || USER_ID === $customer->user_id)): ?>
     <div class="connect-desk__chat">
         <h3>Переписка</h3>
         <div class="chat__overflow">
