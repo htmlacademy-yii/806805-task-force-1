@@ -33,9 +33,14 @@ return [
                     'route' => '<controller>s/view',
                 ],
                 [
-                    'pattern' => '<controller:(tasks|users)>/<sorting>',
-                    'route' => '<controller>/index',
+                    'pattern' => 'users/<sorting>',
+                    'route' => 'users/index',
                     // 'defaults' => ['sorting' => null],
+                ],
+                [
+                    'pattern' => 'tasks/<category>',
+                    'route' => 'tasks/index',
+                    // 'defaults' => ['category' => null],
                 ],
             ],
         ],
