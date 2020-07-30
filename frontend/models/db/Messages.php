@@ -7,16 +7,16 @@ use Yii;
 /**
  * This is the model class for table "messages".
  *
- * @property int $id_message
+ * @property int $message_id
  * @property int $task_id
  * @property int $sender_id
- * @property int $recipient_id
- * @property string $mess
+ * @property int $receiver_id
+ * @property string $mess_text
  * @property string $add_time
  *
  * @property Tasks $task
  * @property Users $sender
- * @property Users $recipient
+ * @property Users $receiver
  */
 class Messages extends \yii\db\ActiveRecord
 {
@@ -34,30 +34,13 @@ class Messages extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['task_id', 'sender_id', 'recipient_id', 'mess', 'add_time'], 'required'],
-            [['task_id', 'sender_id', 'recipient_id'], 'integer'],
-            [['mess'], 'string'],
+            [['task_id', 'sender_id', 'receiver_id', 'mess_text', 'add_time'], 'required'],
+            [['task_id', 'sender_id', 'receiver_id'], 'integer'],
+            [['mess_text'], 'string'],
             [['add_time'], 'safe'],
-            [
-                ['task_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Tasks::className(), 
-                'targetAttribute' => ['task_id' => 'id_task']
-            ],
-            [
-                ['sender_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Users::className(), 
-                'targetAttribute' => ['sender_id' => 'id_user']
-            ],
-            [
-                ['recipient_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Users::className(), 
-                'targetAttribute' => ['recipient_id' => 'id_user']],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'task_id']],
+            [['sender_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['sender_id' => 'user_id']],
+            [['receiver_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['receiver_id' => 'user_id']],
         ];
     }
 
@@ -67,11 +50,11 @@ class Messages extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_message' => 'Id Message',
+            'message_id' => 'Message ID',
             'task_id' => 'Task ID',
             'sender_id' => 'Sender ID',
-            'recipient_id' => 'Recipient ID',
-            'mess' => 'Mess',
+            'receiver_id' => 'Receiver ID',
+            'mess_text' => 'Mess Text',
             'add_time' => 'Add Time',
         ];
     }
@@ -81,7 +64,7 @@ class Messages extends \yii\db\ActiveRecord
      */
     public function getTask()
     {
-        return $this->hasOne(Tasks::className(), ['id_task' => 'task_id']);
+        return $this->hasOne(Tasks::className(), ['task_id' => 'task_id']);
     }
 
     /**
@@ -89,14 +72,14 @@ class Messages extends \yii\db\ActiveRecord
      */
     public function getSender()
     {
-        return $this->hasOne(Users::className(), ['id_user' => 'sender_id']);
+        return $this->hasOne(Users::className(), ['user_id' => 'sender_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRecipient()
+    public function getReceiver()
     {
-        return $this->hasOne(Users::className(), ['id_user' => 'recipient_id']);
+        return $this->hasOne(Users::className(), ['user_id' => 'receiver_id']);
     }
 }

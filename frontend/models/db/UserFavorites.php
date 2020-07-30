@@ -7,13 +7,13 @@ use Yii;
 /**
  * This is the model class for table "user_favorites".
  *
- * @property int $id_user_favorite
- * @property int $user_id
  * @property int $favorite_id
- * @property int|null $on_off
+ * @property int $user_id
+ * @property int $fave_user_id
+ * @property int|null $is_fave
  *
  * @property Users $user
- * @property Users $favorite
+ * @property Users $faveUser
  */
 class UserFavorites extends \yii\db\ActiveRecord
 {
@@ -31,22 +31,10 @@ class UserFavorites extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'favorite_id'], 'required'],
-            [['user_id', 'favorite_id', 'on_off'], 'integer'],
-            [
-                ['user_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Users::className(), 
-                'targetAttribute' => ['user_id' => 'id_user']
-            ],
-            [
-                ['favorite_id'], 
-                'exist', 
-                'skipOnError' => true, 
-                'targetClass' => Users::className(), 
-                'targetAttribute' => ['favorite_id' => 'id_user']
-            ],
+            [['user_id', 'fave_user_id'], 'required'],
+            [['user_id', 'fave_user_id', 'is_fave'], 'integer'],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'user_id']],
+            [['fave_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['fave_user_id' => 'user_id']],
         ];
     }
 
@@ -56,10 +44,10 @@ class UserFavorites extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_user_favorite' => 'Id User Favorite',
-            'user_id' => 'User ID',
             'favorite_id' => 'Favorite ID',
-            'on_off' => 'On Off',
+            'user_id' => 'User ID',
+            'fave_user_id' => 'Fave User ID',
+            'is_fave' => 'Is Fave',
         ];
     }
 
@@ -68,14 +56,14 @@ class UserFavorites extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id_user' => 'user_id']);
+        return $this->hasOne(Users::className(), ['user_id' => 'user_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFavorite()
+    public function getFaveUser()
     {
-        return $this->hasOne(Users::className(), ['id_user' => 'favorite_id']);
+        return $this->hasOne(Users::className(), ['user_id' => 'fave_user_id']);
     }
 }

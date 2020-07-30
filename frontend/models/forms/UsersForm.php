@@ -2,7 +2,6 @@
 
 namespace frontend\models\forms;
 
-use Yii;
 use yii\base\Model;
 
 class UsersForm extends Model
@@ -34,19 +33,21 @@ class UsersForm extends Model
     public function rules()
     {
         return [
-            [['categories', 'isAvailable', 'isOnLine', 'isFeedbacks', 'isFavorite'], 'safe'],
+            [
+                ['categories', 'isAvailable', 'isOnLine', 'isFeedbacks', 'isFavorite', 'search'],
+                'safe'
+            ],
         ];
     }
 
     /* Элементы для полей формы согласно имени атрибута */
     public static function getAttributeItems(string $attributeName): ?array
     {
-        /* Категории - список чекбоксов Массив id_category - name */
-        $categories = (new \yii\db\Query())
-            ->from('categories')
-            ->select(['name', 'id_category'])
-            ->indexBy('id_category')
-            ->orderBy('id_category')
+        /* Список чекбоксов категории */
+        $categories = \frontend\models\db\Categories::find()
+            ->select(['title', 'category_id'])
+            ->indexBy('category_id')
+            ->orderBy('category_id')
             ->column();
 
         return $$attributeName ?? null;

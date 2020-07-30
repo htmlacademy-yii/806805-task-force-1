@@ -4,6 +4,8 @@
 /* @var $content string */
 
 use yii\helpers\Html;
+use yii\helpers\Url;
+
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
@@ -25,8 +27,8 @@ use common\widgets\Alert;
 
     <?php $this->head() ?><!-- Оставляем код, удаляем файл встроенного стиля css/site.css -->
 
-    <link rel="stylesheet" href="css/normalize.css"><!-- Вставляем код -->
-    <link rel="stylesheet" href="css/style.css"><!-- Вставляем код, AppAsset::register($this); влияет на шрифт и некоторые классы -->
+    <link rel="stylesheet" href="/css/normalize.css"><!-- Вставляем код -->
+    <link rel="stylesheet" href="/css/style.css"><!-- Вставляем код, AppAsset::register($this); влияет на шрифт и некоторые классы -->
 </head>
 <body class="landing">
 <?php $this->beginBody() ?><!-- Оставляем код -->
@@ -95,13 +97,13 @@ use common\widgets\Alert;
             <div class="page-footer__links">
                 <ul class="links__list">
                     <li class="links__item">
-                        <a href="">Задания</a>
+                        <a href="/tasks">Задания</a>
                     </li>
                     <li class="links__item">
-                        <a href="">Мой профиль</a>
+                        <a href="#">Мой профиль</a>
                     </li>
                     <li class="links__item">
-                        <a href="">Исполнители</a>
+                        <a href="/users">Исполнители</a>
                     </li>
                     <li class="links__item">
                         <a href="">Регистрация</a>

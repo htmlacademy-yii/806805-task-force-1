@@ -1,32 +1,51 @@
 <?php
 return [
-    'language' => 'ru-RU', 
-    'timeZone' => 'Europe/Moscow', 
+    'language' => 'ru-RU',
+    'timeZone' => 'Europe/Moscow',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
-    'defaultRoute' => 'start', 
+    'defaultRoute' => 'start/index',
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'formatter' => [
+            'dateFormat' => 'dd.MM.yyyy',
+            'decimalSeparator' => '.',
+        ],
+        'errorHandler' => [
+            'errorAction' => 'start/error',
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'enableStrictParsing' => false,
+            'enableStrictParsing' => false, // true - явно разрешенные URL в rules, напрмер '/' => '/' должен быть явно разрешен
+            'normalizer' => [
+                'class' => 'yii\web\UrlNormalizer',
+                'action' => yii\web\UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
+            ],
             'rules' => [
-                '//' => '/',
-                'users' => 'users/index',
-                'users/<sorting>' => 'users/index',
-                'tasks' => 'tasks/index',
+                [
+                    'pattern' => '<controller:(task|user)>/view/<ID>',
+                    'route' => '<controller>s/view',
+                ],
                 [
                     'pattern' => 'users/<sorting>',
                     'route' => 'users/index',
-                    'defaults' => ['sorting' => ''],                
+                    // 'defaults' => ['sorting' => null],
+                ],
+                [
+                    'pattern' => 'tasks/<category>',
+                    'route' => 'tasks/index',
+                    // 'defaults' => ['category' => null],
                 ],
             ],
         ],
+    ],
+    'params' => [
+        'defaultAvatarAddr' => 'img/man-glasses.jpg',
     ],
 ];

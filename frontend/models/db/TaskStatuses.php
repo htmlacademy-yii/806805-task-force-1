@@ -7,9 +7,9 @@ use Yii;
 /**
  * This is the model class for table "task_statuses".
  *
- * @property int $id_task_status
- * @property string $symbol
- * @property string $name
+ * @property int $status_id
+ * @property string $title
+ * @property string $const_name
  *
  * @property Tasks[] $tasks
  */
@@ -29,10 +29,10 @@ class TaskStatuses extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['symbol', 'name'], 'required'],
-            [['symbol', 'name'], 'string', 'max' => 32],
-            [['symbol'], 'unique'],
-            [['name'], 'unique'],
+            [['title', 'const_name'], 'required'],
+            [['title', 'const_name'], 'string', 'max' => 64],
+            [['title'], 'unique'],
+            [['const_name'], 'unique'],
         ];
     }
 
@@ -42,9 +42,9 @@ class TaskStatuses extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_task_status' => 'Id Task Status',
-            'symbol' => 'Symbol',
-            'name' => 'Name',
+            'status_id' => 'Status ID',
+            'title' => 'Title',
+            'const_name' => 'Const Name',
         ];
     }
 
@@ -53,6 +53,6 @@ class TaskStatuses extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Tasks::className(), ['status_id' => 'id_task_status']);
+        return $this->hasMany(Tasks::className(), ['status_id' => 'status_id']);
     }
 }

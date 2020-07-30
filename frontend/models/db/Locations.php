@@ -7,13 +7,13 @@ use Yii;
 /**
  * This is the model class for table "locations".
  *
- * @property int $id_location
+ * @property int $location_id
  * @property string $city
  * @property string $latitude
  * @property string $longitude
  *
- * @property Tasks[] $tasks
- * @property Users[] $users
+ * @property Task[] $tasks
+ * @property User[] $users
  */
 class Locations extends \yii\db\ActiveRecord
 {
@@ -32,7 +32,8 @@ class Locations extends \yii\db\ActiveRecord
     {
         return [
             [['city', 'latitude', 'longitude'], 'required'],
-            [['city', 'latitude', 'longitude'], 'string', 'max' => 128],
+            [['city'], 'string', 'max' => 64],
+            [['latitude', 'longitude'], 'string', 'max' => 255],
         ];
     }
 
@@ -42,7 +43,7 @@ class Locations extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_location' => 'Id Location',
+            'location_id' => 'Location ID',
             'city' => 'City',
             'latitude' => 'Latitude',
             'longitude' => 'Longitude',
@@ -54,7 +55,7 @@ class Locations extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Tasks::className(), ['location_id' => 'id_location']);
+        return $this->hasMany(Task::className(), ['location_id' => 'location_id']);
     }
 
     /**
@@ -62,6 +63,6 @@ class Locations extends \yii\db\ActiveRecord
      */
     public function getUsers()
     {
-        return $this->hasMany(Users::className(), ['location_id' => 'id_location']);
+        return $this->hasMany(User::className(), ['location_id' => 'location_id']);
     }
 }

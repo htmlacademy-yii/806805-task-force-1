@@ -7,9 +7,9 @@ use Yii;
 /**
  * This is the model class for table "user_roles".
  *
- * @property int $id_user_role
- * @property string $symbol
- * @property string $name
+ * @property int $role_id
+ * @property string $title
+ * @property string $const_name
  *
  * @property Users[] $users
  */
@@ -29,10 +29,10 @@ class UserRoles extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['symbol', 'name'], 'required'],
-            [['symbol', 'name'], 'string', 'max' => 32],
-            [['symbol'], 'unique'],
-            [['name'], 'unique'],
+            [['title', 'const_name'], 'required'],
+            [['title', 'const_name'], 'string', 'max' => 64],
+            [['title'], 'unique'],
+            [['const_name'], 'unique'],
         ];
     }
 
@@ -42,9 +42,9 @@ class UserRoles extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_user_role' => 'Id User Role',
-            'symbol' => 'Symbol',
-            'name' => 'Name',
+            'role_id' => 'Role ID',
+            'title' => 'Title',
+            'const_name' => 'Const Name',
         ];
     }
 
@@ -53,6 +53,6 @@ class UserRoles extends \yii\db\ActiveRecord
      */
     public function getUsers()
     {
-        return $this->hasMany(Users::className(), ['role_id' => 'id_user_role']);
+        return $this->hasMany(Users::className(), ['role_id' => 'role_id']);
     }
 }

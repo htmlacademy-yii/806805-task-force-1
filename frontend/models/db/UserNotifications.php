@@ -7,9 +7,9 @@ use Yii;
 /**
  * This is the model class for table "user_notifications".
  *
- * @property int $id_user_notification
- * @property string $symbol
- * @property string $name
+ * @property int $notification_id
+ * @property string $title
+ * @property string $label
  *
  * @property UserNotificationSettings[] $userNotificationSettings
  */
@@ -29,10 +29,10 @@ class UserNotifications extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['symbol', 'name'], 'required'],
-            [['symbol', 'name'], 'string', 'max' => 32],
-            [['symbol'], 'unique'],
-            [['name'], 'unique'],
+            [['title', 'label'], 'required'],
+            [['title', 'label'], 'string', 'max' => 64],
+            [['title'], 'unique'],
+            [['label'], 'unique'],
         ];
     }
 
@@ -42,9 +42,9 @@ class UserNotifications extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_user_notification' => 'Id User Notification',
-            'symbol' => 'Symbol',
-            'name' => 'Name',
+            'notification_id' => 'Notification ID',
+            'title' => 'Title',
+            'label' => 'Label',
         ];
     }
 
@@ -53,6 +53,6 @@ class UserNotifications extends \yii\db\ActiveRecord
      */
     public function getUserNotificationSettings()
     {
-        return $this->hasMany(UserNotificationSettings::className(), ['notification_id' => 'id_user_notification']);
+        return $this->hasMany(UserNotificationSettings::className(), ['notification_id' => 'notification_id']);
     }
 }

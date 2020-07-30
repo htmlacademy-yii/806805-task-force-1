@@ -7,12 +7,12 @@ use Yii;
 /**
  * This is the model class for table "categories".
  *
- * @property int $id_category
- * @property string $symbol
- * @property string $name
+ * @property int $category_id
+ * @property string $title
+ * @property string $label
  *
- * @property Tasks[] $tasks
- * @property UserSpecializations[] $userSpecializations
+ * @property Task[] $tasks
+ * @property UserSpecialization[] $userSpecializations
  */
 class Categories extends \yii\db\ActiveRecord
 {
@@ -30,10 +30,10 @@ class Categories extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['symbol', 'name'], 'required'],
-            [['symbol', 'name'], 'string', 'max' => 32],
-            [['symbol'], 'unique'],
-            [['name'], 'unique'],
+            [['title', 'label'], 'required'],
+            [['title', 'label'], 'string', 'max' => 64],
+            [['title'], 'unique'],
+            [['label'], 'unique'],
         ];
     }
 
@@ -43,9 +43,9 @@ class Categories extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_category' => 'Id Category',
-            'symbol' => 'Symbol',
-            'name' => 'Name',
+            'category_id' => 'Category ID',
+            'title' => 'Title',
+            'label' => 'Label',
         ];
     }
 
@@ -54,7 +54,7 @@ class Categories extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Tasks::className(), ['category_id' => 'id_category']);
+        return $this->hasMany(Task::className(), ['category_id' => 'category_id']);
     }
 
     /**
@@ -62,6 +62,6 @@ class Categories extends \yii\db\ActiveRecord
      */
     public function getUserSpecializations()
     {
-        return $this->hasMany(UserSpecializations::className(), ['category_id' => 'id_category']);
+        return $this->hasMany(UserSpecialization::className(), ['category_id' => 'category_id']);
     }
 }
