@@ -2,7 +2,6 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-// use yii\widgets\ActiveField; // Не используем
 
 $this->title = 'Исполнители (верстка Users.html)';
 ?>
@@ -82,11 +81,9 @@ $this->title = 'Исполнители (верстка Users.html)';
     <?php endif;?>
 
 </section>
-
 <section  class="search-task">
     <div class="search-task__wrapper">
         <!-- Форма начало -->
-        <!-- <form class="search-task__form" name="users" method="post" action="#"> -->
         <?php 
         $form = ActiveForm::begin([
             'id' => 'users-form',
@@ -100,46 +97,31 @@ $this->title = 'Исполнители (верстка Users.html)';
             <fieldset class="search-task__categories">
                 <legend>Категории</legend>
                 <!-- ПОЛЕ категории. Тип список чекбоксов -->
-                <!-- верстка -->
-                <!-- <input class="visually-hidden checkbox__input" id="101" type="checkbox" name="" value="" checked disabled>
-                <label for="101">Курьерские услуги </label>
-                <input class="visually-hidden checkbox__input" id="102" type="checkbox" name="" value="" checked>
-                <label  for="102">Грузоперевозки </label>
-                <input class="visually-hidden checkbox__input" id="103" type="checkbox" name="" value="">
-                <label  for="103">Переводы </label>
-                <input class="visually-hidden checkbox__input" id="104" type="checkbox" name="" value="">
-                <label  for="104">Строительство и ремонт </label>
-                <input class="visually-hidden checkbox__input" id="105" type="checkbox" name="" value="">
-                <label  for="105">Выгул животных </label> -->
+                <?php 
+                echo $form->field($usersForm, 'categories', ['template' => "{input}"])
+                    ->checkboxList(
+                        $usersForm->getAttributeItems('categories'), 
+                        [
+                            'tag' => false, 
+                            'item' => function ($index, $label, $name, $checked, $value) {
+                                ++$index;
 
-                <?php /* ПОЛЕ Категории с помощью ActiveForm */
-                echo $form->field($usersForm, 'categories', [
-                        'template' => "{input}", 
-                    ])
-                    ->checkboxList($usersForm->getAttributeItems('categories'), [
-                        'tag' => false, // Отклчает создание общего контейнера div
-                        'item' => function ($index, $label, $name, $checked, $value) {
-                            ++$index;
+                                $field = Html::checkbox($name, $checked, $options = [
+                                    'id' => $index,
+                                    'class' => 'visually-hidden checkbox__input',
+                                    'value' => $value, 
+                                ]);
+                                $field .= Html::label($label, $for = $index, $options = null);
 
-                            return
-                            Html::checkbox($name, $checked, $options = [
-                                'id' => $index,
-                                'class' => 'visually-hidden checkbox__input',
-                                'value' => $value, // !!!отличается от других, если не задавать то создается автоматически у всех всегда =1. !!!В данном случае необходимо использовать $value, для сохранения сортировки, так как значения хранятся в модели.
-                                // 'label' => $label, // В виде обертки не подходит
-                            ])
-                            . // Конкатенация
-                            Html::label($label, $for = $index, $options = null);
-                        },
-                    ]);
+                                return $field;
+                            },
+                        ]
+                    );
                 ?>
             </fieldset>
             <fieldset class="search-task__categories">
                 <legend>Дополнительно</legend>
                 <!-- Поле Сейчас свободен. Тип чекбокс, по умолчанию нет -->
-                <!-- верстка -->
-                <!-- <input class="visually-hidden checkbox__input" id="106" type="checkbox" name="" value="" disabled>
-                <label for="106">Сейчас свободен</label> -->
                 <?php
                 echo $form->field($usersForm, 'isAvailable')
                     ->checkbox(
@@ -148,9 +130,6 @@ $this->title = 'Исполнители (верстка Users.html)';
                     );
                 ?>
                 <!-- Поле Сейчас онлайн. Тип чекбокс -->
-                <!-- верстка -->
-                <!-- <input class="visually-hidden checkbox__input" id="107" type="checkbox" name="" value="" checked>
-                <label for="107">Сейчас онлайн</label> -->
                 <?php
                 echo $form->field($usersForm, 'isOnLine')
                     ->checkbox(
@@ -160,9 +139,6 @@ $this->title = 'Исполнители (верстка Users.html)';
                 ?>
 
                 <!-- Поле Есть отзывы. Тип чекбокс -->
-                <!-- верстка -->
-                <!-- <input class="visually-hidden checkbox__input" id="108" type="checkbox" name="" value="" checked>
-                <label for="108">Есть отзывы</label> -->
                 <?php
                 echo $form->field($usersForm, 'isFeedbacks')
                     ->checkbox(
@@ -172,9 +148,6 @@ $this->title = 'Исполнители (верстка Users.html)';
                 ?>
 
                 <!-- Поле В избранном. Тип чекбокс -->
-                <!-- верстка -->
-                <!-- <input class="visually-hidden checkbox__input" id="109" type="checkbox" name="" value="" checked>
-                <label for="109">В избранном</label> -->
                 <?php
                 echo $form->field($usersForm, 'isFavorite')
                     ->checkbox(
@@ -184,20 +157,13 @@ $this->title = 'Исполнители (верстка Users.html)';
                 ?>
             </fieldset>
             <!-- ПОЛЕ Поиск по имени. тип search-->
-            <!-- Верстка -->
-            <!-- <label class="search-task__name" for="110">Поиск по имени</label>
-            <input class="input-middle input" id="110" type="search" name="q" placeholder=""> -->
             <?php
             echo $form->field($usersForm, 'search', ['template' => "{label}\n{input}"])
                 ->label($label = null, ['class' => 'search-task__name'])
                 ->input('search', ['class' => 'input-middle input', 'placeholder' => '']); 
             ?>
-
-            <!-- <button class="button" type="submit">Искать</button> -->
             <?=Html::submitButton('Искать', ['class' => 'button'])?>
-
         <?php ActiveForm::end()?>
         <!-- Форма окончание -->
-        <!-- </form> -->
     </div>
 </section>

@@ -3,7 +3,6 @@
 namespace frontend\controllers;
 
 use frontend\models\forms\SignupForm;
-use phpDocumentor\Reflection\Location;
 use Yii;
 use yii\web\Controller;
 use yii\web\Response;
@@ -23,10 +22,10 @@ class SignupController extends Controller
 
                 return ActiveForm::validate($formModel);
             }
-            
+
             if ($formModel->validate()) {
                 $formModel->signup();
-   
+
                 return $this->redirect('/', 302);
             }
         }

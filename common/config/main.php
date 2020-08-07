@@ -22,7 +22,7 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'enableStrictParsing' => false, // true - явно разрешенные URL в rules, напрмер '/' => '/' должен быть явно разрешен
+            'enableStrictParsing' => false, 
             'normalizer' => [
                 'class' => 'yii\web\UrlNormalizer',
                 'action' => yii\web\UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
@@ -35,12 +35,10 @@ return [
                 [
                     'pattern' => 'users/<sorting>',
                     'route' => 'users/index',
-                    // 'defaults' => ['sorting' => null],
                 ],
                 [
                     'pattern' => 'tasks/<category>',
                     'route' => 'tasks/index',
-                    // 'defaults' => ['category' => null],
                 ],
                 'signup' => 'signup/index',
             ],

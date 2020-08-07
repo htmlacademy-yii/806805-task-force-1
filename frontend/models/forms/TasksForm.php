@@ -2,7 +2,6 @@
 
 namespace frontend\models\forms;
 
-use Yii;
 use yii\base\Model;
 
 class TasksForm extends Model
@@ -41,23 +40,19 @@ class TasksForm extends Model
     /* Списки для полей формы согласно имени атрибута */
     public static function getAttributeItems(string $attributeName): array
     {
-        $categories = (new \yii\db\Query())
+        $items['categories'] = (new \yii\db\Query())
             ->from('categories')
             ->select(['title', 'category_id'])
             ->indexBy('category_id')
             ->orderBy('category_id')
             ->column();
 
-        $items = [
-            /* выпадающий список период времени*/
-            'dateInterval' => [
-                // 'all' => 'За все время',  // !!! "За все время", задается activeField option promt
+        /* выпадающий список период времени*/
+        $items['dateInterval'] = [
                 'day' => 'За день',
                 'week' => 'За неделю',
                 'month' => 'За месяц',
-            ],
-            'categories' => $categories,
-        ];
+            ];
 
         return $items[$attributeName];
     }
