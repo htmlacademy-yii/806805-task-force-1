@@ -5,7 +5,7 @@ namespace frontend\controllers;
 use frontend\models\forms\UsersForm;
 use frontend\models\UsersFilters;
 use frontend\models\UserView;
-use yii;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
