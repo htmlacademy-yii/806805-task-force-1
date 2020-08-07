@@ -42,6 +42,7 @@ return [
                     'route' => 'tasks/index',
                     // 'defaults' => ['category' => null],
                 ],
+                'signup' => 'signup/index',
             ],
         ],
     ],
