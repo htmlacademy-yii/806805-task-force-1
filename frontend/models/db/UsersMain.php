@@ -263,7 +263,7 @@ class UsersMain extends Users
         $tasks_count = (new Query())
             ->select(['u.user_id', self::SORTBY_DEALS_COL => 'count(contractor_id)'])
             ->from(['users u'])
-            ->join('LEFT JOIN', [$contractor_tasks], 'contractor_id = u.user_id') // LEFT JOIN позволяет получить 0 при отсутствии записи вместо пусто
+            ->join('LEFT JOIN', [$contractor_tasks], 'contractor_id = u.user_id') 
             ->filterWhere(['IN', 'u.user_id', $contractorIDs])
             ->groupBy(['u.user_id'])
             ->indexBy('user_id')

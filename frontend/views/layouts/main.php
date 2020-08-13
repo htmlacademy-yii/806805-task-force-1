@@ -71,14 +71,23 @@ AppAsset::register($this);
                     <li class="site-list__item">
                         <a href="/users">Исполнители</a>
                     </li>
+
+                    <!-- Только для зарегистрированных пользователей, а также недоступно на страницы signup -->
+                    <?php if (\Yii::$app->request->pathInfo !== 'signup'): ?>
                     <li class="site-list__item">
                         <a href="#">Создать задание</a>
                     </li>
                     <li class="site-list__item">
                         <a>Мой профиль</a>
                     </li>
+                    <?php endif;?>
+                    <!-- /Только для зарегистрированных пользователей -->
+
                 </ul>
             </div>
+            
+            <!-- Только для зарегистрированных пользователей, а также недоступно на страницы signup -->
+            <?php if (\Yii::$app->request->pathInfo !== 'signup'): ?>
             <div class="header__town">
                 <select class="multiple-select input town-select" size="1" name="town[]">
                     <option value="Moscow">Москва</option>
@@ -127,6 +136,9 @@ AppAsset::register($this);
                     </li>
                 </ul>
             </div>
+            <?php endif;?>
+            <!-- /Только для зарегистрированных пользователей -->
+            
         </div>
     </header>
 

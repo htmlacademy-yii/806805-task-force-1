@@ -33,10 +33,7 @@ class UsersForm extends Model
     public function rules()
     {
         return [
-            [
-                ['categories', 'isAvailable', 'isOnLine', 'isFeedbacks', 'isFavorite', 'search'],
-                'safe'
-            ],
+            [['categories', 'isAvailable', 'isOnLine', 'isFeedbacks', 'isFavorite', 'search'], 'safe'],
         ];
     }
 

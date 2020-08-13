@@ -1,12 +1,10 @@
 <?php
 use yii\helpers\Url;
-// use yii\widgets\ActiveField; // Не используем
 
 $this->title = 'Просмотр задания (view.html)';
 ?>
 
 <!-- контент view.html основная секция -->
-
 <section class="content-view">
     <!-- карточка пользователя -->
     <div class="user__card-wrapper">
@@ -18,17 +16,14 @@ $this->title = 'Просмотр задания (view.html)';
                 <div class="profile-mini__name five-stars__rate">
                     <!-- Рейтинг -->
                     <?php $avg_point = $user->avg_point ?? 0;?>
-
                     <!-- итерация желтой звездочки -->
                     <?php for ($i = 1; $i <= $avg_point; $i++): ?>
                         <span></span>
                     <?php endfor;?>
-
                     <!-- итерация белой звездочки -->
                     <?php for ($i = $avg_point; $i < 5; $i++): ?>
                         <span class="star-disabled"></span>
                     <?php endfor;?>
-
                     <!-- Средний балл рейтинг -->
                     <b><?=Yii::$app->formatter->asDecimal($avg_point, 2)?></b>
                     <!-- /Рейтинг -->
@@ -99,12 +94,8 @@ $this->title = 'Просмотр задания (view.html)';
     <?php endif; ?>
     <!-- Блок отзывы -->
 </section>
-
 <!-- /контент view.html основная секция -->
-
-
 <!-- контент view.html правая секция -->
-
 <section class="connect-desk">
     <div class="connect-desk__chat">
         <h3>Переписка</h3>
@@ -131,5 +122,4 @@ $this->title = 'Просмотр задания (view.html)';
         </form>
     </div>
 </section>
-
 <!-- /контент view.html правая секция -->
