@@ -3,31 +3,35 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+use frontend\assets\mainAsset;
+// use yii\bootstrap\Nav;
+// use yii\bootstrap\NavBar;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
+// use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
-use frontend\assets\AppAsset;
+// use frontend\assets\AppAsset; // Удаление кода
 use common\widgets\Alert;
 
-AppAsset::register($this); 
+// AppAsset::register($this); // !!! Отключаем
+mainAsset::register($this); // Вставляем код
 ?>
+
 <?php $this->beginPage() ?><!-- Оставляем код -->
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
+
 <head>
+    <meta charset="UTF-8"><!-- Вставляем код -->
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?><!-- Оставляем код -->
     <title><?= Html::encode($this->title) ?></title><!-- Оставляем код -->
-
     <?php $this->head() ?><!-- Оставляем код -->
-
-    <link rel="stylesheet" href="/css/normalize.css"><!-- Вставляем код -->
-    <link rel="stylesheet" href="/css/style.css"><!-- Вставляем код -->
+    <!-- <link rel="stylesheet" href="/css/normalize.css"> сначал создали без бандла, отключаем тк подлкючен бандла-ресурс -->
+    <!-- <link rel="stylesheet" href="/css/style.css"> сначал создали без бандла, тк подлкючен бандла-ресурс  -->
 </head>
+
 <body>
 <?php $this->beginBody() ?><!-- Оставляем код -->
 <div class="table-layout">

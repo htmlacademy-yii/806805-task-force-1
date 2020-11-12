@@ -3,35 +3,38 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+// use common\widgets\Alert;
+use frontend\assets\mainAsset;
+// use yii\bootstrap\Nav;
+// use yii\bootstrap\NavBar;
 use yii\helpers\Html;
-use yii\helpers\Url;
-
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
-use yii\widgets\Breadcrumbs;
-use frontend\assets\AppAsset;
-use common\widgets\Alert;
+// use yii\helpers\Url;
+// use frontend\assets\AppAsset; // Удаление кода
+// use yii\widgets\Breadcrumbs;
 
 // AppAsset::register($this); // !!! Отключаем Создает стили по умолчанию которые влияют на шрифты и некоторые классы верстки, на др страницах влияет на формы при отключении
+mainAsset::register($this); // Вставляем код
 ?>
-<?php $this->beginPage() ?><!-- Оставляем код -->
+
+<?php $this->beginPage()?><!-- Оставляем код -->
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>">
+<html lang="<?=Yii::$app->language?>">
+
 <head>
     <meta charset="UTF-8"><!-- Вставляем код -->
-    <meta charset="<?= Yii::$app->charset ?>">
+    <meta charset="<?=Yii::$app->charset?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php $this->registerCsrfMetaTags() ?><!-- Оставляем код -->
-    <title><?= Html::encode($this->title) ?></title><!-- Оставляем код -->
-
-    <?php $this->head() ?><!-- Оставляем код, удаляем файл встроенного стиля css/site.css -->
-
-    <link rel="stylesheet" href="/css/normalize.css"><!-- Вставляем код -->
-    <link rel="stylesheet" href="/css/style.css"><!-- Вставляем код, AppAsset::register($this); влияет на шрифт и некоторые классы -->
+    <?php $this->registerCsrfMetaTags()?><!-- Оставляем код -->
+    <title><?=Html::encode($this->title)?></title><!-- Оставляем код -->
+    <?php $this->head()?><!-- Оставляем код -->
+    <!-- <link rel="stylesheet" href="/css/site.css"> удаляем файл встроенного стиля -->
+    <!-- <link rel="stylesheet" href="/css/normalize.css"> сначал создали без бандла, отключаем тк подлкючен бандла-ресурс -->
+    <!-- <link rel="stylesheet" href="/css/style.css"> сначал создали без бандла, тк подлкючен бандла-ресурс  -->
 </head>
+
 <body class="landing">
-<?php $this->beginBody() ?><!-- Оставляем код -->
+<?php $this->beginBody()?><!-- Оставляем код -->
 <div class="table-layout">
     <header class="page-header--index">
         <div class="main-container page-header__container page-header__container--index">
@@ -78,7 +81,7 @@ use common\widgets\Alert;
     <main>
         <div class="landing-container">
             <!-- Представление контент  -->
-            <?= $content ?>
+            <?=$content?>
         </div>
     </main>
 
@@ -147,7 +150,7 @@ use common\widgets\Alert;
 <div class="overlay"></div>
 <script src="js/main.js"></script>
 
-<?php $this->endBody() ?><!-- Оставляем код -->
+<?php $this->endBody()?><!-- Оставляем код -->
 </body>
 </html>
-<?php $this->endPage() ?><!-- Оставляем код -->
+<?php $this->endPage()?><!-- Оставляем код -->
