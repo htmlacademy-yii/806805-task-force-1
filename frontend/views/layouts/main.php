@@ -9,34 +9,29 @@ use frontend\assets\mainAsset;
 use yii\helpers\Html;
 // use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
-// use frontend\assets\AppAsset; // Удаление кода
 use common\widgets\Alert;
 
-// AppAsset::register($this); // !!! Отключаем
-mainAsset::register($this); // Вставляем код
+mainAsset::register($this);
 ?>
 
-<?php $this->beginPage() ?><!-- Оставляем код -->
+<?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
 
 <head>
-    <meta charset="UTF-8"><!-- Вставляем код -->
-    <meta charset="<?= Yii::$app->charset ?>">
+    <meta charset="<?= Yii::$app->charset ?>"><!-- ??? не изучено -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php $this->registerCsrfMetaTags() ?><!-- Оставляем код -->
-    <title><?= Html::encode($this->title) ?></title><!-- Оставляем код -->
-    <?php $this->head() ?><!-- Оставляем код -->
-    <!-- <link rel="stylesheet" href="/css/normalize.css"> сначал создали без бандла, отключаем тк подлкючен бандла-ресурс -->
-    <!-- <link rel="stylesheet" href="/css/style.css"> сначал создали без бандла, тк подлкючен бандла-ресурс  -->
+    <?php $this->registerCsrfMetaTags() ?>
+    <title><?= Html::encode($this->title) ?></title>
+    <?php $this->head() ?>
 </head>
 
 <body>
-<?php $this->beginBody() ?><!-- Оставляем код -->
+<?php $this->beginBody() ?>
 <div class="table-layout">
 
-    <!-- Вставляем хедер  -->
+    <!-- Хедер -->
     <header class="page-header">
         <div class="main-container page-header__container">
             <div class="page-header__logo">
@@ -145,22 +140,20 @@ mainAsset::register($this); // Вставляем код
             
         </div>
     </header>
+    <!-- /Хедер -->
 
-    <!-- Вставляем контент  -->
+    <!-- Контент  -->
     <main class="page-main">
         <div class="main-container page-container">
             <?= Breadcrumbs::widget([
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
-
             <?= Alert::widget() ?>
-            
-            <!-- Представление контент  -->
-            <?= $content ?>
+            <?= $content ?><!-- Представление контент  -->
         </div>
     </main>
 
-    <!-- Вставляем футер  -->
+    <!-- футер  -->
     <footer class="page-footer">
         <div class="main-container page-footer__container">
             <div class="page-footer__info">
@@ -205,9 +198,9 @@ mainAsset::register($this); // Вставляем код
             </div>
         </div>
     </footer>
-
+    <!-- /футер  -->
 </div>
-<?php $this->endBody() ?><!-- Оставляем код -->
+<?php $this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage() ?><!-- Оставляем код -->
+<?php $this->endPage() ?>

@@ -9,32 +9,27 @@ use frontend\assets\mainAsset;
 // use yii\bootstrap\NavBar;
 use yii\helpers\Html;
 // use yii\helpers\Url;
-// use frontend\assets\AppAsset; // Удаление кода
 // use yii\widgets\Breadcrumbs;
 
-// AppAsset::register($this); // !!! Отключаем Создает стили по умолчанию которые влияют на шрифты и некоторые классы верстки, на др страницах влияет на формы при отключении
-mainAsset::register($this); // Вставляем код
+mainAsset::register($this);
 ?>
 
-<?php $this->beginPage()?><!-- Оставляем код -->
+<?php $this->beginPage()?>
 <!DOCTYPE html>
 <html lang="<?=Yii::$app->language?>">
 
 <head>
-    <meta charset="UTF-8"><!-- Вставляем код -->
+    <meta charset="UTF-8">
     <meta charset="<?=Yii::$app->charset?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php $this->registerCsrfMetaTags()?><!-- Оставляем код -->
-    <title><?=Html::encode($this->title)?></title><!-- Оставляем код -->
-    <?php $this->head()?><!-- Оставляем код -->
-    <!-- <link rel="stylesheet" href="/css/site.css"> удаляем файл встроенного стиля -->
-    <!-- <link rel="stylesheet" href="/css/normalize.css"> сначал создали без бандла, отключаем тк подлкючен бандла-ресурс -->
-    <!-- <link rel="stylesheet" href="/css/style.css"> сначал создали без бандла, тк подлкючен бандла-ресурс  -->
+    <?php $this->registerCsrfMetaTags()?><!-- Оставляем код ??? Не изучено-->
+    <title><?=Html::encode($this->title)?></title>
+    <?php $this->head()?>
 </head>
 
 <body class="landing">
-<?php $this->beginBody()?><!-- Оставляем код -->
+<?php $this->beginBody()?>
 <div class="table-layout">
     <header class="page-header--index">
         <div class="main-container page-header__container page-header__container--index">
@@ -80,8 +75,7 @@ mainAsset::register($this); // Вставляем код
 
     <main>
         <div class="landing-container">
-            <!-- Представление контент  -->
-            <?=$content?>
+            <?=$content?><!-- Представление контент  -->
         </div>
     </main>
 
@@ -129,7 +123,7 @@ mainAsset::register($this); // Вставляем код
             </div>
         </div>
     </footer>
-        <!-- Модальное окно -->
+    <!-- Модальное окно -->
     <section class="modal enter-form form-modal" id="enter-form">
         <h2>Вход на сайт</h2>
         <form action="#" method="post">
@@ -145,12 +139,13 @@ mainAsset::register($this); // Вставляем код
         </form>
         <button class="form-modal-close" type="button">Закрыть</button>
     </section>
+    <!-- /Модальное окно -->
 </div>
 
 <div class="overlay"></div>
 <script src="js/main.js"></script>
 
-<?php $this->endBody()?><!-- Оставляем код -->
+<?php $this->endBody()?>
 </body>
 </html>
-<?php $this->endPage()?><!-- Оставляем код -->
+<?php $this->endPage()?>
