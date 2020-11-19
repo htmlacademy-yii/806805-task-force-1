@@ -2,14 +2,14 @@
 
 namespace frontend\controllers;
 
+use frontend\controllers\AccessController;
 use frontend\models\forms\UsersForm;
 use frontend\models\UsersFilters;
 use frontend\models\UserView;
 use Yii;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
-class UsersController extends Controller
+class UsersController extends AccessController
 {
     public function actionIndex(string $sorting = null)
     {

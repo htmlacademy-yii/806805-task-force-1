@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use frontend\controllers\AccessController;
 use frontend\models\forms\TasksForm;
 use frontend\models\TasksFilters;
 use frontend\models\TaskView;
@@ -9,7 +10,7 @@ use yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
-class TasksController extends Controller
+class TasksController extends AccessController
 {
     public function actionIndex(int $category = null)
     {

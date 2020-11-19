@@ -8,6 +8,7 @@ return [
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'defaultRoute' => 'start/index',
+    'layout' => 'main',
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -18,6 +19,10 @@ return [
         ],
         'errorHandler' => [
             'errorAction' => 'start/error',
+        ],
+        'user' => [
+            'loginUrl' => ['/'],
+            'identityClass' => 'frontend\models\db\Users',
         ],
         'urlManager' => [
             'enablePrettyUrl' => true,

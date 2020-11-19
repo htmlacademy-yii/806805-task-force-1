@@ -3,6 +3,8 @@
 namespace frontend\models\db;
 
 use Yii;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "users".
@@ -43,7 +45,7 @@ use Yii;
  * Связь много-много
  * @property UserSpecializations[] $userSpecializations
  */
-class Users extends \yii\db\ActiveRecord
+class Users extends ActiveRecord implements IdentityInterface
 {
     /**
      * {@inheritdoc}
@@ -52,6 +54,36 @@ class Users extends \yii\db\ActiveRecord
     {
         return 'users';
     }
+
+    public static function findIdentity($id)
+    {
+        return self::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        // TODO: Implement findIdentityByAccessToken() method.
+    }
+
+    public function getId()
+    {
+        return $this->getPrimaryKey();
+    }
+
+    public function getAuthKey()
+    {
+        // TODO: Implement getAuthKey() method.
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        // TODO: Implement validateAuthKey() method.
+    }
+
+    // public function validatePassword($password)
+    // {
+    //     return \Yii::$app->security->validatePassword($password, $this->password);
+    // }
 
     /**
      * {@inheritdoc}
@@ -71,14 +103,14 @@ class Users extends \yii\db\ActiveRecord
                 ['role_id'],
                 'exist',
                 'skipOnError' => true,
-                'targetClass' => UserRoles::className(),
+                'targetClass' => UserRoles::class,
                 'targetAttribute' => ['role_id' => 'role_id'],
             ],
             [
                 ['location_id'],
                 'exist',
                 'skipOnError' => true,
-                'targetClass' => Locations::className(),
+                'targetClass' => Locations::class,
                 'targetAttribute' => ['location_id' => 'location_id']
             ],
         ];
