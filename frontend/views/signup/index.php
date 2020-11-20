@@ -45,7 +45,7 @@ $this->title = 'Регистарция (Верстка singup.html)';
                 ->textarea([
                     'class' => 'input textarea',
                     'rows' => 1,
-                    'placeholder' => 'kumarm@mail.ru',
+                    'placeholder' => 'name@mail.ru',
                     'autofocus' => true
                 ]);
             ?>

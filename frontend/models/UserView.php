@@ -29,7 +29,7 @@ class UserView
     {
         $defaultSettings = ['asQuery']; // значения по умолчанию (всегда включено)
         $userIDs[] = $this->userID;
-        $contractor = UsersMain::getcontractorsMain('*', $defaultSettings, $userIDs);
+        $contractor = UsersMain::getContractorsMain('*', $defaultSettings, $userIDs);
 
         // Общее дополнение запроса
         $contractor

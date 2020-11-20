@@ -85,9 +85,11 @@ class SignupForm extends Model
         $user->full_name = $this->full_name;
         $user->email = $this->email;
         $user->location_id = $this->location_id;
-        $user->password_key = $this->password;
         $user->reg_time = date('Y-m-d h:i:s', time());
         $user->activity_time = date('Y-m-d h:i:s', time());
+
+        $user->password_key = $this->password;
+
         return $user->save();
     }
 }
