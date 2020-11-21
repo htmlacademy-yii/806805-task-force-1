@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\helpers\Url;
+// use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 // use yii\widgets\ActiveField; // Не используем
 
@@ -23,7 +23,7 @@ $this->title = 'Регистарция (Верстка singup.html)';
             'ajaxDataType' => 'json',
             'enableAjaxValidation' => true,
             'enableClientValidation' => false,
-            'validateOnSubmit' => false,
+            'validateOnSubmit' => true,
             'validateOnChange' => true,
             'validateOnType' => false,
             'validateOnBlur' => false,
@@ -73,7 +73,7 @@ $this->title = 'Регистарция (Верстка singup.html)';
                 ->passwordInput(['class' => 'input textarea']);
             ?>
             <?=Html::submitButton('Cоздать аккаунт', ['class' => 'button button__registration'])?>
-        <?php ActiveForm::end()?>
+        <?php ActiveForm::end();?>
         <!-- /Форма -->
     </div>
 </section>

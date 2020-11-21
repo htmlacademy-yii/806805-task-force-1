@@ -1,5 +1,7 @@
 <?php 
 use yii\helpers\html;
+use yii\widgets\ActiveForm;
+
 
 $this->title = 'Главная (макет landing.html)';
 ?>
@@ -163,3 +165,70 @@ $this->title = 'Главная (макет landing.html)';
                    <button type="button" class="button red-button">смотреть все задания</button>
                </div>
            </div>
+
+
+    <!-- Модальное окно -->
+    <section class="modal enter-form form-modal" id="enter-form">
+        <h2>Вход на сайт</h2>
+        <!-- <form action="#" method="post"> -->
+        <?php $form = ActiveForm::begin([
+            'id' => 'login-form',
+
+            'errorCssClass' => 'input-danger',
+            'validationStateOn' => 'input',
+
+            'ajaxDataType' => 'json',
+            'enableAjaxValidation' => true,
+            'enableClientValidation' => false,
+            'validateOnSubmit' => false,
+            'validateOnChange' => true,
+            'validateOnType' => false,
+            'validateOnBlur' => false,
+
+            'options' => [
+                'class' => false,
+            ],
+            'fieldConfig' => [
+                'template' => "{label}\n{input}",
+                'options' => ['tag' => false],
+                'errorOptions' => ['tag' => false, 'class' => false],
+                'hintOptions' => ['tag' => false, 'class' => false],
+            ],
+        ]);?>
+            <p>
+                <!-- <label class="form-modal-description" for="enter-email">Email</label> -->
+                <!-- <input class="enter-form-email input input-middle" type="email" name="enter-email" id="enter-email"> -->
+                <?php 
+                echo $form->field($formModel, 'email')
+                    ->label(null, ['class' => 'form-modal-description'])
+                    ->input(
+                        'email', 
+                        [
+                            'id' => 'enter-email', 
+                            'class' => 'enter-form-email input input-middle'
+                        ]
+                    );
+                ?>
+            </p>
+            <p>
+                <!-- <label class="form-modal-description" for="enter-password">Пароль</label> -->
+                <!-- <input class="enter-form-email input input-middle" type="password" name="enter-password" id="enter-password"> -->
+                <?php 
+                echo $form->field($formModel, 'password')
+                    ->label(null, ['class' => 'form-modal-description'])
+                    ->input(
+                        'password', 
+                        [
+                            'id' => 'enter-password', 
+                            'class' => 'enter-form-email input input-middle'
+                        ]
+                    );
+                ?>
+            </p>
+            <!-- <button class="button" type="submit">Войти</button> -->
+            <?=Html::submitButton('Войти', ['class' => 'button'])?>
+        <!-- </form> -->
+        <?php ActiveForm::end();?>
+        <button class="form-modal-close" type="button">Закрыть</button>
+    </section>
+    <!-- /Модальное окно -->

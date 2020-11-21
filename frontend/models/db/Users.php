@@ -80,11 +80,6 @@ class Users extends ActiveRecord implements IdentityInterface
         // TODO: Implement validateAuthKey() method.
     }
 
-    // public function validatePassword($password)
-    // {
-    //     return \Yii::$app->security->validatePassword($password, $this->password);
-    // }
-
     /**
      * {@inheritdoc}
      */
