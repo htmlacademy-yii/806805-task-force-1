@@ -5,15 +5,13 @@ namespace frontend\models\forms;
 use frontend\models\db\Users;
 use Yii;
 use yii\base\Model;
-use yii\widgets\ActiveForm;
-
 
 class LoginForm extends Model
 {
     public $email;
     public $password;
 
-    public $user;
+    private $userByForm;
 
     public function rules()
     {
@@ -35,13 +33,15 @@ class LoginForm extends Model
         ];
     }
 
-
-    public function validatePassword($attribute, $params) {
+    public function validatePassword($attribute, $params)
+    {
         if (!$this->hasErrors()) {
-            $user = $this->getUser();
-            $validatePassword = Yii::$app->security->validatePassword($this->password, $user->password_key);
+            $userByForm = $this->getUser();
+            $validatePassword = Yii::$app
+                ->getSecurity()
+                ->validatePassword($this->password, $userByForm->password_key);
 
-            if (!$this->user || !$validatePassword) {
+            if (!$this->userByForm || !$validatePassword) {
                 $this->addError($attribute, 'Неправильный email или пароль');
 
                 echo 'wrong';
@@ -49,7 +49,12 @@ class LoginForm extends Model
         }
     }
 
-    protected function getUser() {
-        return $this->user ?: Users::findOne(['email' => $this->email]);
+    public function getUser()
+    {
+        if ($this->userByForm === null) {
+            $this->userByForm = Users::findOne(['email' => $this->email]);
+        }
+
+        return $this->userByForm;
     }
 }
