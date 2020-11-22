@@ -11,14 +11,11 @@ class mainAsset extends AssetBundle
 {
     public $basePath = '@frontend';
     public $css = [
-        'css/style.css',
         'css/normalize.css',
+        'css/style.css',
     ];
     public $js = [
-        // 'js/dropzone.js',
+        'js/dropzone.js',
         'js/main.css',
-    ];
-    public $depends = [
-        'frontend\assets\AppAsset',
     ];
 }

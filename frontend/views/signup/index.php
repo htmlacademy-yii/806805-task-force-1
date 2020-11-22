@@ -1,14 +1,12 @@
 <?php
 
 use yii\helpers\Html;
-// use yii\helpers\Url;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-// use yii\widgets\ActiveField; // Не используем
 
-$this->title = 'Регистарция (Верстка singup.html)';
+$this->title = 'Регистарция (Верстка signup.html)';
 ?>
 
-<!-- Контент singup.html -->
 <section class="registration__user">
     <h1>Регистрация аккаунта</h1>
     <div class="registration-wrapper">
@@ -77,4 +75,3 @@ $this->title = 'Регистарция (Верстка singup.html)';
         <!-- /Форма -->
     </div>
 </section>
-<!-- /Контент singup.html -->
