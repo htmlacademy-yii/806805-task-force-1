@@ -33,6 +33,11 @@ return [
                 'action' => yii\web\UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
             ],
             'rules' => [
+                '/' => 'start/index',
+                'tasks/index' => 'tasks/index',
+                'users/index' => 'users/index',
+                'signup/index' => 'signup/index',
+                'signup' => 'signup/index',
                 [
                     'pattern' => '<controller:(task|user)>/view/<ID>',
                     'route' => '<controller>s/view',
@@ -45,7 +50,6 @@ return [
                     'pattern' => 'tasks/<category>',
                     'route' => 'tasks/index',
                 ],
-                'signup' => 'signup/index',
             ],
         ],
     ],
