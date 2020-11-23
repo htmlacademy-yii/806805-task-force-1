@@ -37,7 +37,14 @@ class SignupForm extends Model
             ],
             ['full_name', 'trim'],
             ['full_name', 'required', 'message' => 'Обязательно. '],
-            ['full_name', 'string', 'min' => 4, 'max' => 64],
+            [
+                'full_name', 
+                'string', 
+                'length' => [4,64], 
+                'message' => 'Минимально 4 символа. Максимально 24. ', 
+                'tooShort' => 'Минимально 4 символа. ',
+                'tooLong' => 'Максимально 64 символа. ',
+            ],
 
             ['location_id', 'required', 'message' => 'Обязательно. '],
             ['location_id', 'integer'],
@@ -47,7 +54,15 @@ class SignupForm extends Model
                 'targetAttribute' => 'location_id',
             ],
             ['password', 'required', 'message' => 'Обязательно. '],
-            ['password', 'string', 'min' => 4, 'tooShort' => 'Неверно. '],
+            [
+                'password', 
+                'string', 
+                'min'=>4, 
+                'max'=>24,
+                'message' => 'Минимально 4 символа. Максимально 24. ', 
+                'tooShort' => 'Минимально 4 символа. ',
+                'tooLong' => 'Максимально 24 символа. ',
+            ],
         ];
     }
 

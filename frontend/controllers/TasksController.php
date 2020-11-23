@@ -42,8 +42,6 @@ class TasksController extends AccessController
             throw new NotFoundHttpException('Такого задания не существует');
         }
 
-        define('USER_ID', 5); // условно текущий пользователь, в условии показа блоков мини-панели и чата
-
         $customer = $taskView->getCustomer();
 
         // Действующий исполнитель
