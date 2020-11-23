@@ -45,7 +45,7 @@ class SignupController extends Controller
             if ($formModel->validate()) {
                 $formModel->signup();
 
-                return $this->redirect('/', 302);
+                return $this->redirect('/?singup=success', 302);
             }
         }
 

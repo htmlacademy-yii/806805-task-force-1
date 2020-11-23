@@ -19,7 +19,7 @@ $this->title = 'Просмотр задания (view.html)';
                 <div class="content-view__headline">
                     <h1><?=$task->title?></h1>
                     <span><?='Статус: ' . $task->status->title?>. Размещено в категории
-                        <a href="<?=Url::to(['tasks/index', 'category' => $task->category_id])?>" class="link-regular"><?=$task->category->title?></a>
+                        <a href="<?=Url::to(['index', 'category' => $task->category_id])?>" class="link-regular"><?=$task->category->title?></a>
                         25 минут назад</span>
                 </div>
                 <b class="new-task__price new-task__price--clean content-view-price"><?=$task->price?><b> ₽</b></b>
@@ -78,11 +78,11 @@ $this->title = 'Просмотр задания (view.html)';
             <?php list($candidate, $offer) = $candidateAndOffer; ?>
             <div class="content-view__feedback-card">
                 <div class="feedback-card__top">
-                    <a href="<?=Url::to(['users/view', 'ID' => $candidate->user_id])?>">
+                    <a href="<?=Url::to(['/users/view', 'ID' => $candidate->user_id])?>">
                         <img src="/<?=$candidate->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="55" height="55">
                     </a>
                     <div class="feedback-card__top--name">
-                        <p><a href="<?=Url::to(['users/view', 'ID' => $candidate->user_id])?>" class="link-regular"><?=$candidate->full_name?></a></p>
+                        <p><a href="<?=Url::to(['/users/view', 'ID' => $candidate->user_id])?>" class="link-regular"><?=$candidate->full_name?></a></p>
                         <!-- Рейтинг -->
                         <?php $avg_point = $candidate->avg_point ?? 0;?>
                         
@@ -125,12 +125,12 @@ $this->title = 'Просмотр задания (view.html)';
 <!-- контент view.html правая секция -->
 <section class="connect-desk">
     <div class="connect-desk__profile-mini">
-        <?php if (USER_ID !== $task->customer_id OR $currentContractor === null): // переписки нет?>
+        <?php if (Yii::$app->user->getId() !== $task->customer_id OR $currentContractor === null): // переписки нет?>
         <!-- мини профиль заказчика -->
         <div class="profile-mini__wrapper">
             <h3>Заказчик (<?='id'. $customer->user_id ?>)</h3>
             <div class="profile-mini__top">
-                <img src="/<?=$customer->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="62" height="62" alt="Аватар заказчика">
+                <img src="/<?=$customer->avatar_addr ?: Yii::$app->params['defaultAvatarAddr']?>" width="62" height="62" alt="Аватар заказчика">
                 <div class="profile-mini__name five-stars__rate">
                     <p><?=$customer->full_name?></p>
                 </div>

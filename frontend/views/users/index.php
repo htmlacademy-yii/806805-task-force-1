@@ -27,12 +27,12 @@ $this->title = 'Исполнители (верстка Users.html)';
     <div class="content-view__feedback-card user__search-wrapper">
         <div class="feedback-card__top">
             <div class="user__search-icon">
-                <a href="<?=Url::to(['users/view', 'ID' => $user->user_id])?>"><img src="/<?=$user->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="65" height="65"></a>
+                <a href="<?=Url::to(['view', 'ID' => $user->user_id])?>"><img src="/<?=$user->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="65" height="65"></a>
                 <span><?=$user->tasks_count?> заданий</span>
                 <span><?=$user->feedbacks_count?> отзывов</span>
             </div>
             <div class="feedback-card__top--name user__search-card">
-                <p class="link-name"><a href="<?=Url::to(['users/view', 'ID' => $user->user_id])?>" class="link-regular"><?=$user->full_name?> (ID: <?=$user->user_id?>)</a></p>
+                <p class="link-name"><a href="<?=Url::to(['view', 'ID' => $user->user_id])?>" class="link-regular"><?=$user->full_name?> (ID: <?=$user->user_id?>)</a></p>
                 <!-- Рейтинг -->
                 <?php $avg_point = $user->avg_point ?? 0;?>
 
