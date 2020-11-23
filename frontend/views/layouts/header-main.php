@@ -52,8 +52,9 @@ use yii\helpers\Url;
             </ul>
         </div>
         
-        <!-- Только для зарегистрированных пользователей -->
+        <!-- Меню пользователя. для зарегистрированных пользователей -->
         <?php if ($ID = Yii::$app->user->getId()):?>
+        <?php $currentUser = Yii::$app->user->identity;?>
         <div class="header__town">
             <select class="multiple-select input town-select" size="1" name="town[]">
                 <option value="Moscow">Москва</option>
@@ -81,12 +82,12 @@ use yii\helpers\Url;
         </div>
         <div class="header__account">
             <a class="header__account-photo">
-                <img src="./img/user-photo.png"
+                <img src="/<?=$currentUser->avatar_addr ?: Yii::$app->params['defaultAvatarAddr']?>"
                         width="43" height="44"
                         alt="Аватар пользователя">
             </a>
             <span class="header__account-name">
-                Василий
+                <?=$currentUser->full_name?>
             </span>
         </div>
         <div class="account__pop-up">
@@ -103,7 +104,7 @@ use yii\helpers\Url;
             </ul>
         </div>
         <?php endif;?>
-        <!-- /Только для зарегистрированных пользователей -->
+        <!-- /Меню пользователя. для зарегистрированных пользователей -->
         
     </div>
 </header>
