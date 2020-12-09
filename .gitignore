@@ -47,7 +47,7 @@ backend/web/robots.txt
 .tmp.drivedownload
 
 # XDebug
-.vscode/launch.json
+# .vscode
 
 # vendor files
-vendor
+# vendor

@@ -15,7 +15,7 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "taskForce\\": ""
+            "site\\": "src/"
         },
         "files": [
             "common\\functions-basic\\transform.php"
