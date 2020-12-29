@@ -50,6 +50,7 @@ return [
                     'pattern' => 'tasks/<category>',
                     'route' => 'tasks/index',
                 ],
+                'arr-saver' => 'converter/arr-saver',
             ],
         ],
     ],
