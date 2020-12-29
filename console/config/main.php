@@ -22,6 +22,13 @@ return [
             'fixtureDataPath' => '@common/fixtures/data', 
             'namespace' => 'common\fixtures',
         ],
+        'migrate' => [
+            'class' => 'yii\console\controllers\MigrateController',
+            'interactive' => true,
+            'migrationTable' => 'migration',
+            'migrationPath' => dirname(dirname(__DIR__)) . '/migrations',
+            'db' => 'db',
+        ],
     ],
     'components' => [
         'log' => [
