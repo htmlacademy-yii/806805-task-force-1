@@ -15,8 +15,12 @@ return [
         'request' => [
             'csrfParam' => '_csrf-frontend',
         ],
+        'errorHandler' => [
+            'errorAction' => 'start/error',
+        ],
         'user' => [
-            // 'identityClass' => 'common\models\User',
+            'loginUrl' => ['/'],
+            'identityClass' => 'frontend\models\db\Users',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],

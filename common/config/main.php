@@ -17,13 +17,6 @@ return [
             'dateFormat' => 'dd.MM.yyyy',
             'decimalSeparator' => '.',
         ],
-        'errorHandler' => [
-            'errorAction' => 'start/error',
-        ],
-        'user' => [
-            'loginUrl' => ['/'],
-            'identityClass' => 'frontend\models\db\Users',
-        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
