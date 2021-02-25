@@ -51,7 +51,8 @@ Vagrant.configure(2) do |config|
   config.vm.hostname = options['machine_name']
 
   # network settings
-  config.vm.network 'private_network', ip: options['ip']
+  # config.vm.network 'private_network', ip: options['ip'] # исходник
+  config.vm.network "forwarded_port", guest: 8888, host: 8888
 
   # sync: folder 'yii2-app-advanced' (host machine) -> folder '/app' (guest machine)
   config.vm.synced_folder './', '/app', owner: 'vagrant', group: 'vagrant'
