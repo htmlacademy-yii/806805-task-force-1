@@ -35,32 +35,32 @@ class ConverterController extends Controller
 
         foreach ($tableNames as $tableName) {
 
-        $tableData = (new Query())->from($tableName)->all();
+            $tableData = (new Query())->from($tableName)->all();
 
-// var_dump($tableData); die;
+    // var_dump($tableData); die;
 
-        $arrToString = "<?php" . PHP_EOL;
-        $arrToString .= "$$tableName = [" . PHP_EOL;
-        foreach ($tableData as $row) {
-            $arrToString .= "   [";
-            foreach ($row as $key => $value) {
-                if (is_array($value)) {
-                    $value2 = implode(', ', $value);
-                    $arrToString .= "'$key' => [$value2], ";
-                } elseif (is_int($value)) {
-                    $arrToString .= "'$key' => $value, ";
-                } elseif ($value === null OR $value === '') {
-                    $arrToString .= "'$key' => null, ";
-                } else {
-                    $arrToString .= "'$key' => '$value', ";
+            $arrToString = "<?php" . PHP_EOL;
+            $arrToString .= "$$tableName = [" . PHP_EOL;
+            foreach ($tableData as $row) {
+                $arrToString .= "   [";
+                foreach ($row as $key => $value) {
+                    if (is_array($value)) {
+                        $value2 = implode(', ', $value);
+                        $arrToString .= "'$key' => [$value2], ";
+                    } elseif (is_int($value)) {
+                        $arrToString .= "'$key' => $value, ";
+                    } elseif ($value === null OR $value === '') {
+                        $arrToString .= "'$key' => null, ";
+                    } else {
+                        $arrToString .= "'$key' => '$value', ";
+                    }
                 }
+                $arrToString .= "]," . PHP_EOL;
             }
-            $arrToString .= "]," . PHP_EOL;
-        }
-        $arrToString .= '];';
+            $arrToString .= '];';
 
-        $result[$tableName] = file_put_contents(dirname(dirname(__DIR__)) . "/data/arr_data/$tableName.php", $arrToString) ? 'Сохранено' : 'Не сохранено';
-    }
+            $result[$tableName] = file_put_contents(dirname(dirname(__DIR__)) . "/data/arr_data/$tableName.php", $arrToString) ? 'Сохранено' : 'Не сохранено';
+        }
 
         return $this->render('index', ['result' => $result]);
     }
