@@ -2,7 +2,7 @@
 
 namespace TaskForce\General; 
 
-use TaskForce\Exs\AvailableNamesException;
+use site\Exs\AvailableNamesException;
 
 class AvailableActions
 {
