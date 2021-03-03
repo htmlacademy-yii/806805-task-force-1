@@ -8,33 +8,66 @@ class AvailableActions
 {
     // statuses of task
     const STATUS_NEW = 'Новое';
+        // после ACTION_ADD_TASK
     const STATUS_CANCELED = 'Отменено';
-    const STATUS_RUNNING = 'Выполняется';
-    const STATUS_COMPLETED = 'Выполнено';
+        // после ACTION_CANCEL && !==STATUS_RUNNING
+    const STATUS_RUNNING = 'В работе';
+        // после ACTION_ACCEPT
+    const STATUS_COMPLETED = 'Завершено'; 
+        // После ACTION_COMPLETE && STATUS_RUNNING
     const STATUS_FAILED = 'Провалено';
+        // после (ACTION_FAILURE && STATUS_RUNNING) || (ACTION_COMPLETE && галочка *ВОЗНИКЛИ ПРОБЛЕМЫ)
+        // ???Просроченные — все задания со статусом «На исполнении», у которых истёк срок выполнения;
 
     // roles of user
     const ROLE_CONTRACTOR = 'Исполнитель';
     const ROLE_CUSTOMER = 'Заказчик';
 
-    // action buttons of task
-    const ACTION_ADD_TASK = AddTaskAction::class; // Добавить - STATUS_NEW
-    const ACTION_ACCEPT = AcceptAction::class; // принять, начать работу (исполнитель) - STATUS_RUNNING
-    const ACTION_CANCEL = CancelAction::class; // Отменить (заказчик) - STATUS_CANCELED
-    const ACTION_FAILURE = FailureAction::class; // Отказатся (исполнитель) - STATUS_FAILED
-    const ACTION_COMPLETE = CompleteAction::class; // Завершить работу (заказчик) - STATUS_COMPLETED
-    const ACTION_OFFER = OfferAction::class; // Откликнутся - STATUS_NEW
-    const ACTION_SET_CONTRACTOR = SetContractorAction::class; // Выбрать исполнителя - STATUS_NEW
-    const ACTION_SEND_MESS = SendMessAction::class; // Написать сообщение (заказчик или исполнитель)
+    // actions, buttons of task
+    const ACTION_ADD_TASK = AddTaskAction::class;
+        // ДОБАВИТЬ ЗАДАНИЕ (заказчик) >> STATUS_NEW 
+        // сохранить новое задание в таблице заданий, а прикреплённые файлы перенести в публичную директорию и сохранить ссылки на них
+    const ACTION_OFFER = OfferAction::class;
+        // ОТКЛИКНУТЬСЯ (исполнитель) <> статус не меняется && ACTION_NOTICE
+        // Проверить, что роль пользователя «Исполнитель» и он еще не откликался на это задание.
+        // Добавить отклик в таблицу откликов с привязкой к заданию.
+    const ACTION_FAILURE = FailureAction::class;
+        // ОТКАЗАТЬСЯ (исполнитель) >> STATUS_FAILED && ACTION_NOTICE
+        // счетчик заданий провалено +1
+    const ACTION_CANCEL = CancelAction::class;
+        // ОТМЕНИТЬ (заказчик) >> STATUS_CANCELED
+        // Отмена заданий со статусом «На исполнении» невозможна.
+    const ACTION_ACCEPT = AcceptAction::class;
+        // ПРИНЯТЬ, ПОДТВЕРДИТЬ (заказчик) >> STATUS_RUNNING && ACTION_NOTICE
+        // Назначить автора отклика исполнителем этого задания.
+    const ACTION_DENIED = deniedAction::class;
+        // ОТКАЗАТЬ (заказчик) <> статус не меняется
+        // помечает отклик как отклонённый и больше не показывает кнопки доступных действий для этого отклика.
+    const ACTION_COMPLETE = CompleteAction::class; 
+        // ЗАВЕРШИТЬ ЗАДАНИЕ (заказчик) >> STATUS_COMPLETED (если STATUS_RUNNING и галочка *ДА)  || >> STATUS_FAILED (если галочка *ВОЗНИКЛИ ПРОБЛЕМЫ)
+        // + ОТКЛИК (заказчик) && ACTION_NOTICE
+        // в отклике будет переключатель выполненности задания («Да» или «Возникли проблемы»), текст комментария (при наличии) и значение оценки (если выбрано)
+    const ACTION_SEND_MESS = SendMessAction::class;
+        // ОТПРАВИТЬ СООБЩЕНИЕ в чате (заказчик или исполнитель) <> статус не меняется 
+        // форма из блока «Переписка» на странице задания
+    const ACTION_NOTICE = SendMessAction::class;
+        // ОТПРАВКА УВЕДОМЛЕНИЯ <> статус не меняется
+        // от действий ACTION_OFFER, ACTION_FAILURE, ACTION_COMPLETE, ACTION_ACCEPT, ACTION_SEND_MESS
+        // Сформировать сообщение эл.почты, где тема - название события, а текст - все необходимые детали по вашему усмотрению (ссылка на задание ...).
+        // у получателя в настройках включено получение уведомлений
+        // Добавить новое событие в «Ленту событий» получателя.
 
-    // Свойства базовые
+    
+    /**
+     * @property string $currentStatus
+     * название рус.
+     * @property int $customerId
+     * @property int $contractorId
+     */
     public $currentStatus;
     public $customerId;
     public $contractorId;
 
-    /**
-     * Конструктор - Слушать базовые данные страницы.
-     */
     public function __construct(?string $currentStatus, ?int $customerId, ?int $contractorId)
     {
         $this->currentStatus = $currentStatus;
@@ -46,6 +79,7 @@ class AvailableActions
         }
     }
 
+
     /**
      * карта статусов
      */
@@ -54,8 +88,8 @@ class AvailableActions
         return [
             'status_new' => self::STATUS_NEW,
             'status_canceled' => self::STATUS_CANCELED,
-            'status_comleted' => self::STATUS_COMPLETED,
             'status_running' => self::STATUS_RUNNING,
+            'status_comleted' => self::STATUS_COMPLETED,
             'status_failed' => self::STATUS_FAILED,
         ];
     }
@@ -70,15 +104,16 @@ class AvailableActions
             'action_offer' => self::ACTION_OFFER,
             'action_failure' => self::ACTION_FAILURE,
             'action_cancel' => self::ACTION_CANCEL,
-            'action_set_contractor' => self::ACTION_SET_CONTRACTOR,
-            'action_complete' => self::ACTION_COMPLETE,
             'action_accept' => self::ACTION_ACCEPT,
+            'action_denied' => self::ACTION_DENIED,
+            'action_complete' => self::ACTION_COMPLETE,
             'action_send_mess' => self::ACTION_SEND_MESS,
+            'action_notice' => self::ACTION_NOTICE,
         ];
     }
 
     /**
-     * Получение список всех ролей
+     * карта ролей
      */
     public function getRoles(): array
     {
@@ -98,33 +133,25 @@ class AvailableActions
 
     /**
      * Определяем роль пользователя
-     * Проверяем userId на совпадение с id Пользователя/Заказчика
+     * Проверяем id пользователя на совпадение с id Исполнителя/Заказчика
      */
-    public function checkRoleInTask(int $userId): ?string
+    public function getRoleOfUser(int $userID): ?string
     {
-
-        if ($userId === $this->contractorId) {
-            return self::ROLE_CONTRACTOR;
-        } elseif ($userId === $this->customerId) {
-            return self::ROLE_CUSTOMER;
+        switch ($userID) {
+            case $this->contractorId:
+                return self::ROLE_CONTRACTOR;
+                break;
+            case $this->customerId:
+                return self::ROLE_CUSTOMER;
         }
 
-        return null; // Пользователь гость 
+        return null; // Пользователь без роли 
     }
 
     /**
-     * возвращать имя статуса, в который перейдёт задание после выполнения конкретного действия.
-     * 
-     * const ACTION_ADD_TASK = AddTaskAction::class; // Добавить - STATUS_NEW
-     * const ACTION_ACCEPT = AcceptAction::class; // принять, начать работу (исполнитель) - STATUS_RUNNING
-     * const ACTION_CANCEL = CancelAction::class; // Отменить (заказчик) - STATUS_CANCELED
-     * const ACTION_FAILURE = FailureAction::class; // Отказатся (исполнитель) - STATUS_FAILED
-     * const ACTION_COMPLETE = CompleteAction::class; // Завершить работу (заказчик) - STATUS_COMPLETED
-     * const ACTION_OFFER = OfferAction::class; // Откликнутся - STATUS_NEW
-     * const ACTION_SET_CONTRACTOR = SetContractorAction::class; // Выбрать исполнителя - STATUS_NEW
-     * const ACTION_SEND_MESS = SendMessAction::class; // Написать сообщение (заказчик или исполнитель)
+     * возвращать имя статуса(сов), в который перейдёт задание после выполнения конкретного действия.
      */
-    public function getNextStatus(string $action): string
+    public function getNextStatus(string $action): mixed
     {
         if (!in_array($action, $this->getActions())) {
             throw new AvailableNamesException('действие не существует');
@@ -133,23 +160,21 @@ class AvailableActions
         switch ($action) {
             case self::ACTION_ADD_TASK:
                 return $this->currentStatus = self::STATUS_NEW;
-            case self::ACTION_ACCEPT:
-                return $this->currentStatus = self::STATUS_RUNNING;
+                break;
             case self::ACTION_CANCEL:
                 return $this->currentStatus = self::STATUS_CANCELED;
+                break;
+            case self::ACTION_ACCEPT:
+                return $this->currentStatus = self::STATUS_RUNNING;
+                break;
+            case self::ACTION_COMPLETE:
+                return $this->currentStatus = [self::STATUS_FAILED, self::STATUS_COMPLETED];
+                break;
             case self::ACTION_FAILURE:
                 return $this->currentStatus = self::STATUS_FAILED;
-            case self::ACTION_COMPLETE:
-                return $this->currentStatus = self::STATUS_COMPLETED;
-            case self::ACTION_OFFER:
-                break;
-            case self::ACTION_SET_CONTRACTOR:
-                break;
-            case self::ACTION_SEND_MESS:
-                break;
         }
 
-        return $this->currentStatus; // статус не меняется
+        return $this->currentStatus; // в остальных случаях статус не меняется
     }
 
     /**
@@ -169,7 +194,7 @@ class AvailableActions
         if ($roleInTask === self::ROLE_CUSTOMER) {
             switch ($currentStatus) {
                 case self::STATUS_NEW:
-                    return [self::ACTION_CANCEL, self::ACTION_SET_CONTRACTOR];
+                    return [self::ACTION_CANCEL, self::ACTION_ACCEPT];
                 case self::STATUS_RUNNING:
                     return [self::ACTION_COMPLETE, self::ACTION_SEND_MESS];
             }
