@@ -52,11 +52,11 @@ class AvailableActions
         // форма из блока «Переписка» на странице задания
     const ACTION_NOTICE = SendMessAction::class;
         // ОТПРАВКА УВЕДОМЛЕНИЯ <> статус не меняется
+        // побочное, не учитываетя для ролей и статусов, вызывается совместно с другими действиями 
         // от действий ACTION_OFFER, ACTION_FAILURE, ACTION_COMPLETE, ACTION_ACCEPT, ACTION_SEND_MESS
         // Сформировать сообщение эл.почты, где тема - название события, а текст - все необходимые детали по вашему усмотрению (ссылка на задание ...).
         // у получателя в настройках включено получение уведомлений
         // Добавить новое событие в «Ленту событий» получателя.
-
     
     /**
      * @property string $currentStatus
@@ -181,42 +181,38 @@ class AvailableActions
      * определить список доступных действий для указанного (текущего) статуса
      * какие действия доступны каждой роли
      */
-    public function getAvailableActions(string $currentStatus, string $roleInTask): array
+    public function getAvailableActions(?string $currentStatus, string $roleOfUser): array
     {
-        if (!in_array($roleInTask, $this->getRoles())) {
+        if (!in_array($roleOfUser, $this->getRoles())) {
             throw new AvailableNamesException('роль пользователя не существует');
         }
 
         if (!in_array($this->currentStatus, $this->getStatuses())) {
-            throw new AvailableNamesException('статус. см Доступные действия');
+            throw new AvailableNamesException('статус задания не существует');
         }
 
-        if ($roleInTask === self::ROLE_CUSTOMER) {
+
+        if ($roleOfUser === self::ROLE_CUSTOMER) {
             switch ($currentStatus) {
+                case null:
+                    return [self::ACTION_ADD_TASK];
+                    break;
                 case self::STATUS_NEW:
-                    return [self::ACTION_CANCEL, self::ACTION_ACCEPT];
+                    return [self::ACTION_CANCEL, self::ACTION_ACCEPT, self::ACTION_DENIED];
+                    break;
                 case self::STATUS_RUNNING:
                     return [self::ACTION_COMPLETE, self::ACTION_SEND_MESS];
             }
-        } elseif ($roleInTask === self::ROLE_CONTRACTOR) {
+        } elseif ($roleOfUser === self::ROLE_CONTRACTOR) {
             switch ($currentStatus) {
                 case self::STATUS_NEW:
                     return [self::ACTION_OFFER];
+                    break;
                 case self::STATUS_RUNNING:
-                    return [self::ACTION_ACCEPT, self::ACTION_FAILURE, self::ACTION_SEND_MESS];
+                    return [self::ACTION_FAILURE, self::ACTION_SEND_MESS];
             }
         }
-        /* #пример_1
-        elseif ($roleInTask === NULL) {
-        switch ($currentStatus) {
-        case self::STATUS_NEW:
-        return [self::ACTION_OFFER];
-        }
-        }
-         */
-        // ???ACTION_ACCEPT должно быть при STATUS_RUNNING, в предыдушем методе getNextStatus указывается при STATUS_RUNNING, но после ее нужно не показывать?
-        // ???ACTION_OFFER - откликнутся не должно быть у задания у которого пользователь уже является Исполнителем, $roleInTask === NULL (как в #пример_1)
-        // ???ACTION_ADD_TASK - его не нужно указывать в данном методе, тк он не связан с просматриеваемым Заданием, а связан с $_POST и ролью внешней
+        
         return [];
     }
 }
