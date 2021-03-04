@@ -50,7 +50,7 @@ class AvailableActions
     const ACTION_SEND_MESS = SendMessAction::class;
         // ОТПРАВИТЬ СООБЩЕНИЕ в чате (заказчик или исполнитель) <> статус не меняется 
         // форма из блока «Переписка» на странице задания
-    const ACTION_NOTICE = SendMessAction::class;
+    const ACTION_NOTICE = NoticeAction::class;
         // ОТПРАВКА УВЕДОМЛЕНИЯ <> статус не меняется
         // побочное, не учитываетя для ролей и статусов, вызывается совместно с другими действиями 
         // от действий ACTION_OFFER, ACTION_FAILURE, ACTION_COMPLETE, ACTION_ACCEPT, ACTION_SEND_MESS
@@ -212,7 +212,7 @@ class AvailableActions
                     return [self::ACTION_FAILURE, self::ACTION_SEND_MESS];
             }
         }
-        
+
         return [];
     }
 }
