@@ -27,6 +27,7 @@ return [
             ],
             'rules' => [
                 '/' => 'start/index',
+                'utils' => 'utils/index',
                 'tasks/index' => 'tasks/index',
                 'users/index' => 'users/index',
                 'signup/index' => 'signup/index',

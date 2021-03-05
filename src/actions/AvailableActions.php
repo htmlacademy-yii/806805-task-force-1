@@ -40,7 +40,7 @@ class AvailableActions
     const ACTION_ACCEPT = AcceptAction::class;
         // ПРИНЯТЬ, ПОДТВЕРДИТЬ (заказчик) >> STATUS_RUNNING && ACTION_NOTICE
         // Назначить автора отклика исполнителем этого задания.
-    const ACTION_DENIED = deniedAction::class;
+    const ACTION_DENIED = DeniedAction::class;
         // ОТКАЗАТЬ (заказчик) <> статус не меняется
         // помечает отклик как отклонённый и больше не показывает кнопки доступных действий для этого отклика.
     const ACTION_COMPLETE = CompleteAction::class; 
@@ -74,7 +74,7 @@ class AvailableActions
         $this->customerId = $customerId;
         $this->contractorId = $contractorId;
 
-        if (!in_array($currentStatus, $this->getStatuses())) {
+        if ($this->currentStatus !== null && !in_array($currentStatus, $this->getStatuses())) {
             throw new AvailableNamesException('статус не существует');
         }
     }
@@ -191,7 +191,7 @@ class AvailableActions
             throw new AvailableNamesException('роль пользователя не существует');
         }
 
-        if (!in_array($this->currentStatus, $this->getStatuses())) {
+        if ($this->currentStatus !== null && !in_array($this->currentStatus, $this->getStatuses())) {
             throw new AvailableNamesException('статус задания не существует');
         }
 
