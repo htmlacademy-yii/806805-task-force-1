@@ -151,7 +151,7 @@ class AvailableActions
     /**
      * возвращать имя статуса(сов), в который перейдёт задание после выполнения конкретного действия.
      */
-    public function getNextStatus(string $action): mixed
+    public function getNextStatus(string $action): ?array
     {
         if (!in_array($action, $this->getActions())) {
             throw new AvailableNamesException('действие не существует');
@@ -159,30 +159,34 @@ class AvailableActions
 
         switch ($action) {
             case self::ACTION_ADD_TASK:
-                return $this->currentStatus = self::STATUS_NEW;
+                return [self::STATUS_NEW];
                 break;
             case self::ACTION_CANCEL:
-                return $this->currentStatus = self::STATUS_CANCELED;
+                return [self::STATUS_CANCELED];
                 break;
             case self::ACTION_ACCEPT:
-                return $this->currentStatus = self::STATUS_RUNNING;
+                return [self::STATUS_RUNNING];
                 break;
             case self::ACTION_COMPLETE:
-                return $this->currentStatus = [self::STATUS_FAILED, self::STATUS_COMPLETED];
+                return [self::STATUS_FAILED, self::STATUS_COMPLETED];
                 break;
             case self::ACTION_FAILURE:
-                return $this->currentStatus = self::STATUS_FAILED;
+                return [self::STATUS_FAILED];
         }
 
-        return $this->currentStatus; // в остальных случаях статус не меняется
+        return [$this->currentStatus]; // в остальных случаях статус не меняется
     }
 
     /**
      * определить список доступных действий для указанного (текущего) статуса
      * какие действия доступны каждой роли
      */
-    public function getAvailableActions(?string $currentStatus, string $roleOfUser): array
+    public function getAvailableActions(?string $currentStatus, ?string $roleOfUser): array
     {
+        if (!$roleOfUser) {
+            return [];
+        }
+
         if (!in_array($roleOfUser, $this->getRoles())) {
             throw new AvailableNamesException('роль пользователя не существует');
         }
@@ -191,7 +195,24 @@ class AvailableActions
             throw new AvailableNamesException('статус задания не существует');
         }
 
+        return $this->getAvailableActionNames($currentStatus, $roleOfUser);
+    }
 
+    public function getAvailableActionObjs(?string $currentStatus, ?string $roleOfUser): array
+    {
+        $availableActions = [];
+        foreach($this->getActions() as $class) {
+            $action = new $class;
+            if ($action->verifyAccess()) {
+                $availableActions[] = $action;
+            }
+        }
+
+        return $availableActions;
+    }
+
+    public function getAvailableActionNames(?string $currentStatus, ?string $roleOfUser): array
+    {
         if ($roleOfUser === self::ROLE_CUSTOMER) {
             switch ($currentStatus) {
                 case null:
