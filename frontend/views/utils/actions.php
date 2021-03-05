@@ -31,7 +31,7 @@ foreach($userIDs as $userID) {
             varprnt('Роль пользователя', $role ? "<b>$role</b>" : 'гость');
 
             varprnt('<br>Текущий статус', $currentStatus);
-            $actions = $AvailableActions->getAvailableActions($currentStatus, $role);
+            $actions = $AvailableActions->getAvailableActions($userID);
             if (!$actions) {
                 varprnt('Действия и статус не доступны');
             }
