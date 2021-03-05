@@ -24,36 +24,36 @@ class AvailableActions
     const ROLE_CUSTOMER = 'Заказчик';
 
     // actions, buttons of task
-    const ACTION_ADD_TASK = AddTaskAction::class;
+    const ACTION_ADD_TASK = ActionAddTask::class;
         // ДОБАВИТЬ ЗАДАНИЕ (заказчик) >> STATUS_NEW 
         // сохранить новое задание в таблице заданий, а прикреплённые файлы перенести в публичную директорию и сохранить ссылки на них
-    const ACTION_OFFER = OfferAction::class;
+    const ACTION_OFFER = ActionOffer::class;
         // ОТКЛИКНУТЬСЯ (исполнитель) <> статус не меняется && ACTION_NOTICE
         // Проверить, что роль пользователя «Исполнитель» и он еще не откликался на это задание.
         // Добавить отклик в таблицу откликов с привязкой к заданию.
-    const ACTION_FAILURE = FailureAction::class;
+    const ACTION_FAILURE = ActionFailure::class;
         // ОТКАЗАТЬСЯ (исполнитель) >> STATUS_FAILED && ACTION_NOTICE
         // счетчик заданий провалено +1
-    const ACTION_CANCEL = CancelAction::class;
+    const ACTION_CANCEL = ActionCancel::class;
         // ОТМЕНИТЬ (заказчик) >> STATUS_CANCELED
         // Отмена заданий со статусом «На исполнении» невозможна.
-    const ACTION_ASSIGN = AcceptAction::class;
+    const ACTION_ASSIGN = ActionAssign::class;
         // ПРИНЯТЬ, ПОДТВЕРДИТЬ, НАЗНАЧИТЬ (заказчик) >> STATUS_RUNNING && ACTION_NOTICE
         // Назначить автора отклика исполнителем этого задания.
-    const ACTION_DENY = DeniedAction::class;
+    const ACTION_DENY = ActionDeny::class;
         // ОТКАЗАТЬ (заказчик) <> статус не меняется
         // помечает отклик как отклонённый и больше не показывает кнопки доступных действий для этого отклика.
-    const ACTION_COMPLETE = CompleteAction::class; 
+    const ACTION_COMPLETE = ActionComplete::class; 
         // ЗАВЕРШИТЬ ЗАДАНИЕ (заказчик) >> STATUS_COMPLETED (если STATUS_RUNNING и галочка *ДА)  || >> STATUS_FAILED (если галочка *ВОЗНИКЛИ ПРОБЛЕМЫ)
         // + ОТКЛИК (заказчик) && ACTION_NOTICE
         // в отклике будет переключатель выполненности задания («Да» или «Возникли проблемы»), текст комментария (при наличии) и значение оценки (если выбрано)
-    const ACTION_SEND_MESS = SendMessAction::class;
+    const ACTION_SEND_MESS = ActionSendMess::class;
         // ОТПРАВИТЬ СООБЩЕНИЕ в чате (заказчик или исполнитель) <> статус не меняется 
         // форма из блока «Переписка» на странице задания, между заказчиком и исполнителем
 
     const ACTION_NOTICE = NoticeAction::class;
         // ОТПРАВКА УВЕДОМЛЕНИЯ <> статус не меняется
-        // побочное, не учитываетя для ролей и статусов, вызывается совместно с другими действиями 
+        // побочное (не входит в карту), не учитываетя для ролей и статусов, вызывается совместно с другими действиями 
         // от действий ACTION_OFFER, ACTION_FAILURE, ACTION_COMPLETE, ACTION_ASSIGN, ACTION_SEND_MESS
         // Сформировать сообщение эл.почты, где тема - название события, а текст - все необходимые детали по вашему усмотрению (ссылка на задание ...).
         // у получателя в настройках включено получение уведомлений
@@ -109,7 +109,6 @@ class AvailableActions
             'action_deny' => self::ACTION_DENY,
             'action_complete' => self::ACTION_COMPLETE,
             'action_send_mess' => self::ACTION_SEND_MESS,
-            'action_notice' => self::ACTION_NOTICE,
         ];
     }
 
@@ -127,7 +126,7 @@ class AvailableActions
     /**
      * Получение текущего статуса задачи
      */
-    public function getCurrentStatus(): string
+    public function getCurrentStatus(): ?string
     {
         return $this->currentStatus;
     }
@@ -194,8 +193,8 @@ class AvailableActions
             throw new AvailableNamesException('статус задания не существует');
         }
 
-        return $this->getAvailableActionNames($this->currentStatus, $roleOfUser); // 1 вариант /utils/actions
-        // return $this->getAvailableActionObjs(int $userID); // 2 вариант /utils/actions2
+        // return $this->getAvailableActionNames($this->currentStatus, $roleOfUser); // 1 вариант /utils/actions
+        return $this->getAvailableActionObjs($userID); // 2 вариант /utils/actions2
     }
 
     public function getAvailableActionObjs(int $userID): array

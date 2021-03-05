@@ -12,6 +12,12 @@ class UtilsController extends Controller
         return $this->render('actions');
     }
 
+    public function actionActions2()
+    {
+        return $this->render('actions2');
+    }
+
+
     public function actionArrSaver(string $tableName = null)
     {
 
