@@ -12,7 +12,7 @@ class AvailableActions
     const STATUS_CANCELED = 'Отменено';
         // после ACTION_CANCEL && !==STATUS_RUNNING
     const STATUS_RUNNING = 'В работе';
-        // после ACTION_ACCEPT
+        // после ACTION_ASSIGN
     const STATUS_COMPLETED = 'Завершено'; 
         // После ACTION_COMPLETE && STATUS_RUNNING
     const STATUS_FAILED = 'Провалено';
@@ -37,10 +37,10 @@ class AvailableActions
     const ACTION_CANCEL = CancelAction::class;
         // ОТМЕНИТЬ (заказчик) >> STATUS_CANCELED
         // Отмена заданий со статусом «На исполнении» невозможна.
-    const ACTION_ACCEPT = AcceptAction::class;
-        // ПРИНЯТЬ, ПОДТВЕРДИТЬ (заказчик) >> STATUS_RUNNING && ACTION_NOTICE
+    const ACTION_ASSIGN = AcceptAction::class;
+        // ПРИНЯТЬ, ПОДТВЕРДИТЬ, НАЗНАЧИТЬ (заказчик) >> STATUS_RUNNING && ACTION_NOTICE
         // Назначить автора отклика исполнителем этого задания.
-    const ACTION_DENIED = DeniedAction::class;
+    const ACTION_DENY = DeniedAction::class;
         // ОТКАЗАТЬ (заказчик) <> статус не меняется
         // помечает отклик как отклонённый и больше не показывает кнопки доступных действий для этого отклика.
     const ACTION_COMPLETE = CompleteAction::class; 
@@ -49,11 +49,12 @@ class AvailableActions
         // в отклике будет переключатель выполненности задания («Да» или «Возникли проблемы»), текст комментария (при наличии) и значение оценки (если выбрано)
     const ACTION_SEND_MESS = SendMessAction::class;
         // ОТПРАВИТЬ СООБЩЕНИЕ в чате (заказчик или исполнитель) <> статус не меняется 
-        // форма из блока «Переписка» на странице задания
+        // форма из блока «Переписка» на странице задания, между заказчиком и исполнителем
+
     const ACTION_NOTICE = NoticeAction::class;
         // ОТПРАВКА УВЕДОМЛЕНИЯ <> статус не меняется
         // побочное, не учитываетя для ролей и статусов, вызывается совместно с другими действиями 
-        // от действий ACTION_OFFER, ACTION_FAILURE, ACTION_COMPLETE, ACTION_ACCEPT, ACTION_SEND_MESS
+        // от действий ACTION_OFFER, ACTION_FAILURE, ACTION_COMPLETE, ACTION_ASSIGN, ACTION_SEND_MESS
         // Сформировать сообщение эл.почты, где тема - название события, а текст - все необходимые детали по вашему усмотрению (ссылка на задание ...).
         // у получателя в настройках включено получение уведомлений
         // Добавить новое событие в «Ленту событий» получателя.
@@ -104,8 +105,8 @@ class AvailableActions
             'action_offer' => self::ACTION_OFFER,
             'action_failure' => self::ACTION_FAILURE,
             'action_cancel' => self::ACTION_CANCEL,
-            'action_accept' => self::ACTION_ACCEPT,
-            'action_denied' => self::ACTION_DENIED,
+            'action_assign' => self::ACTION_ASSIGN,
+            'action_deny' => self::ACTION_DENY,
             'action_complete' => self::ACTION_COMPLETE,
             'action_send_mess' => self::ACTION_SEND_MESS,
             'action_notice' => self::ACTION_NOTICE,
@@ -164,7 +165,7 @@ class AvailableActions
             case self::ACTION_CANCEL:
                 return [self::STATUS_CANCELED];
                 break;
-            case self::ACTION_ACCEPT:
+            case self::ACTION_ASSIGN:
                 return [self::STATUS_RUNNING];
                 break;
             case self::ACTION_COMPLETE:
@@ -181,13 +182,11 @@ class AvailableActions
      * определить список доступных действий для указанного (текущего) статуса
      * какие действия доступны каждой роли
      */
-    public function getAvailableActions(?string $currentStatus, ?string $roleOfUser): array
+    public function getAvailableActions(int $userID): array
     {
-        if (!$roleOfUser) {
-            return [];
-        }
+        $roleOfUser = $this->getRoleOfUser($userID);
 
-        if (!in_array($roleOfUser, $this->getRoles())) {
+        if ($roleOfUser !== null && !in_array($roleOfUser, $this->getRoles())) {
             throw new AvailableNamesException('роль пользователя не существует');
         }
 
@@ -195,16 +194,18 @@ class AvailableActions
             throw new AvailableNamesException('статус задания не существует');
         }
 
-        return $this->getAvailableActionNames($currentStatus, $roleOfUser);
+        return $this->getAvailableActionNames($this->currentStatus, $roleOfUser); // 1 вариант /utils/actions
+        // return $this->getAvailableActionObjs(int $userID); // 2 вариант /utils/actions2
     }
 
-    public function getAvailableActionObjs(?string $currentStatus, ?string $roleOfUser): array
+    public function getAvailableActionObjs(int $userID): array
     {
         $availableActions = [];
         foreach($this->getActions() as $class) {
-            $action = new $class;
-            if ($action->verifyAccess()) {
-                $availableActions[] = $action;
+            $class = '\\' . $class;
+            $action = new $class();
+            if ($action->verifyAccess($this, $userID)) {
+                $availableActions[] = get_class($action);
             }
         }
 
@@ -219,7 +220,7 @@ class AvailableActions
                     return [self::ACTION_ADD_TASK];
                     break;
                 case self::STATUS_NEW:
-                    return [self::ACTION_CANCEL, self::ACTION_ACCEPT, self::ACTION_DENIED];
+                    return [self::ACTION_CANCEL, self::ACTION_ASSIGN, self::ACTION_DENY];
                     break;
                 case self::STATUS_RUNNING:
                     return [self::ACTION_COMPLETE, self::ACTION_SEND_MESS];
