@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use yii\web\Controller;
+use yii\db\Query;
 
 class UtilsController extends Controller
 {
