@@ -1,7 +1,8 @@
-<?php 
+<?php
 
-namespace TaskForce\Exs;
+namespace ownsite\exs;
 
-class AvailableNamesException extends \Exception{
+class AvailableNamesException extends \Exception
+{
 
 }
