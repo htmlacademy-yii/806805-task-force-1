@@ -33,10 +33,8 @@ class UtilsController extends Controller
         $testFile = dirname(\Yii::getAlias('@app')) . '/data/importing/locations.csv';
 
         $converter = new ConverterCSV($testFile);
-        $converter->getDataAsArray();
-        $test = ['save' => $converter->exportToArrfile(), 'file' => $converter->getNewFile()];
-
-        $test = require_once $test['file'];
+        $converter->importToArray();
+        $test = [['save' => $converter->exportToArrfile(), 'file' => $converter->getNewFile()]];
 
         return $this->render('converter', [
             'test' => $test,
@@ -72,12 +70,25 @@ class UtilsController extends Controller
             $arrData = (new Query())->from($tableName)->all();
 
             $converter = new ConverterData($arrData, null, $tableName . '.php');
-            $converter->getDataAsArray();
+            $converter->importToArray();
             $result[] = ['save' => $converter->exportToArrfile(), 'file' => $converter->getNewFile()];
         }
 
         return $this->render('converter', [
             'test' => $result,
+        ]);
+    }
+
+    public function actionCsvToSql()
+    {
+        $testFile = dirname(\Yii::getAlias('@app')) . '/data/importing/locations.csv';
+
+        $converter = new ConverterCSV($testFile);
+        $converter->importToArray();
+        $test = [['save' => $converter->exportToSqlfile(), 'file' => $converter->getNewFile()]];
+
+        return $this->render('converter', [
+            'test' => $test,
         ]);
     }
 }

@@ -22,7 +22,7 @@ abstract class Converting
 
     abstract public function getObjectData();
 
-    public function getDataAsArray()
+    public function importToArray()
     {
         $dataObject = $this->getObjectData();
 
@@ -33,35 +33,56 @@ abstract class Converting
 
     public function exportToArrfile()
     {
-
         $fileExt = pathinfo($this->newName, PATHINFO_EXTENSION);
 
         if ($fileExt === 'abc') {
-            $this->newName = pathinfo($this->file, PATHINFO_FILENAME) . '.php';
+            $this->newName = pathinfo($this->newName, PATHINFO_FILENAME) . '.php';
         } elseif ($fileExt !== 'php') {
-            throw new FileSourceException("Расширение нового файла - $fileExt, метод php");
+            throw new FileSourceException("Расширение нового файла - $fileExt, необходимо php");
         }
 
-        $arrToString = "<?php" . PHP_EOL;
-        $arrToString .= "return [" . PHP_EOL;
+        $dataToString = "<?php" . PHP_EOL;
+        $dataToString .= "return [" . PHP_EOL;
         foreach ($this->dataAsArray as $row) {
-            $arrToString .= "   [";
+            $dataToString .= "   [";
             foreach ($row as $key => $value) {
                 if (is_array($value)) {
                     $value2 = implode(', ', $value);
-                    $arrToString .= "'$key' => [$value2], ";
+                    $dataToString .= "'$key' => [$value2], ";
                 } elseif (is_int($value)) {
-                    $arrToString .= "'$key' => $value, ";
+                    $dataToString .= "'$key' => $value, ";
                 } elseif ($value === null or $value === '') {
-                    $arrToString .= "'$key' => null, ";
+                    $dataToString .= "'$key' => null, ";
                 } else {
-                    $arrToString .= "'$key' => '$value', ";
+                    $dataToString .= "'$key' => '$value', ";
                 }
             }
-            $arrToString .= "]," . PHP_EOL;
+            $dataToString .= "]," . PHP_EOL;
         }
-        $arrToString .= '];';
+        $dataToString .= '];';
 
-        return !empty(file_put_contents($this->pathToSave . '/' . $this->newName, $arrToString));
+        return !empty(file_put_contents($this->pathToSave . '/' . $this->newName, $dataToString));
+    }
+
+    public function exportToSqlfile()
+    {
+        $fileExt = pathinfo($this->newName, PATHINFO_EXTENSION);
+
+        if ($fileExt === 'abc') {
+            $this->newName = pathinfo($this->newName, PATHINFO_FILENAME) . '.sql';
+        } elseif ($fileExt !== 'sql') {
+            throw new FileSourceException("Расширение нового файла - $fileExt, необходимо sql");
+        }
+
+        $tableKeys = array_keys($this->dataAsArray[0]);
+        $table = pathinfo($this->file, PATHINFO_FILENAME);
+
+        $dataToString = "INSERT INTO $table (" . implode(', ', $tableKeys) . ") VALUES " . PHP_EOL;
+        foreach($this->dataAsArray as $row) {
+            $dataToString .= "    ('" . implode("', '", $row) . "')," . PHP_EOL;
+        }
+        $dataToString[strlen($dataToString) - 3] = ';';
+
+        return !empty(file_put_contents($this->pathToSave . '/' . $this->newName, $dataToString));
     }
 }
