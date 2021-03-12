@@ -1,5 +1,5 @@
 <?php
-$task_runnings = [
+return [
    ['running_id' => '1', 'task_id' => '1', 'contractor_id' => '11', ],
    ['running_id' => '2', 'task_id' => '2', 'contractor_id' => '12', ],
    ['running_id' => '3', 'task_id' => '3', 'contractor_id' => '13', ],

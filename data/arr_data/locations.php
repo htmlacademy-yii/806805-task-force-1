@@ -1,5 +1,5 @@
 <?php
-$locations = [
+return [
    ['location_id' => '1', 'city' => 'Абаза', 'latitude' => '52.6517296', 'longitude' => '90.0885929', ],
    ['location_id' => '2', 'city' => 'Абакан', 'latitude' => '53.7223661', 'longitude' => '91.4437792', ],
    ['location_id' => '3', 'city' => 'Абдулино', 'latitude' => '53.6778096', 'longitude' => '53.6473115', ],

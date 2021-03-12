@@ -1,5 +1,5 @@
 <?php
-$task_actions = [
+return [
    ['action_id' => '1', 'title' => 'Добавить задание', 'const_name' => 'ACTION_ADD_TASK', ],
    ['action_id' => '2', 'title' => 'Откликнуться', 'const_name' => 'ACTION_OFFER', ],
    ['action_id' => '3', 'title' => 'Отказаться', 'const_name' => 'ACTION_FAILURE', ],

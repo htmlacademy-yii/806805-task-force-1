@@ -1,5 +1,5 @@
 <?php
-$user_favorites = [
+return [
    ['favorite_id' => '1', 'user_id' => '1', 'fave_user_id' => '11', 'is_fave' => '1', ],
    ['favorite_id' => '2', 'user_id' => '2', 'fave_user_id' => '12', 'is_fave' => '1', ],
    ['favorite_id' => '3', 'user_id' => '3', 'fave_user_id' => '13', 'is_fave' => '1', ],

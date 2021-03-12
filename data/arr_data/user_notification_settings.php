@@ -1,5 +1,5 @@
 <?php
-$user_notification_settings = [
+return [
    ['setting_id' => '1', 'user_id' => '1', 'notification_id' => '1', 'is_active' => '1', ],
    ['setting_id' => '2', 'user_id' => '1', 'notification_id' => '2', 'is_active' => '1', ],
    ['setting_id' => '3', 'user_id' => '1', 'notification_id' => '3', 'is_active' => '1', ],

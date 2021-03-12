@@ -1,5 +1,5 @@
 <?php
-$user_portfolio_images = [
+return [
    ['image_id' => '1', 'user_id' => '1', 'title' => 'фото работы 1', 'image_addr' => 'Robby_project_1.jpg', ],
    ['image_id' => '2', 'user_id' => '2', 'title' => 'фото работы 2', 'image_addr' => 'john_project_2.jpg', ],
    ['image_id' => '3', 'user_id' => '3', 'title' => 'фото работы 3', 'image_addr' => 'Adel_project_3.jpg', ],

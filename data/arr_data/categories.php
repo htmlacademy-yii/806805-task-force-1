@@ -1,5 +1,5 @@
 <?php
-$categories = [
+return [
    ['category_id' => '1', 'title' => 'Курьерские услуги', 'label' => 'translation', ],
    ['category_id' => '2', 'title' => 'Уборка', 'label' => 'clean', ],
    ['category_id' => '3', 'title' => 'Переезды', 'label' => 'cargo', ],

@@ -1,5 +1,5 @@
 <?php
-$offers = [
+return [
    ['offer_id' => '2', 'task_id' => '2', 'contractor_id' => '12', 'price' => '2000', 'desc_text' => 'We will do everything without noise and dust', 'add_time' => '2020-07-29 14:16:10', ],
    ['offer_id' => '5', 'task_id' => '5', 'contractor_id' => '15', 'price' => '5000', 'desc_text' => ' gkeik lvllep nale lnlks lne', 'add_time' => '2020-07-29 14:16:10', ],
    ['offer_id' => '7', 'task_id' => '7', 'contractor_id' => '17', 'price' => '7000', 'desc_text' => 'We will do everything without noise and dust', 'add_time' => '2020-07-29 14:16:10', ],
