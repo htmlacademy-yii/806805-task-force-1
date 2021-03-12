@@ -35,12 +35,10 @@ class m201227_150000_add_data_to_all_tables extends Migration
 
         foreach ($tableNames as $tableName) {
 
-            require dirname(__DIR__) . '/data/arr_data/' . $tableName . '.php';
+            $tableValues = require dirname(__DIR__) . '/data/arr_data/' . $tableName . '.php';
+            $tableKeys = array_keys($tableValues[0]);
 
-            $tableData = $$tableName;
-            $tableKey = array_keys($tableData[0]);
-
-            $this->batchInsert("{{" . $tableName . "}}", $tableKey, $tableData);
+            $this->batchInsert("{{" . $tableName . "}}", $tableKeys, $tableValues);
         }
     }
 
@@ -73,13 +71,11 @@ class m201227_150000_add_data_to_all_tables extends Migration
 
         foreach ($tableNames as $tableName) {
 
-            require dirname(__DIR__) . '/data/arr_data/' . $tableName . '.php';
+            $tableValues = require dirname(__DIR__) . '/data/arr_data/' . $tableName . '.php';
+            $primaryfieldKey = array_key_first($tableValues[0]);
+            $num = count($tableValues);
 
-            $tableData = $$tableName;
-            $keyName = array_key_first($tableData[0]);
-            $num = count($tableData);
-
-            $this->delete("{{" . $tableName . "}}", "[[$keyName]]<=$num", []);
+            $this->delete("{{" . $tableName . "}}", "[[$primaryfieldKey]]<=$num", []);
         }
     }
 }
