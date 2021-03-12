@@ -69,7 +69,7 @@ class UtilsController extends Controller
         foreach($tableNames as $tableName) {
             $arrData = (new Query())->from($tableName)->all();
 
-            $converter = new ConverterData($arrData, null, $tableName . '.php');
+            $converter = new ConverterData($arrData, dirname(dirname(__DIR__)) . '/data/arr_data', $tableName . '.php');
             $converter->importToArray();
             $result[] = ['save' => $converter->exportToArrfile(), 'file' => $converter->getNewFile()];
         }
