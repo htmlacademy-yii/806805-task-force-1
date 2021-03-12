@@ -1,6 +1,6 @@
 <?php 
 
-namespace TaskForce\Exs;
+namespace ownsite\exs;
 
 class FileFormatException extends \Exception{
 
