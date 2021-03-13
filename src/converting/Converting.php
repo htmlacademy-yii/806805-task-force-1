@@ -78,10 +78,13 @@ abstract class Converting
         $table = pathinfo($this->file, PATHINFO_FILENAME);
 
         $dataToString = "INSERT INTO $table (" . implode(', ', $tableKeys) . ") VALUES " . PHP_EOL;
-        foreach($this->dataAsArray as $row) {
+        foreach($this->dataAsArray as $key => $row) {
+            if (array_key_last($this->dataAsArray) === $key) {
+                $dataToString .= "    ('" . implode("', '", $row) . "');" . PHP_EOL;
+                continue;
+            }
             $dataToString .= "    ('" . implode("', '", $row) . "')," . PHP_EOL;
         }
-        $dataToString[strlen($dataToString) - 3] = ';';
 
         return !empty(file_put_contents($this->pathToSave . '/' . $this->newName, $dataToString));
     }
