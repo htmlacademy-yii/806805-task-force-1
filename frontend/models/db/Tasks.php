@@ -36,17 +36,11 @@ use Yii;
  */
 class Tasks extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'tasks';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -60,36 +54,33 @@ class Tasks extends \yii\db\ActiveRecord
                 ['status_id'], 
                 'exist', 
                 'skipOnError' => true, 
-                'targetClass' => TaskStatuses::className(), 
+                'targetClass' => TaskStatuses::class, 
                 'targetAttribute' => ['status_id' => 'status_id']
             ],
             [
                 ['category_id'], 
                 'exist', 
                 'skipOnError' => true, 
-                'targetClass' => Categories::className(), 
+                'targetClass' => Categories::class, 
                 'targetAttribute' => ['category_id' => 'category_id']
             ],
             [
                 ['location_id'], 
                 'exist', 
                 'skipOnError' => true, 
-                'targetClass' => Locations::className(), 
+                'targetClass' => Locations::class, 
                 'targetAttribute' => ['location_id' => 'location_id']
             ],
             [
                 ['customer_id'], 
                 'exist', 
                 'skipOnError' => true, 
-                'targetClass' => Users::className(), 
+                'targetClass' => Users::class, 
                 'targetAttribute' => ['customer_id' => 'user_id']
             ],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -111,28 +102,19 @@ class Tasks extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getFeedbacks()
     {
-        return $this->hasMany(Feedbacks::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(Feedbacks::class, ['task_id' => 'task_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getMessages()
     {
-        return $this->hasMany(Messages::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(Messages::class, ['task_id' => 'task_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getOffers()
     {
-        return $this->hasMany(Offers::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(Offers::class, ['task_id' => 'task_id']);
     }
 
     /**
@@ -140,7 +122,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getTaskFailings()
     {
-        return $this->hasMany(TaskFailings::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(TaskFailings::class, ['task_id' => 'task_id']);
     }
 
     /**
@@ -148,7 +130,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getTaskFiles()
     {
-        return $this->hasMany(TaskFiles::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(TaskFiles::class, ['task_id' => 'task_id']);
     }
 
     /**
@@ -156,7 +138,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getTaskRunnings()
     {
-        return $this->hasOne(TaskRunnings::className(), ['task_id' => 'task_id']);
+        return $this->hasOne(TaskRunnings::class, ['task_id' => 'task_id']);
     }
 
     /**
@@ -164,7 +146,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getStatus()
     {
-        return $this->hasOne(TaskStatuses::className(), ['status_id' => 'status_id']);
+        return $this->hasOne(TaskStatuses::class, ['status_id' => 'status_id']);
     }
 
     /**
@@ -172,7 +154,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Categories::className(), ['category_id' => 'category_id']);
+        return $this->hasOne(Categories::class, ['category_id' => 'category_id']);
     }
 
     /**
@@ -180,7 +162,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getLocation()
     {
-        return $this->hasOne(Locations::className(), ['location_id' => 'location_id']);
+        return $this->hasOne(Locations::class, ['location_id' => 'location_id']);
     }
 
     /**
@@ -188,6 +170,6 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public function getCustomer()
     {
-        return $this->hasOne(Users::className(), ['user_id' => 'customer_id']);
+        return $this->hasOne(Users::class, ['user_id' => 'customer_id']);
     }
 }

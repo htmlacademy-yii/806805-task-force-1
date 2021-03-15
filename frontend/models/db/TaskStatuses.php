@@ -15,17 +15,11 @@ use Yii;
  */
 class TaskStatuses extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'task_statuses';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -36,9 +30,6 @@ class TaskStatuses extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -48,11 +39,8 @@ class TaskStatuses extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTasks()
     {
-        return $this->hasMany(Tasks::className(), ['status_id' => 'status_id']);
+        return $this->hasMany(Tasks::class, ['status_id' => 'status_id']);
     }
 }

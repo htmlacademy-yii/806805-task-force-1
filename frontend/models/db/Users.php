@@ -27,16 +27,16 @@ use yii\web\IdentityInterface;
  * @property int $hide_contacts
  * @property int $hide_profile
  *
- * @property Feedbacks[] $yoursFeedbacks
+ * @property Feedbacks[] $feedbacksToUsers
  * @property Feedbacks[] $feedbacks
+ * @property Messages[] $messagesOutgoing
  * @property Messages[] $messages
- * @property Messages[] $messages0
  * @property Offers[] $offers
  * @property TaskFailings[] $taskFailings
  * @property TaskRunnings[] $taskRunnings
  * @property Tasks[] $customerTasks
  * @property UserFavorites[] $userFavorites
- * @property UserFavorites[] $userFavorites0
+ * @property UserFavorites[] $usersLikedYou
  * @property UserNotificationSettings[] $userNotificationSettings
  * @property UserPortfolioImages[] $userPortfolioImages
  * @property UserRoles $role
@@ -47,9 +47,6 @@ use yii\web\IdentityInterface;
  */
 class Users extends ActiveRecord implements IdentityInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'users';
@@ -85,10 +82,6 @@ class Users extends ActiveRecord implements IdentityInterface
         return Yii::$app->getSecurity()->validatePassword($password, $this->password_key);
     }
 
-
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -117,9 +110,6 @@ class Users extends ActiveRecord implements IdentityInterface
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -143,116 +133,74 @@ class Users extends ActiveRecord implements IdentityInterface
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getYoursFeedbacks()
+    public function getFeedbacksToUsers()
     {
-        return $this->hasMany(Feedbacks::className(), ['author_id' => 'user_id']);
+        return $this->hasMany(Feedbacks::class, ['author_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getFeedbacks()
     {
-        return $this->hasMany(Feedbacks::className(), ['recipient_id' => 'user_id']);
+        return $this->hasMany(Feedbacks::class, ['recipient_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
+    public function getMessagesOutgoing()
+    {
+        return $this->hasMany(Messages::class, ['sender_id' => 'user_id']);
+    }
+
     public function getMessages()
     {
-        return $this->hasMany(Messages::className(), ['sender_id' => 'user_id']);
+        return $this->hasMany(Messages::class, ['receiver_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMessages0()
-    {
-        return $this->hasMany(Messages::className(), ['receiver_id' => 'user_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getOffers()
     {
-        return $this->hasMany(Offers::className(), ['contractor_id' => 'user_id']);
+        return $this->hasMany(Offers::class, ['contractor_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTaskFailings()
     {
-        return $this->hasMany(TaskFailings::className(), ['contractor_id' => 'user_id']);
+        return $this->hasMany(TaskFailings::class, ['contractor_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTaskRunnings()
     {
-        return $this->hasMany(TaskRunnings::className(), ['contractor_id' => 'user_id']);
+        return $this->hasMany(TaskRunnings::class, ['contractor_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getCustomerTasks()
     {
-        return $this->hasMany(Tasks::className(), ['customer_id' => 'user_id']);
+        return $this->hasMany(Tasks::class, ['customer_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUserFavorites()
     {
-        return $this->hasMany(UserFavorites::className(), ['user_id' => 'user_id']);
+        return $this->hasMany(UserFavorites::class, ['user_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUserFavorites0()
+    public function getUsersLikedYou()
     {
-        return $this->hasMany(UserFavorites::className(), ['fave_user_id' => 'user_id']);
+        return $this->hasMany(UserFavorites::class, ['fave_user_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUserNotificationSettings()
     {
-        return $this->hasMany(UserNotificationSettings::className(), ['user_id' => 'user_id']);
+        return $this->hasMany(UserNotificationSettings::class, ['user_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUserPortfolioImages()
     {
-        return $this->hasMany(UserPortfolioImages::className(), ['user_id' => 'user_id']);
+        return $this->hasMany(UserPortfolioImages::class, ['user_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getRole()
     {
-        return $this->hasOne(UserRoles::className(), ['role_id' => 'role_id']);
+        return $this->hasOne(UserRoles::class, ['role_id' => 'role_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getLocation()
     {
-        return $this->hasOne(Locations::className(), ['location_id' => 'location_id']);
+        return $this->hasOne(Locations::class, ['location_id' => 'location_id']);
     }
 
     // Связи много-много
@@ -263,7 +211,7 @@ class Users extends ActiveRecord implements IdentityInterface
      */
     public function getUserSpecializations()
     {
-        return $this->hasMany(Categories::className(), ['category_id' => 'category_id'])
+        return $this->hasMany(Categories::class, ['category_id' => 'category_id'])
             ->viaTable('user_specializations', ['user_id' => 'user_id']);
     }
 }

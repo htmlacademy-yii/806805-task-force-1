@@ -15,17 +15,11 @@ use Yii;
  */
 class UserNotifications extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'user_notifications';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -36,9 +30,6 @@ class UserNotifications extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -48,11 +39,8 @@ class UserNotifications extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUserNotificationSettings()
     {
-        return $this->hasMany(UserNotificationSettings::className(), ['notification_id' => 'notification_id']);
+        return $this->hasMany(UserNotificationSettings::class, ['notification_id' => 'notification_id']);
     }
 }

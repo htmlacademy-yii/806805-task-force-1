@@ -15,30 +15,21 @@ use Yii;
  */
 class TaskFiles extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'task_files';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
             [['task_id'], 'required'],
             [['task_id'], 'integer'],
             [['file_addr'], 'string', 'max' => 255],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'task_id']],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::class, 'targetAttribute' => ['task_id' => 'task_id']],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -48,11 +39,8 @@ class TaskFiles extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTask()
     {
-        return $this->hasOne(Tasks::className(), ['task_id' => 'task_id']);
+        return $this->hasOne(Tasks::class, ['task_id' => 'task_id']);
     }
 }

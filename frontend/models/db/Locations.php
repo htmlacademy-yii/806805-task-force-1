@@ -17,17 +17,11 @@ use Yii;
  */
 class Locations extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'locations';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -37,9 +31,6 @@ class Locations extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -50,19 +41,13 @@ class Locations extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTasks()
     {
-        return $this->hasMany(Task::className(), ['location_id' => 'location_id']);
+        return $this->hasMany(Task::class, ['location_id' => 'location_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['location_id' => 'location_id']);
+        return $this->hasMany(User::class, ['location_id' => 'location_id']);
     }
 }
