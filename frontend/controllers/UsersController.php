@@ -3,9 +3,9 @@
 namespace frontend\controllers;
 
 use frontend\controllers\AccessController;
+use frontend\models\db\Users;
+use frontend\models\usersFiltration;
 use frontend\models\forms\UsersForm;
-use frontend\models\UsersFilters;
-use frontend\models\UserView;
 use Yii;
 use yii\web\NotFoundHttpException;
 
@@ -13,33 +13,49 @@ class UsersController extends AccessController
 {
     public function actionIndex(string $sorting = null)
     {
-        $usersForm = new UsersForm();
-        $usersFilters = new UsersFilters($sorting, $usersForm);
-        $users = [];
+        $userFiltersForm = new UsersForm();
+        $sortings = usersFiltration::getSortings(); // Заготовка сортировки
+        $contractorsQuery = Users::findContractors()
+            ->addSelect(['*', 'taskCounter' => Users::subTaskCounter()])
+            ->addSelect(['skillCounter' => Users::subSkillCounter()])
+            ->addSelect(['feedbackCounter' => Users::subFeedbackCounter()])
+            ->addSelect(['sumRating' => Users::subSumRating()])
+            ->addSelect(['avgRating' => Users::subAvgRating()]);
 
-        if ($usersForm->load(Yii::$app->request->post()) === true) {
-            $users = $usersFilters->getFilterContractors();
-        } else {
-            $users = $usersFilters->getContractors();
+        if ($userFiltersForm->load(Yii::$app->request->post()) === true) {
+            $filtration = new usersFiltration($contractorsQuery, $userFiltersForm);
+            $filtration->filter();
+            $contractorsQuery = $filtration->getFilteredUsers();
         }
+        
+        $contractors = $contractorsQuery->all();
 
-        $sortings = UsersFilters::getSortingTags();
+        // примеры получения пользователей
+        $customers = Users::findCustomers()->all();
+        $customersActive = Users::findCustomersActive()->all();
 
         return $this->render('index', [
-            'users' => $users,
-            'sortings' => $sortings,
-            'usersForm' => $usersForm,
+            'users' => $contractors,
+            'sortings' => $sortings, // Заготовка сортировки
+            'usersForm' => $userFiltersForm,
         ]);
     }
 
     public function actionView(int $ID)
     {
-        $userView = new UserView($ID);
-        $user = $userView->getContractor();
-        if (!$user) {
+        $contractor = Users::findContractors([$ID])
+            ->addSelect(['*', 'taskCounter' => Users::subTaskCounter()])
+            ->addSelect(['skillCounter' => Users::subSkillCounter()])
+            ->addSelect(['feedbackCounter' => Users::subFeedbackCounter()])
+            ->addSelect(['sumRating' => Users::subSumRating()])
+            ->addSelect(['avgRating' => Users::subAvgRating()])
+            ->limit(1)
+            ->one();
+
+        if (!$contractor) {
             throw new NotFoundHttpException('Исполнителя с таким ID не существует');
         }
 
-        return $this->render('view', ['user' => $user]);
+        return $this->render('view', ['user' => $contractor]);
     }
 }

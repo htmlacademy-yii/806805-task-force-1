@@ -14,9 +14,9 @@ $this->title = 'Исполнители (верстка Users.html)';
     <div class="user__search-link">
         <p>Сортировать по:</p>
         <ul class="user__search-list">
-            <?php foreach ($sortings as $sorting): ?>
-            <li class="user__search-item <?=Yii::$app->request->get('sorting') === $sorting['label'] ? 'user__search-item--current' : ''?>">
-                <a href="<?=Url::to(['', 'sorting' => $sorting['label']])?>" class="link-regular"><?=$sorting['title']?></a>
+            <?php foreach ($sortings as $sortingKey => $sorting): ?>
+            <li class="user__search-item <?=Yii::$app->request->get('sorting') === $sortingKey ? 'user__search-item--current' : ''?>">
+                <a href="<?=Url::to(['', 'sorting' => $sortingKey])?>" class="link-regular"><?=$sorting?></a>
             </li>
             <?php endforeach;?>
         </ul>
@@ -28,13 +28,13 @@ $this->title = 'Исполнители (верстка Users.html)';
         <div class="feedback-card__top">
             <div class="user__search-icon">
                 <a href="<?=Url::to(['view', 'ID' => $user->user_id])?>"><img src="/<?=$user->avatar_addr ?: \Yii::$app->params['defaultAvatarAddr']?>" width="65" height="65"></a>
-                <span><?=$user->tasks_count?> заданий</span>
-                <span><?=$user->feedbacks_count?> отзывов</span>
+                <span><?=$user->taskCounter?> заданий</span>
+                <span><?=$user->feedbackCounter?> отзывов</span>
             </div>
             <div class="feedback-card__top--name user__search-card">
                 <p class="link-name"><a href="<?=Url::to(['view', 'ID' => $user->user_id])?>" class="link-regular"><?=$user->full_name?> (ID: <?=$user->user_id?>)</a></p>
                 <!-- Рейтинг -->
-                <?php $avg_point = $user->avg_point ?? 0;?>
+                <?php $avg_point = $user->avgRating ?? 0;?>
 
                 <!-- итерация желтой звездочки -->
                 <?php for ($i = 1; $i <= $avg_point; $i++): ?>
@@ -59,7 +59,6 @@ $this->title = 'Исполнители (верстка Users.html)';
             <?php foreach ($user->userSpecializations as $category): ?>
             <a href="#" class="link-regular"><?=$category->title?></a>
             <?php endforeach;?>
-
         </div>
     </div>
     <?php endforeach;?>
