@@ -7,8 +7,9 @@ use yii;
 use yii\db\Query;
 
 /**
- * @property object $filters
- * @property array $items
+ * @property object $usersQuery
+ * @property object $userFilters
+ * @property object $filteredUsers
  */
 class usersFiltration
 {
