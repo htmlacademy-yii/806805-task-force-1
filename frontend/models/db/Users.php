@@ -2,8 +2,10 @@
 
 namespace frontend\models\db;
 
+use frontend\models\db\UserSpecializations as Specialization;
 use Yii;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\web\IdentityInterface;
 
 /**
@@ -42,15 +44,32 @@ use yii\web\IdentityInterface;
  * @property UserRoles $role
  * @property Locations $location
  *
- * Связь много-много
+ * много-много
  * @property UserSpecializations[] $userSpecializations
+ *
+ * Дополнительные вычисляемые атрибуты
+ * @property int $feedbackCounter
+ * @property int $sumRating
+ * @property int $avgRating
+ * @property int $skillCounter
+ * @property int $taskCounter
  */
 class Users extends ActiveRecord implements IdentityInterface
 {
     public static function tableName()
     {
-        return 'users';
+        return '{{users}}';
     }
+
+    // Дополнительные вычисляемые атрибуты
+
+    public $feedbackCounter;
+    public $sumRating;
+    public $avgRating;
+    public $skillCounter;
+    public $taskCounter;
+
+    // Авторизация
 
     public static function findIdentity($id)
     {
@@ -82,6 +101,8 @@ class Users extends ActiveRecord implements IdentityInterface
         return Yii::$app->getSecurity()->validatePassword($password, $this->password_key);
     }
 
+    // Стандартные данные таблицы ORM
+
     public function rules()
     {
         return [
@@ -105,7 +126,7 @@ class Users extends ActiveRecord implements IdentityInterface
                 'exist',
                 'skipOnError' => true,
                 'targetClass' => Locations::class,
-                'targetAttribute' => ['location_id' => 'location_id']
+                'targetAttribute' => ['location_id' => 'location_id'],
             ],
         ];
     }
@@ -132,6 +153,8 @@ class Users extends ActiveRecord implements IdentityInterface
             'hide_profile' => 'Hide Profile',
         ];
     }
+
+    // Связи
 
     public function getFeedbacksToUsers()
     {
@@ -213,5 +236,108 @@ class Users extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(Categories::class, ['category_id' => 'category_id'])
             ->viaTable('user_specializations', ['user_id' => 'user_id']);
+    }
+
+    // Пользователи с ролями
+
+    public static function findCustomers(array $IDs = []): \yii\db\ActiveQuery
+    {
+        $contractorIDs = array_values(self::findContractors()->column());
+
+        $query = self::find()
+            ->from('users u')
+            ->where(['NOT IN', 'u.user_id', $contractorIDs])
+            ->andFilterWhere(['IN', 'u.user_id', $IDs]);
+
+        return $query;
+    }
+
+    public static function findCustomersActive(array $IDs = []): \yii\db\ActiveQuery
+    {
+        $query = self::find()
+            ->from('users u')
+            ->joinWith('customerTasks ct', true, 'LEFT JOIN')
+            ->filterWhere(['ct.status_id' => 1])
+            ->orfilterWhere(['ct.status_id' => 3]);
+
+        return $query;
+    }
+
+    public static function findContractors(array $IDs = []): \yii\db\ActiveQuery
+    {
+        $specializationQuantity = 1;
+
+        $query = self::find()
+            ->from('users u')
+            ->where(['>=', self::subSkillCounter(), $specializationQuantity])
+            ->andFilterWhere(['IN', 'u.user_id', $IDs])
+            ->orderBy(['reg_time' => SORT_DESC]); // Сортировка по умолчанию - по дате регистрации
+
+        return $query;
+    }
+
+    public static function findContractorsAll(): array
+    {
+        $specializationQuantity = 1;
+
+        $contractors = (new Query())
+            ->from('users u')
+            ->select(['u.user_id', 'us.category_id'])
+            ->join('INNER JOIN', 'user_specializations us', 'u.user_id = us.user_id')
+            ->where(['>=', self::subSkillCounter(), $specializationQuantity]);
+
+        return $contractors->all();
+    }
+
+    // Дополнительные вычисляемые атрибуты
+
+    public static function subTaskCounter()
+    {
+        return (new Query())
+            ->select(['count(contractor_id)'])
+            ->from((new Query())
+                    ->from(['task_runnings tr'])
+                    ->where('tr.contractor_id = u.user_id')
+                    ->union((new Query())
+                            ->from(['task_failings tf'])
+                            ->where('tf.contractor_id = u.user_id')
+                        , true)
+                    ->groupBy('contractor_id'));
+    }
+
+    public static function subSkillCounter()
+    {
+        return (new Query())
+            ->from('user_specializations us')
+            ->select(['count(us.user_id)'])
+            ->where('us.user_id = u.user_id')
+            ->groupBy('us.user_id');
+    }
+
+    public static function subFeedbackCounter()
+    {
+        return (new Query())
+            ->from('feedbacks fb')
+            ->select(['count(fb.recipient_id)'])
+            ->where('fb.recipient_id = u.user_id')
+            ->groupBy('fb.recipient_id');
+    }
+
+    public static function subSumRating()
+    {
+        return (new Query())
+            ->from('feedbacks fb')
+            ->select(['sum(fb.point_num)'])
+            ->where('fb.recipient_id = u.user_id')
+            ->groupBy('fb.recipient_id');
+    }
+
+    public static function subAvgRating()
+    {
+        return (new Query())
+            ->from('feedbacks fb')
+            ->select(['sum(fb.point_num)/count(fb.recipient_id)'])
+            ->where('fb.recipient_id = u.user_id')
+            ->groupBy('fb.recipient_id');
     }
 }
