@@ -2,6 +2,7 @@
 
 namespace frontend\models\db;
 
+use frontend\models\db\Tasks;
 use frontend\models\db\UserSpecializations as Specialization;
 use Yii;
 use yii\db\ActiveRecord;
@@ -287,6 +288,17 @@ class Users extends ActiveRecord implements IdentityInterface
             ->where(['>=', self::subSkillCounter(), $specializationQuantity]);
 
         return $contractors->all();
+    }
+
+    // Исполнители с предложениями к заданию
+    public static function findCandidates(int $taskID): \yii\db\ActiveQuery
+    {
+        $query = self::find()
+            ->from('users u')
+            ->joinWith(['offers o'])
+            ->where(['o.task_id' => $taskID]);
+
+        return $query;
     }
 
     // Дополнительные вычисляемые атрибуты
