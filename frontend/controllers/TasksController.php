@@ -4,57 +4,51 @@ namespace frontend\controllers;
 
 use frontend\controllers\AccessController;
 use frontend\models\forms\TasksForm;
-use frontend\models\TasksFilters;
-use frontend\models\TaskView;
+use frontend\models\TasksFiltration;
+use frontend\models\db\Tasks;
 use yii;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use frontend\models\db\Users;
 
 class TasksController extends AccessController
 {
     public function actionIndex(int $category = null)
     {
-        $tasksForm = new TasksForm();
-        $tasksFilters = new TasksFilters($tasksForm);
+        $taskFiltersForm = new TasksForm();
+        $tasksQuery = Tasks::findNewTasks();
 
-        $tasks = [];
-        if ($category !== null) {
-            $tasksForm->categories = [$category];
-            $tasks = $tasksFilters->getFilterNewTasks();
-        } elseif ($tasksForm->load(Yii::$app->request->post()) === true) {
-            $tasks = $tasksFilters->getFilterNewTasks();
-        } else {
-            $tasks = $tasksFilters->getNewTasks();
+        if (($taskFiltersForm->categories[] = $category)
+            || $taskFiltersForm->load(Yii::$app->request->post()) === true) {
+
+            $filtration = new TasksFiltration($tasksQuery, $taskFiltersForm);
+            $filtration->filter();
+            $tasksQuery = $filtration->getFilteredTasks();
         }
+        
+        $tasks = $tasksQuery->all();
 
         return $this->render('index', [
             'tasks' => $tasks,
-            'tasksForm' => $tasksForm,
+            'tasksForm' => $taskFiltersForm,
         ]);
     }
 
     public function actionView(int $ID)
     {
-        $taskView = new TaskView($ID);
-        $task = $taskView->getTask();
+        $task = Tasks::findNewTasks([$ID])->one();
 
         if (!$task) {
             throw new NotFoundHttpException('Такого задания не существует');
         }
 
-        $customer = $taskView->getCustomer();
-
-        // Действующий исполнитель
-        $currentContractor = $taskView->getCurrentContractor();
-
-        // Исполнители с их предложениями
-        $candidatesAndOffers = $taskView->getCandidatesAndOffers();
+        // Исполнители с предложениями к заданию
+        $candidates = Users::findCandidates($task->task_id)->all();
 
         return $this->render('view', [
             'task' => $task,
-            'customer' => $customer,
-            'currentContractor' => $currentContractor,
-            'candidatesAndOffers' => $candidatesAndOffers,
+            'customer' => $task->customer,
+            'currentContractor' => $task->taskContractor,
+            'candidatesAndOffers' => $candidates,
         ]);
     }
 }

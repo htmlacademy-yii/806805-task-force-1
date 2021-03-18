@@ -38,7 +38,7 @@ class TasksForm extends Model
     }
 
     /* Списки для полей формы согласно имени атрибута */
-    public static function getAttributeItems(string $attributeName): array
+    public static function getAttributeItems(string $attributeName): ?array
     {
         $items['categories'] = (new \yii\db\Query())
             ->from('categories')
@@ -54,6 +54,6 @@ class TasksForm extends Model
                 'month' => 'За месяц',
             ];
 
-        return $items[$attributeName];
+        return $items[$attributeName] ?? null;
     }
 }
