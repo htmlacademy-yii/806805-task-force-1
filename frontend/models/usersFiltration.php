@@ -11,7 +11,7 @@ use yii\db\Query;
  * @property object $userFilters
  * @property object $filteredUsers
  */
-class usersFiltration
+class UsersFiltration
 {
     public $usersQuery; //$contractors, $customers, $users и тд
     public $userFilters;
