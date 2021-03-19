@@ -179,7 +179,8 @@ class Users extends ActiveRecord implements IdentityInterface
 
     public function getOffers()
     {
-        return $this->hasMany(Offers::class, ['contractor_id' => 'user_id']);
+        return $this->hasMany(Offers::class, ['contractor_id' => 'user_id'])
+            ->indexBy('task_id');
     }
 
     public function getTaskFailings()
@@ -290,7 +291,11 @@ class Users extends ActiveRecord implements IdentityInterface
         return $contractors->all();
     }
 
-    // Исполнители с предложениями к заданию
+    /**
+     * Исполнители сдалавшие предложение к заданию
+     * Предложение по свойству-связи, жадная загрузка offers
+     * @return \yii\db\ActiveQuery
+     */
     public static function findCandidates(int $taskID): \yii\db\ActiveQuery
     {
         $query = self::find()

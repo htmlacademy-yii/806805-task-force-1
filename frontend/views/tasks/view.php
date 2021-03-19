@@ -74,8 +74,8 @@ $this->title = 'Просмотр задания (view.html)';
         <div class="content-view__feedback-wrapper">
 
             <!-- Отклики (предложения) итерация -->
-            <?php foreach ($candidatesAndOffers as $candidateAndOffer): ?>
-            <?php list($candidate, $offer) = $candidateAndOffer; ?>
+            <?php foreach ($candidatesAndOffers as $candidate): ?>
+            <?php $offer = $candidate->offers[$task->task_id]; ?>
             <div class="content-view__feedback-card">
                 <div class="feedback-card__top">
                     <a href="<?=Url::to(['/users/view', 'ID' => $candidate->user_id])?>">
@@ -84,7 +84,7 @@ $this->title = 'Просмотр задания (view.html)';
                     <div class="feedback-card__top--name">
                         <p><a href="<?=Url::to(['/users/view', 'ID' => $candidate->user_id])?>" class="link-regular"><?=$candidate->full_name?></a></p>
                         <!-- Рейтинг -->
-                        <?php $avg_point = $candidate->avg_point ?? 0;?>
+                        <?php $avg_point = $candidate->avgRating ?? 0;?>
                         
                         <!-- итерация желтой звездочки -->
                         <?php for ($i = 1; $i <= $avg_point; $i++): ?>
@@ -181,7 +181,9 @@ $this->title = 'Просмотр задания (view.html)';
     </div>
 
     <!-- Чат -->
-    <?php if ($currentContractor !== null && (USER_ID === $currentContractor['user_id'] || USER_ID === $customer->user_id)): ?>
+    <?php if ($currentContractor !== null 
+                && (\Yii::$app->user->getId() === $currentContractor['user_id'] 
+                    || \Yii::$app->user->getId() === $customer->user_id)): ?>
     <div class="connect-desk__chat">
         <h3>Переписка</h3>
         <div class="chat__overflow">
