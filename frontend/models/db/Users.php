@@ -273,7 +273,7 @@ class Users extends ActiveRecord implements IdentityInterface
             ->from('users u')
             ->where(['>=', self::subSkillCounter(), $specializationQuantity])
             ->andFilterWhere(['IN', 'u.user_id', $IDs])
-            ->orderBy(['reg_time' => SORT_DESC]); // Сортировка по умолчанию - по дате регистрации
+            ->orderBy(['u.reg_time' => SORT_DESC]); // Сортировка по умолчанию - по дате регистрации
 
         return $query;
     }

@@ -53,7 +53,9 @@ class UsersFiltration
             $contractors
                 ->andWhere("MATCH(u.full_name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
 
-            return !empty($this->filteredUsers = $contractors);
+            $this->filteredUsers = $contractors;
+
+            return $contractors->exists();
         }
 
         /* Фильтр Категории. (по умолчанию пусто) */
@@ -99,6 +101,8 @@ class UsersFiltration
             $contractors->andWhere(['IN', 'u.user_id', $filter]);
         }
 
-        return !empty($this->filteredUsers = $contractors);
+        $this->filteredUsers = $contractors;
+
+        return $contractors->exists();
     }
 }

@@ -188,7 +188,7 @@ class Tasks extends \yii\db\ActiveRecord
             ])
             ->where(['t.status_id' => 1])
             ->andFilterWhere(['IN', 't.task_id', $IDs])
-            ->orderBy(['add_time' => SORT_DESC]); // Сортировка по умолчанию - по дате добавления
+            ->orderBy(['t.add_time' => SORT_DESC]); // Сортировка по умолчанию - по дате добавления
 
         return $query;
     }

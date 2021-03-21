@@ -39,7 +39,9 @@ class TasksFiltration
             $logicSearch = prepareLogicSearch($search);
             $tasks->andWhere("MATCH(t.title) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
 
-            return !empty($this->filteredTasks = $tasks);
+            $this->filteredTasks = $tasks;
+
+            return $tasks->exists();
         }
 
         // Фильтр Категории
@@ -51,7 +53,7 @@ class TasksFiltration
                 ->from('offers o')
                 ->select('o.task_id')
                 ->distinct();
-                
+
             $tasks->andWhere(['NOT IN', 't.task_id', $taskWithOffers]);
         }
 
@@ -61,11 +63,8 @@ class TasksFiltration
             $tasks->andWhere(['>', 't.add_time', $datePoint]);
         }
 
-        return !empty($this->filteredTasks = $tasks);
-    }
+        $this->filteredTasks = $tasks;
 
-    public function getTaskIDs()
-    {
-        return $this->taskIDs = array_column($this->tasks, 'task_id');
+        return $tasks->exists();
     }
 }
