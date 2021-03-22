@@ -23,17 +23,6 @@ class UsersFiltration
         $this->usersQuery = $usersQuery;
     }
 
-    // временно сортировку сделать с помощью компонентов Yii
-    public static function getSortings(): array
-    {
-        return [
-            'by_reg' => 'Дате регистрации',
-            'by_rating' => 'Рейтингу',
-            'by_deals' => 'Числу заказов',
-            'by_pop' => 'Популярности',
-        ];
-    }
-
     public function getFilteredUsers()
     {
         return $this->filteredUsers;

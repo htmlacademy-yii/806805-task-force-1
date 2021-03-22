@@ -14,7 +14,6 @@ class UsersController extends AccessController
     public function actionIndex(string $sorting = null)
     {
         $userFiltersForm = new UsersForm();
-        $sortings = usersFiltration::getSortings(); // Заготовка сортировки
         $contractorsQuery = Users::findContractors()
             ->addSelect(['*', 'taskCounter' => Users::subTaskCounter()])
             ->addSelect(['skillCounter' => Users::subSkillCounter()])
@@ -23,21 +22,24 @@ class UsersController extends AccessController
             ->addSelect(['avgRating' => Users::subAvgRating()]);
 
         if ($userFiltersForm->load(Yii::$app->request->post()) === true) {
-            $filtration = new usersFiltration($contractorsQuery, $userFiltersForm);
+            $filtration = new UsersFiltration($contractorsQuery, $userFiltersForm);
             $filtration->filter();
             $contractorsQuery = $filtration->getFilteredUsers();
         }
-        
-        $contractors = $contractorsQuery->all();
 
+        $sortings = Users::getSortings();
+        $currentSorting = $sorting ? $sorting : Users::SORTING_REG_TIME;
+
+        $contractors = $contractorsQuery->orderBy([$currentSorting => SORT_DESC])->all();
         // примеры получения пользователей
         $customers = Users::findCustomers()->all();
         $customersActive = Users::findCustomersActive()->all();
 
         return $this->render('index', [
             'users' => $contractors,
-            'sortings' => $sortings, // Заготовка сортировки
+            'sortings' => $sortings,
             'usersForm' => $userFiltersForm,
+            'currentSorting' => $currentSorting,
         ]);
     }
 

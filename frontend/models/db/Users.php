@@ -57,11 +57,6 @@ use yii\web\IdentityInterface;
  */
 class Users extends ActiveRecord implements IdentityInterface
 {
-    public static function tableName()
-    {
-        return '{{users}}';
-    }
-
     // Дополнительные вычисляемые атрибуты
 
     public $feedbackCounter;
@@ -69,6 +64,27 @@ class Users extends ActiveRecord implements IdentityInterface
     public $avgRating;
     public $skillCounter;
     public $taskCounter;
+    public $popCounter; // ??? неизвестно
+
+    const SORTING_REG_TIME = 'reg_time';
+    const SORTING_TASKCOUNTER = 'taskCounter'; // по названию дополнительного атрибута
+    const SORTING_AVGRATING = 'avgRating'; // по названию дополнительного атрибута
+    const SORTING_POPCOUNTER = 'popCounter'; // по названию дополнительного атрибута
+
+    public static function tableName()
+    {
+        return '{{users}}';
+    }
+
+    public static function getSortings(): array
+    {
+        return [
+            self::SORTING_REG_TIME => 'Дате регистрации',
+            self::SORTING_TASKCOUNTER => 'Числу заказов',
+            self::SORTING_AVGRATING => 'Рейтингу',
+            self::SORTING_POPCOUNTER => 'Популярности',
+        ];
+    }
 
     // Авторизация
 
@@ -273,7 +289,7 @@ class Users extends ActiveRecord implements IdentityInterface
             ->from('users u')
             ->where(['>=', self::subSkillCounter(), $specializationQuantity])
             ->andFilterWhere(['IN', 'u.user_id', $IDs])
-            ->orderBy(['u.reg_time' => SORT_DESC]); // Сортировка по умолчанию - по дате регистрации
+            ->orderBy(['u.' . self::SORTING_REG_TIME => SORT_DESC]); // Сортировка по умолчанию - по дате регистрации
 
         return $query;
     }

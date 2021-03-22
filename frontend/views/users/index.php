@@ -15,7 +15,7 @@ $this->title = 'Исполнители (верстка Users.html)';
         <p>Сортировать по:</p>
         <ul class="user__search-list">
             <?php foreach ($sortings as $sortingKey => $sorting): ?>
-            <li class="user__search-item <?=Yii::$app->request->get('sorting') === $sortingKey ? 'user__search-item--current' : ''?>">
+            <li class="user__search-item <?= $currentSorting === $sortingKey ? 'user__search-item--current' : ''?>">
                 <a href="<?=Url::to(['', 'sorting' => $sortingKey])?>" class="link-regular"><?=$sorting?></a>
             </li>
             <?php endforeach;?>
