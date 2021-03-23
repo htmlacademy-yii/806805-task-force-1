@@ -18,7 +18,6 @@
             "ownsite\\": "src/"
         },
         "files": [
-            "common\\functions-basic\\transform.php"
         ]
     },
     "require": {
