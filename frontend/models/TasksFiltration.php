@@ -36,9 +36,7 @@ class TasksFiltration
 
         // Фильтр поиск по названию задания. Тип Fulltext логический, поиск сбрасывает другие фильтры
         if ($search = $this->taskFilters->search) {
-            $logicSearch = prepareLogicSearch($search);
-            $tasks->andWhere("MATCH(t.title) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
-
+            $tasks->andWhere(['OR LIKE', 't.title', explode(' ', $search)]);
             $this->filteredTasks = $tasks;
 
             return $tasks->exists();

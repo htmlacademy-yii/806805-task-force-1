@@ -29,6 +29,9 @@ class UsersController extends AccessController
 
         $sortings = Users::getSortings();
         $currentSorting = $sorting ? $sorting : Users::SORTING_REG_TIME;
+        if (!in_array($currentSorting, array_keys(Users::getSortings()))) {
+            throw new NotFoundHttpException('Поля сортировки не существует');
+        }
 
         $contractors = $contractorsQuery->orderBy([$currentSorting => SORT_DESC])->all();
         // примеры получения пользователей

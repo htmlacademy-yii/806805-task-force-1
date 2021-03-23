@@ -35,13 +35,9 @@ class UsersFiltration
     {
         $contractors = $this->usersQuery;
 
-        // Фильтр поиск по имени, Тип Fulltext логический, поиск сбрасывает другие фильтры
+        // Фильтр поиск по имени, поиск сбрасывает другие фильтры
         if ($search = $this->userFilters->search) {
-            // удаление символов логического поиска
-            $logicSearch = prepareLogicSearch($search);
-            $contractors
-                ->andWhere("MATCH(u.full_name) AGAINST ('$logicSearch' IN BOOLEAN MODE)");
-
+            $contractors->andWhere(['OR LIKE', 'u.full_name', explode(' ', $search)]);
             $this->filteredUsers = $contractors;
 
             return $contractors->exists();
