@@ -7,7 +7,7 @@ return [
         '@npm' => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
-    'defaultRoute' => 'start/index',
+    'defaultRoute' => 'site/index',
     'layout' => 'main',
     'components' => [
         'cache' => [
@@ -26,25 +26,19 @@ return [
                 'action' => yii\web\UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
             ],
             'rules' => [
-                '/' => 'start/index',
+                '/' => 'site/index',
                 'utils' => 'utils/index',
-                'tasks/index' => 'tasks/index',
-                'users/index' => 'users/index',
-                'signup/index' => 'signup/index',
+                'tasks' => 'tasks/index',
+                'users' => 'users/index',
                 'signup' => 'signup/index',
                 [
                     'pattern' => '<controller:(task|user)>/view/<ID>',
                     'route' => '<controller>s/view',
                 ],
                 [
-                    'pattern' => 'users/<sorting>',
-                    'route' => 'users/index',
-                ],
-                [
                     'pattern' => 'tasks/<category>',
                     'route' => 'tasks/index',
                 ],
-                'arr-saver' => 'converter/arr-saver',
             ],
         ],
     ],

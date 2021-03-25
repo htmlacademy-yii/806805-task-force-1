@@ -27,8 +27,6 @@ class SignupController extends Controller
         ];
     }
 
-    public $layout = 'main';
-
     public function actionIndex()
     {
         $formModel = new SignupForm();

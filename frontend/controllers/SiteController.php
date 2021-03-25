@@ -9,7 +9,7 @@ use yii\web\Controller;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 
-class StartController extends Controller
+class SiteController extends Controller
 {
     public $layout = 'start';
 
@@ -22,7 +22,6 @@ class StartController extends Controller
 
     public function actionIndex()
     {
-                
         if (Yii::$app->user->getId()) {
             return $this->redirect('/tasks', 302);
         }

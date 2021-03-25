@@ -16,7 +16,7 @@ return [
             'csrfParam' => '_csrf-frontend',
         ],
         'errorHandler' => [
-            'errorAction' => 'start/error',
+            'errorAction' => 'site/error',
         ],
         'user' => [
             'loginUrl' => ['/'],
