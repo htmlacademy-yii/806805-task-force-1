@@ -7,7 +7,7 @@ use frontend\models\db\Categories;
 use frontend\models\forms\TasksForm;
 use frontend\models\TasksFiltration;
 use frontend\models\db\Tasks;
-use yii;
+use Yii;
 use yii\web\NotFoundHttpException;
 use frontend\models\db\Users;
 
