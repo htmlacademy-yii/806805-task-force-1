@@ -3,40 +3,41 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+use frontend\assets\appAsset;
+use frontend\assets\mainAsset;
+// use yii\bootstrap\Nav;
+// use yii\bootstrap\NavBar;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
-use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
-AppAsset::register($this); 
+appAsset::register($this);
+mainAsset::register($this);
 ?>
-<?php $this->beginPage() ?><!-- Оставляем код -->
+
+<?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
+
 <head>
-    <meta charset="<?= Yii::$app->charset ?>">
+    <meta charset="<?= Yii::$app->charset ?>"><!-- ??? не изучено -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php $this->registerCsrfMetaTags() ?><!-- Оставляем код -->
-    <title><?= Html::encode($this->title) ?></title><!-- Оставляем код -->
-
-    <?php $this->head() ?><!-- Оставляем код -->
-
-    <link rel="stylesheet" href="/css/normalize.css"><!-- Вставляем код -->
-    <link rel="stylesheet" href="/css/style.css"><!-- Вставляем код -->
+    <?php $this->registerCsrfMetaTags() ?>
+    <title><?= Html::encode($this->title) ?></title>
+    <?php $this->head() ?>
 </head>
+
 <body>
-<?php $this->beginBody() ?><!-- Оставляем код -->
+<?php $this->beginBody() ?>
 <div class="table-layout">
 
-    <!-- Вставляем хедер  -->
+    <!-- Хедер -->
     <header class="page-header">
         <div class="main-container page-header__container">
             <div class="page-header__logo">
-                <a href="/">
+                <a href="<?=Url::home()?>">
                     <svg class="page-header__logo-image" id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1634 646.35">
                         <title>taskforce_logo2-01</title>
                         <g>
@@ -66,28 +67,24 @@ AppAsset::register($this);
             <div class="header__nav">
                 <ul class="header-nav__list site-list">
                     <li class="site-list__item">
-                        <a href="/tasks">Задания</a>
+                        <a href="<?=Url::to(['/tasks'])?>">Задания</a>
                     </li>
                     <li class="site-list__item">
-                        <a href="/users">Исполнители</a>
+                        <a href="<?=Url::to(['/users'])?>">Исполнители</a>
                     </li>
-
-                    <!-- Только для зарегистрированных пользователей, а также недоступно на страницы signup -->
-                    <?php if (\Yii::$app->request->pathInfo !== 'signup'): ?>
                     <li class="site-list__item">
                         <a href="#">Создать задание</a>
                     </li>
                     <li class="site-list__item">
-                        <a>Мой профиль</a>
+                        <?php $ID = Yii::$app->user->getId();?>
+                        <a href="#">Мой профиль</a>
                     </li>
-                    <?php endif;?>
-                    <!-- /Только для зарегистрированных пользователей -->
-
                 </ul>
             </div>
             
-            <!-- Только для зарегистрированных пользователей, а также недоступно на страницы signup -->
-            <?php if (\Yii::$app->request->pathInfo !== 'signup'): ?>
+            <!-- Меню пользователя. для зарегистрированных пользователей -->
+            <?php if ($ID = Yii::$app->user->getId()):?>
+            <?php $currentUser = Yii::$app->user->identity;?>
             <div class="header__town">
                 <select class="multiple-select input town-select" size="1" name="town[]">
                     <option value="Moscow">Москва</option>
@@ -115,12 +112,12 @@ AppAsset::register($this);
             </div>
             <div class="header__account">
                 <a class="header__account-photo">
-                    <img src="./img/user-photo.png"
-                         width="43" height="44"
-                         alt="Аватар пользователя">
+                    <img src="/<?=$currentUser->avatar_addr ?: Yii::$app->params['defaultAvatarAddr']?>"
+                            width="43" height="44"
+                            alt="Аватар пользователя">
                 </a>
                 <span class="header__account-name">
-                 Василий
+                    <?=$currentUser->full_name?>
                 </span>
             </div>
             <div class="account__pop-up">
@@ -132,78 +129,32 @@ AppAsset::register($this);
                         <a href="#">Настройки</a>
                     </li>
                     <li>
-                        <a href="#">Выход</a>
+                        <a href="<?=Url::to(['/site/logout'])?>">Выход</a>
                     </li>
                 </ul>
             </div>
             <?php endif;?>
-            <!-- /Только для зарегистрированных пользователей -->
+            <!-- /Меню пользователя. для зарегистрированных пользователей -->
             
         </div>
     </header>
 
-    <!-- Вставляем контент  -->
+    <!-- Контент  -->
     <main class="page-main">
         <div class="main-container page-container">
             <?= Breadcrumbs::widget([
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
-
             <?= Alert::widget() ?>
-            
-            <!-- Представление контент  -->
-            <?= $content ?>
+            <?= $content ?><!-- Представление контент  -->
         </div>
     </main>
 
-    <!-- Вставляем футер  -->
-    <footer class="page-footer">
-        <div class="main-container page-footer__container">
-            <div class="page-footer__info">
-                <p class="page-footer__info-copyright">
-                    © 2019, ООО «ТаскФорс»
-                    Все права защищены
-                </p>
-                <p class="page-footer__info-use">
-                    «TaskForce» — это сервис для поиска исполнителей на разовые задачи.
-                    mail@taskforce.com
-                </p>
-            </div>
-            <div class="page-footer__links">
-                <ul class="links__list">
-                    <li class="links__item">
-                        <a href="/tasks">Задания</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="#">Мой профиль</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="/users">Исполнители</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Регистрация</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Создать задание</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Справка</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="page-footer__copyright">
-                <a>
-                    <img class="copyright-logo"
-                         src="./img/academy-logo.png"
-                         width="185" height="63"
-                         alt="Логотип HTML Academy">
-                </a>
-            </div>
-        </div>
-    </footer>
-
+    <!-- футер  -->
+    <?php require_once __DIR__ . '/footer.php'?>
+    
 </div>
-<?php $this->endBody() ?><!-- Оставляем код -->
+<?php $this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage() ?><!-- Оставляем код -->
+<?php $this->endPage() ?>

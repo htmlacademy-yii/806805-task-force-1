@@ -594,14 +594,22 @@ footer {
   font-size: 20px;
   color: #847e7b;
   margin-top: 0;
-  margin-bottom: 8px; }
+  margin-bottom: 8px;
+  border: none;
+}
+
+.search-task__categories:first-of-type {
+  margin-bottom: 10px;
+}
 
 .search-task__form label {
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 0.03em;
   padding-top: 11px;
-  padding-bottom: 11px; }
+  padding-bottom: 11px;
+  width: 100%;
+}
 
 .search-task__name {
   font-family: "Roboto", sans-serif;

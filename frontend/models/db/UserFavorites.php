@@ -17,30 +17,21 @@ use Yii;
  */
 class UserFavorites extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'user_favorites';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
             [['user_id', 'fave_user_id'], 'required'],
             [['user_id', 'fave_user_id', 'is_fave'], 'integer'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'user_id']],
-            [['fave_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['fave_user_id' => 'user_id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['user_id' => 'user_id']],
+            [['fave_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['fave_user_id' => 'user_id']],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -51,19 +42,13 @@ class UserFavorites extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['user_id' => 'user_id']);
+        return $this->hasOne(Users::class, ['user_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getFaveUser()
     {
-        return $this->hasOne(Users::className(), ['user_id' => 'fave_user_id']);
+        return $this->hasOne(Users::class, ['user_id' => 'fave_user_id']);
     }
 }

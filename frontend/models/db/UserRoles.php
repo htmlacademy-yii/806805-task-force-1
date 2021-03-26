@@ -15,17 +15,11 @@ use Yii;
  */
 class UserRoles extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'user_roles';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -36,9 +30,6 @@ class UserRoles extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -48,11 +39,8 @@ class UserRoles extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUsers()
     {
-        return $this->hasMany(Users::className(), ['role_id' => 'role_id']);
+        return $this->hasMany(Users::class, ['role_id' => 'role_id']);
     }
 }

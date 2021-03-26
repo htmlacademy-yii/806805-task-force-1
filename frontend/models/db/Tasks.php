@@ -28,25 +28,24 @@ use Yii;
  * @property Offers[] $offers
  * @property TaskFailings[] $taskFailings
  * @property TaskFiles[] $taskFiles
- * @property TaskRunnings[] $taskRunnings
+ * @property TaskRunnings $taskRunning
  * @property TaskStatuses $status
  * @property Categories $category
  * @property Locations $location
  * @property Users $customer
+ * 
+ * связи много-много
+ * @property Users $taskContractor
  */
 class Tasks extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
-        return 'tasks';
+        return '{{tasks}}';
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    // Стандартные данные таблицы ORM
+    
     public function rules()
     {
         return [
@@ -60,36 +59,33 @@ class Tasks extends \yii\db\ActiveRecord
                 ['status_id'], 
                 'exist', 
                 'skipOnError' => true, 
-                'targetClass' => TaskStatuses::className(), 
+                'targetClass' => TaskStatuses::class, 
                 'targetAttribute' => ['status_id' => 'status_id']
             ],
             [
                 ['category_id'], 
                 'exist', 
                 'skipOnError' => true, 
-                'targetClass' => Categories::className(), 
+                'targetClass' => Categories::class, 
                 'targetAttribute' => ['category_id' => 'category_id']
             ],
             [
                 ['location_id'], 
                 'exist', 
                 'skipOnError' => true, 
-                'targetClass' => Locations::className(), 
+                'targetClass' => Locations::class, 
                 'targetAttribute' => ['location_id' => 'location_id']
             ],
             [
                 ['customer_id'], 
                 'exist', 
                 'skipOnError' => true, 
-                'targetClass' => Users::className(), 
+                'targetClass' => Users::class, 
                 'targetAttribute' => ['customer_id' => 'user_id']
             ],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -111,83 +107,89 @@ class Tasks extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
+    // Связи
+    // @return \yii\db\ActiveQuery
+
     public function getFeedbacks()
     {
-        return $this->hasMany(Feedbacks::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(Feedbacks::class, ['task_id' => 'task_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getMessages()
     {
-        return $this->hasMany(Messages::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(Messages::class, ['task_id' => 'task_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getOffers()
     {
-        return $this->hasMany(Offers::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(Offers::class, ['task_id' => 'task_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTaskFailings()
     {
-        return $this->hasMany(TaskFailings::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(TaskFailings::class, ['task_id' => 'task_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTaskFiles()
     {
-        return $this->hasMany(TaskFiles::className(), ['task_id' => 'task_id']);
+        return $this->hasMany(TaskFiles::class, ['task_id' => 'task_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTaskRunnings()
+    public function getTaskRunning()
     {
-        return $this->hasOne(TaskRunnings::className(), ['task_id' => 'task_id']);
+        return $this->hasOne(TaskRunnings::class, ['task_id' => 'task_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getStatus()
     {
-        return $this->hasOne(TaskStatuses::className(), ['status_id' => 'status_id']);
+        return $this->hasOne(TaskStatuses::class, ['status_id' => 'status_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getCategory()
     {
-        return $this->hasOne(Categories::className(), ['category_id' => 'category_id']);
+        return $this->hasOne(Categories::class, ['category_id' => 'category_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getLocation()
     {
-        return $this->hasOne(Locations::className(), ['location_id' => 'location_id']);
+        return $this->hasOne(Locations::class, ['location_id' => 'location_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getCustomer()
     {
-        return $this->hasOne(Users::className(), ['user_id' => 'customer_id']);
+        return $this->hasOne(Users::class, ['user_id' => 'customer_id']);
+    }
+
+
+    // Связи много-много
+
+    /**
+     * Исполнитель задания, если есть
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTaskContractor()
+    {
+        return $this->hasOne(Users::class, ['user_id' => 'contractor_id'])
+            ->via('taskRunning');
+    }
+
+    // Задания с ролями
+
+    public static function findNewTasks(array $IDs = []): \yii\db\ActiveQuery
+    {
+        $query = self::find()
+            ->from('tasks t')
+            ->joinWith([
+                'status s1',
+                'category c1',
+                'taskFiles tf1',
+                'location l1',
+                'offers o1',
+            ])
+            ->where(['t.status_id' => 1])
+            ->andFilterWhere(['IN', 't.task_id', $IDs])
+            ->orderBy(['t.add_time' => SORT_DESC]); // Сортировка по умолчанию - по дате добавления
+
+        return $query;
     }
 }

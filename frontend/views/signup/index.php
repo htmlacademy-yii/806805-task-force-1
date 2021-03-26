@@ -3,12 +3,10 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-// use yii\widgets\ActiveField; // Не используем
 
-$this->title = 'Регистарция (Верстка singup.html)';
+$this->title = 'Регистарция (Верстка signup.html)';
 ?>
 
-<!-- Контент singup.html -->
 <section class="registration__user">
     <h1>Регистрация аккаунта</h1>
     <div class="registration-wrapper">
@@ -23,7 +21,7 @@ $this->title = 'Регистарция (Верстка singup.html)';
             'ajaxDataType' => 'json',
             'enableAjaxValidation' => true,
             'enableClientValidation' => false,
-            'validateOnSubmit' => false,
+            'validateOnSubmit' => true,
             'validateOnChange' => true,
             'validateOnType' => false,
             'validateOnBlur' => false,
@@ -45,7 +43,7 @@ $this->title = 'Регистарция (Верстка singup.html)';
                 ->textarea([
                     'class' => 'input textarea',
                     'rows' => 1,
-                    'placeholder' => 'kumarm@mail.ru',
+                    'placeholder' => 'name@mail.ru',
                     'autofocus' => true
                 ]);
             ?>
@@ -73,8 +71,7 @@ $this->title = 'Регистарция (Верстка singup.html)';
                 ->passwordInput(['class' => 'input textarea']);
             ?>
             <?=Html::submitButton('Cоздать аккаунт', ['class' => 'button button__registration'])?>
-        <?php ActiveForm::end()?>
+        <?php ActiveForm::end();?>
         <!-- /Форма -->
     </div>
 </section>
-<!-- /Контент singup.html -->

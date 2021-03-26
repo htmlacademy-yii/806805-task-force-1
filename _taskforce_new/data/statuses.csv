@@ -1,6 +1,0 @@
-symbol,name
-STATUS_NEW,Новое
-STATUS_CANCELED,Отменено
-STATUS_RUNNING,Выполняется
-STATUS_COMPLETED,Выполнено
-STATUS_FAILED,Провалено

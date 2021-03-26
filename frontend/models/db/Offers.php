@@ -19,31 +19,22 @@ use Yii;
  */
 class Offers extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'offers';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
             [['task_id', 'contractor_id', 'desc_text'], 'required'],
             [['task_id', 'contractor_id', 'price'], 'integer'],
             [['desc_text'], 'string'],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'task_id']],
-            [['contractor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['contractor_id' => 'user_id']],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::class, 'targetAttribute' => ['task_id' => 'task_id']],
+            [['contractor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['contractor_id' => 'user_id']],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -55,19 +46,13 @@ class Offers extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTask()
     {
-        return $this->hasOne(Tasks::className(), ['task_id' => 'task_id']);
+        return $this->hasOne(Tasks::class, ['task_id' => 'task_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getContractor()
     {
-        return $this->hasOne(Users::className(), ['user_id' => 'contractor_id']);
+        return $this->hasOne(Users::class, ['user_id' => 'contractor_id']);
     }
 }

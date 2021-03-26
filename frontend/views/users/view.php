@@ -15,7 +15,7 @@ $this->title = 'Просмотр задания (view.html)';
                     <p>Россия, Санкт-Петербург, <?=strstr(Yii::$app->formatter->asRelativeTime(strtotime($user->birth_date)), ' назад', true)?></p>
                 <div class="profile-mini__name five-stars__rate">
                     <!-- Рейтинг -->
-                    <?php $avg_point = $user->avg_point ?? 0;?>
+                    <?php $avg_point = $user->avgRating ?? 0;?>
                     <!-- итерация желтой звездочки -->
                     <?php for ($i = 1; $i <= $avg_point; $i++): ?>
                         <span></span>
@@ -28,7 +28,7 @@ $this->title = 'Просмотр задания (view.html)';
                     <b><?=Yii::$app->formatter->asDecimal($avg_point, 2)?></b>
                     <!-- /Рейтинг -->
                 </div>
-                <b class="done-task">Выполнил <?= $user->tasks_count ?> заказ</b><b class="done-review">Получил <?= $user->feedbacks_count ?> отзыв</b>
+                <b class="done-task">Выполнил <?= $user->taskCounter ?> заказ</b><b class="done-review">Получил <?= $user->feedbackCounter ?> отзыв</b>
                 </div>
             <div class="content-view__headline user__card-bookmark user__card-bookmark--current">
                 <span>Был на сайте <?=Yii::$app->formatter->asRelativeTime(strtotime($user->activity_time))?></span>
@@ -66,9 +66,9 @@ $this->title = 'Просмотр задания (view.html)';
     </div>
     <!-- /карточка пользователя -->
     <!-- Блок отзывы -->
-    <?php if ($feedbacks_count = $user->feedbacks_count):?>
+    <?php if ($feedbackCounter = $user->feedbackCounter):?>
     <div class="content-view__feedback">
-        <h2>Отзывы <span>(<?= $feedbacks_count ?>)</span></h2>
+        <h2>Отзывы <span>(<?= $feedbackCounter ?>)</span></h2>
         <div class="content-view__feedback-wrapper reviews-wrapper">
             <!-- отзывы итерация -->
             <?php foreach ($user->feedbacks as $feedback):?>
@@ -83,7 +83,7 @@ $this->title = 'Просмотр задания (view.html)';
                         </p>
                     </div>
                     <div class="card__review-rate">
-                        <p class="five-rate big-rate"><?= ceil($user->avg_point) . '<span></span>' ?? '';?></p>
+                        <p class="five-rate big-rate"><?= ceil($user->avgRating) . '<span></span>' ?? '';?></p>
                     </div>
                 </div>
             </div>

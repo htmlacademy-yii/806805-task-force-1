@@ -3,36 +3,35 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+// use common\widgets\Alert;
+use frontend\assets\mainAsset;
+// use yii\bootstrap\Nav;
+// use yii\bootstrap\NavBar;
 use yii\helpers\Html;
 use yii\helpers\Url;
+// use yii\widgets\Breadcrumbs;
 
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
-use yii\widgets\Breadcrumbs;
-use frontend\assets\AppAsset;
-use common\widgets\Alert;
-
-// AppAsset::register($this); // !!! Отключаем Создает стили по умолчанию которые влияют на шрифты и некоторые классы верстки, на др страницах влияет на формы при отключении
+mainAsset::register($this);
 ?>
-<?php $this->beginPage() ?><!-- Оставляем код -->
+
+<?php $this->beginPage()?>
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>">
+<html lang="<?=Yii::$app->language?>">
+
 <head>
-    <meta charset="UTF-8"><!-- Вставляем код -->
-    <meta charset="<?= Yii::$app->charset ?>">
+    <meta charset="<?=Yii::$app->charset?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php $this->registerCsrfMetaTags() ?><!-- Оставляем код -->
-    <title><?= Html::encode($this->title) ?></title><!-- Оставляем код -->
-
-    <?php $this->head() ?><!-- Оставляем код, удаляем файл встроенного стиля css/site.css -->
-
-    <link rel="stylesheet" href="/css/normalize.css"><!-- Вставляем код -->
-    <link rel="stylesheet" href="/css/style.css"><!-- Вставляем код, AppAsset::register($this); влияет на шрифт и некоторые классы -->
+    <?php $this->registerCsrfMetaTags()?><!-- Оставляем код ??? Не изучено-->
+    <title><?=Html::encode($this->title)?></title>
+    <?php $this->head()?>
 </head>
+
 <body class="landing">
-<?php $this->beginBody() ?><!-- Оставляем код -->
+<?php $this->beginBody()?>
 <div class="table-layout">
+
+    <!-- Хедер -->
     <header class="page-header--index">
         <div class="main-container page-header__container page-header__container--index">
             <div class="page-header__logo--index">
@@ -62,13 +61,13 @@ use common\widgets\Alert;
                         </g>
                     </svg>
                 </a>
-               <p>Работа там, где ты!</p>
+                <p>Работа там, где ты!</p>
             </div>
             <div class="header__account--index">
-                <a href="#" class="header__account-enter open-modal" data-for="enter-form">
+                <a href="#login" class="header__account-enter open-modal" data-for="enter-form">
                     <span>Вход</span></a>
                 или
-                <a href="/signup" class="header__account-registration">
+                <a href="<?=Url::to(['/signup'])?>" class="header__account-registration">
                     Регистрация
                 </a>
             </div>
@@ -77,77 +76,19 @@ use common\widgets\Alert;
 
     <main>
         <div class="landing-container">
-            <!-- Представление контент  -->
-            <?= $content ?>
+            <?=$content?>
         </div>
     </main>
 
-    <footer class="page-footer">
-        <div class="main-container page-footer__container">
-            <div class="page-footer__info">
-                <p class="page-footer__info-copyright">
-                    © 2019, ООО «ТаскФорс»
-                    Все права защищены
-                </p>
-                <p class="page-footer__info-use">
-                    «TaskForce» — это сервис для поиска исполнителей на разовые задачи.
-                    mail@taskforce.com
-                </p>
-            </div>
-            <div class="page-footer__links">
-                <ul class="links__list">
-                    <li class="links__item">
-                        <a href="/tasks">Задания</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="#">Мой профиль</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="/users">Исполнители</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Регистрация</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Создать задание</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Справка</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="page-footer__copyright">
-                <a href="https://htmlacademy.ru">
-                    <img class="copyright-logo"
-                         src="./img/academy-logo.png"
-                         width="185" height="63"
-                         alt="Логотип HTML Academy">
-                </a>
-            </div>
-        </div>
-    </footer>
-        <!-- Модальное окно -->
-    <section class="modal enter-form form-modal" id="enter-form">
-        <h2>Вход на сайт</h2>
-        <form action="#" method="post">
-            <p>
-                <label class="form-modal-description" for="enter-email">Email</label>
-                <input class="enter-form-email input input-middle" type="email" name="enter-email" id="enter-email">
-            </p>
-            <p>
-                <label class="form-modal-description" for="enter-password">Пароль</label>
-                <input class="enter-form-email input input-middle" type="password" name="enter-email" id="enter-password">
-            </p>
-            <button class="button" type="submit">Войти</button>
-        </form>
-        <button class="form-modal-close" type="button">Закрыть</button>
-    </section>
+    <!-- футер  -->
+    <?php require_once __DIR__ . '/footer.php';?>
+
 </div>
 
 <div class="overlay"></div>
 <script src="js/main.js"></script>
 
-<?php $this->endBody() ?><!-- Оставляем код -->
+<?php $this->endBody()?>
 </body>
 </html>
-<?php $this->endPage() ?><!-- Оставляем код -->
+<?php $this->endPage()?>

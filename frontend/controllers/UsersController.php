@@ -2,44 +2,65 @@
 
 namespace frontend\controllers;
 
+use frontend\controllers\AccessController;
+use frontend\models\db\Users;
+use frontend\models\usersFiltration;
 use frontend\models\forms\UsersForm;
-use frontend\models\UsersFilters;
-use frontend\models\UserView;
 use Yii;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
-class UsersController extends Controller
+class UsersController extends AccessController
 {
     public function actionIndex(string $sorting = null)
     {
-        $usersForm = new UsersForm();
-        $usersFilters = new UsersFilters($sorting, $usersForm);
-        $users = [];
+        $userFiltersForm = new UsersForm();
+        $contractorsQuery = Users::findContractors()
+            ->addSelect(['*', 'taskCounter' => Users::subTaskCounter()])
+            ->addSelect(['skillCounter' => Users::subSkillCounter()])
+            ->addSelect(['feedbackCounter' => Users::subFeedbackCounter()])
+            ->addSelect(['sumRating' => Users::subSumRating()])
+            ->addSelect(['avgRating' => Users::subAvgRating()]);
 
-        if ($usersForm->load(Yii::$app->request->post()) === true) {
-            $users = $usersFilters->getFilterContractors();
-        } else {
-            $users = $usersFilters->getContractors();
+        if ($userFiltersForm->load(Yii::$app->request->post()) === true) {
+            $filtration = new UsersFiltration($contractorsQuery, $userFiltersForm);
+            $filtration->filter();
+            $contractorsQuery = $filtration->getFilteredUsers();
         }
 
-        $sortings = UsersFilters::getSortingTags();
+        $sortings = Users::getSortings();
+        $currentSorting = $sorting ? $sorting : Users::SORTING_REG_TIME;
+        if (!in_array($currentSorting, array_keys(Users::getSortings()))) {
+            throw new NotFoundHttpException('Поля сортировки не существует');
+        }
+
+        $contractors = $contractorsQuery->orderBy([$currentSorting => SORT_DESC])->all();
+        // примеры получения пользователей
+        $customers = Users::findCustomers()->all();
+        $customersActive = Users::findCustomersActive()->all();
 
         return $this->render('index', [
-            'users' => $users,
+            'users' => $contractors,
             'sortings' => $sortings,
-            'usersForm' => $usersForm,
+            'usersForm' => $userFiltersForm,
+            'currentSorting' => $currentSorting,
         ]);
     }
 
     public function actionView(int $ID)
     {
-        $userView = new UserView($ID);
-        $user = $userView->getContractor();
-        if (!$user) {
+        $contractor = Users::findContractors([$ID])
+            ->addSelect(['*', 'taskCounter' => Users::subTaskCounter()])
+            ->addSelect(['skillCounter' => Users::subSkillCounter()])
+            ->addSelect(['feedbackCounter' => Users::subFeedbackCounter()])
+            ->addSelect(['sumRating' => Users::subSumRating()])
+            ->addSelect(['avgRating' => Users::subAvgRating()])
+            ->limit(1)
+            ->one();
+
+        if (!$contractor) {
             throw new NotFoundHttpException('Исполнителя с таким ID не существует');
         }
 
-        return $this->render('view', ['user' => $user]);
+        return $this->render('view', ['user' => $contractor]);
     }
 }

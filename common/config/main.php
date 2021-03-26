@@ -7,7 +7,8 @@ return [
         '@npm' => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
-    'defaultRoute' => 'start/index',
+    'defaultRoute' => 'site/index',
+    'layout' => 'main',
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -15,9 +16,6 @@ return [
         'formatter' => [
             'dateFormat' => 'dd.MM.yyyy',
             'decimalSeparator' => '.',
-        ],
-        'errorHandler' => [
-            'errorAction' => 'start/error',
         ],
         'urlManager' => [
             'enablePrettyUrl' => true,
@@ -28,19 +26,19 @@ return [
                 'action' => yii\web\UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
             ],
             'rules' => [
+                '/' => 'site/index',
+                'utils' => 'utils/index',
+                'tasks' => 'tasks/index',
+                'users' => 'users/index',
+                'signup' => 'signup/index',
                 [
                     'pattern' => '<controller:(task|user)>/view/<ID>',
                     'route' => '<controller>s/view',
                 ],
                 [
-                    'pattern' => 'users/<sorting>',
-                    'route' => 'users/index',
-                ],
-                [
                     'pattern' => 'tasks/<category>',
                     'route' => 'tasks/index',
                 ],
-                'signup' => 'signup/index',
             ],
         ],
     ],

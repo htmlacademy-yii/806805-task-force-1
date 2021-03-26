@@ -1,7 +1,7 @@
 # Личный проект «TaskForce»
 
-* Студент: [Михаил Лебедев](https://up.htmlacademy.ru/yii/1/user/806805).
-* Наставник: `Неизвестно`.
+* Студент: [Михаил Лебедев alomir@yandex.ru](https://up.htmlacademy.ru/yii/1/user/806805).
+* Наставник: [Сергей Парфенов](https://htmlacademy.ru/profile/id926645).
 
 ---
 

@@ -21,17 +21,11 @@ use Yii;
  */
 class Feedbacks extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'feedbacks';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -39,15 +33,12 @@ class Feedbacks extends \yii\db\ActiveRecord
             [['author_id', 'recipient_id', 'task_id', 'point_num'], 'integer'],
             [['desc_text'], 'string'],
             [['add_time'], 'safe'],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['author_id' => 'user_id']],
-            [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['recipient_id' => 'user_id']],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'task_id']],
+            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['author_id' => 'user_id']],
+            [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['recipient_id' => 'user_id']],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::class, 'targetAttribute' => ['task_id' => 'task_id']],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -61,27 +52,18 @@ class Feedbacks extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getAuthor()
     {
-        return $this->hasOne(Users::className(), ['user_id' => 'author_id']);
+        return $this->hasOne(Users::class, ['user_id' => 'author_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getRecipient()
     {
-        return $this->hasOne(Users::className(), ['user_id' => 'recipient_id']);
+        return $this->hasOne(Users::class, ['user_id' => 'recipient_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTask()
     {
-        return $this->hasOne(Tasks::className(), ['task_id' => 'task_id']);
+        return $this->hasOne(Tasks::class, ['task_id' => 'task_id']);
     }
 }

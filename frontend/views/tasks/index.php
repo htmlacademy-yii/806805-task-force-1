@@ -15,8 +15,8 @@ $this->title = 'Задания (Верстка browse.html)';
         <?php foreach ($tasks as $task): ?>
         <div class="new-task__card">
             <div class="new-task__title">
-                <a href="<?=Url::to(['tasks/view', 'ID' => $task->task_id])?>" class="link-regular"><h2><?=ucfirst($task->title)?></h2></a>
-                <a class="new-task__type link-regular" href="<?=Url::to(['tasks/index', 'category' => $task->category_id])?>"><p><?=$task->category->title?></p></a>
+                <a href="<?=Url::to(['view', 'ID' => $task->task_id])?>" class="link-regular"><h2><?=ucfirst($task->title)?></h2></a>
+                <a class="new-task__type link-regular" href="<?=Url::to(['index', 'category' => $task->category_id])?>"><p><?=$task->category->title?></p></a>
             </div>
             <div class="new-task__icon new-task__icon--<?=$task->category->label?>"></div>
                 <p class="new-task_description">

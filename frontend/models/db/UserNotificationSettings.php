@@ -17,30 +17,21 @@ use Yii;
  */
 class UserNotificationSettings extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'user_notification_settings';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
             [['user_id', 'notification_id'], 'required'],
             [['user_id', 'notification_id', 'is_active'], 'integer'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'user_id']],
-            [['notification_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserNotifications::className(), 'targetAttribute' => ['notification_id' => 'notification_id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['user_id' => 'user_id']],
+            [['notification_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserNotifications::class, 'targetAttribute' => ['notification_id' => 'notification_id']],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -51,19 +42,13 @@ class UserNotificationSettings extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['user_id' => 'user_id']);
+        return $this->hasOne(Users::class, ['user_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getNotification()
     {
-        return $this->hasOne(UserNotifications::className(), ['notification_id' => 'notification_id']);
+        return $this->hasOne(UserNotifications::class, ['notification_id' => 'notification_id']);
     }
 }

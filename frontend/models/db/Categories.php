@@ -16,17 +16,11 @@ use Yii;
  */
 class Categories extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'categories';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -37,9 +31,6 @@ class Categories extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -49,19 +40,13 @@ class Categories extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTasks()
     {
-        return $this->hasMany(Task::className(), ['category_id' => 'category_id']);
+        return $this->hasMany(Task::class, ['category_id' => 'category_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUserSpecializations()
     {
-        return $this->hasMany(UserSpecialization::className(), ['category_id' => 'category_id']);
+        return $this->hasMany(UserSpecialization::class, ['category_id' => 'category_id']);
     }
 }
